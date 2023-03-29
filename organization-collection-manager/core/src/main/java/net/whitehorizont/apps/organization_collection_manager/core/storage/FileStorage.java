@@ -1,5 +1,7 @@
 package net.whitehorizont.apps.organization_collection_manager.core.storage;
 
+// provides adapter with file content
+// adapters operate on collections
 public class FileStorage {
   public FileStorage(String path) {
     // create file object
@@ -7,9 +9,17 @@ public class FileStorage {
     // if file does not exist, create it
       // create all missing parent directories
       // if could not create parent dirs, report what when wrong (perm)
-    // if file exists, verify integrity
+    // may be just use iterators
+    // 
+    // if file exists
+      // create observable
+      // apply delayWhen(ready)
+      // emit two observables and complete
+      // one observable represents warnings
+      // the other one represents collections
+      // verify integrity
       // check if hash sum stored in file match the computed one
-    // report if data was modified (integrity check failed) by external factors
+    // error if data was modified (integrity check failed) by external factors
     // report that resource is available
   }
 
@@ -24,4 +34,11 @@ public class FileStorage {
     // write down serialized data
   }
 
+  public void load() {
+    // receive collection id
+    // if no collection id specified, consider default or all collections
+    // storage = new FileStorage() // internally delayWhen 
+
+    
+  }
 }
