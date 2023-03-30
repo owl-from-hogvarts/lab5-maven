@@ -1,0 +1,19 @@
+<storage>
+  <collections>
+    <collection>
+      <collection-metadata></collection-metadata>
+      <collection-elements>
+        <element>
+          <key></key>
+          <body></body>
+        </element>
+      </collection-elements>
+    </collection>
+  </collections>
+  <meta>
+    <integrity>
+      <algoritm></algoritm>
+      <integrity-data></integrity-data>
+    </integrity>
+  </meta>
+</storage>

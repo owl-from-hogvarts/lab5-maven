@@ -3,7 +3,7 @@ package net.whitehorizont.apps.organization_collection_manager.core.collection;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Stream;
+import org.javatuples.Pair;
 
 import io.reactivex.rxjava3.core.Observable;
 import net.whitehorizont.apps.organization_collection_manager.core.storage.IStorage;
@@ -12,10 +12,10 @@ import net.whitehorizont.apps.organization_collection_manager.core.storage.IStor
  * Maps storages to collections they hold.
  * 
  */
-public class CollectionManager<T, E> {
-  private Map<IStorage, Set<Collection<T, E>>> storageToCollectionMap;
+public class CollectionManager<T, E extends IWithId<? extends ISerializableKey>> {
+  private Map<IStorage<Collection<T, E>>, Set<Collection<T, E>>> storageToCollectionMap;
 
-  public void addStorage(IStorage storage, DataSinkSource<T, E> dataSink) {
+  public void addStorage(IStorage<Collection<T, E>> storage, DataSinkSource<T, E, Collection<T, E>> dataSink) {
     // create appropriate mapping for storage
     final var collectionSet = new HashSet<Collection<T, E>>();
     storageToCollectionMap.put(storage, collectionSet);
@@ -26,20 +26,37 @@ public class CollectionManager<T, E> {
     // supply insert command with appropriate collection
   }
 
-  public void getCollection() {
+  /**
+   * Get collection by id
+   * @throws NoSuchCollection
+   */
+  public Collection<T, E> getCollection(CollectionId id) throws NoSuchCollection {
     // if no collection specified, return default collection
+    return getCollectionAndStorage(id).getValue1();
+    
   }
 
-  public void save() {
-    IStorage testStorage;
-    CollectionId id;
-    final var foundCollection = this.findById(storageToCollectionMap.get(testStorage).parallelStream(), id);
-    Observable.just(foundCollection).subscribe(testStorage);
+  private Pair<IStorage<Collection<T, E>>, Collection<T, E>> getCollectionAndStorage(CollectionId collectionId) throws NoSuchCollection {
+    for (var entry : storageToCollectionMap.entrySet()) {
+      for (var collection : entry.getValue()) {
+        if (collection.getMetadataSnapshot().getId().equals(collectionId)) {
+          return new Pair<IStorage<Collection<T, E>>,Collection<T,E>>(entry.getKey(), collection);
+        }
+      }
+    }
+
+    throw new NoSuchCollection();
   }
 
-  private Collection<T, E> findById(Stream<Collection<T, E>> stream, CollectionId id) {
-    final var foundCollection = stream.filter((collection) -> collection.getMetadataSnapshot().getId().equals(id)).findFirst().get();
-    assert foundCollection != null;
-    return foundCollection;
+  /**
+   * Saves collection by collection id
+   * @throws NoSuchCollection
+   */
+  public void save(CollectionId collectionId) throws NoSuchCollection {
+    final var storageAndCollection = getCollectionAndStorage(collectionId);
+    final var storage = storageAndCollection.getValue0();
+    final var collection = storageAndCollection.getValue1();
+
+    Observable.just(collection).subscribe(storage);
   }
 }
