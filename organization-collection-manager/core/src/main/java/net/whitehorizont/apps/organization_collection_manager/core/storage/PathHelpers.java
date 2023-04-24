@@ -32,7 +32,7 @@ public final class PathHelpers {
   }
 
   static public Path getParentSafe(Path path) {
-    if (path.compareTo(path.getRoot()) == 0) {
+    if (path.getParent() == null) {
       return path;
     }
 

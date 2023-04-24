@@ -5,42 +5,53 @@ import java.util.Map;
 import java.util.Set;
 import org.javatuples.Pair;
 
+import io.reactivex.rxjava3.core.Flowable;
 import io.reactivex.rxjava3.core.Observable;
-import net.whitehorizont.apps.organization_collection_manager.core.storage.IStorage;
+import io.reactivex.rxjava3.core.Single;
+import io.reactivex.rxjava3.subjects.PublishSubject;
+import net.whitehorizont.apps.organization_collection_manager.core.storage.IBaseStorage;
 
 /**
- * Maps storages to collections they hold.
+ * Looks up storages for collection.
  * 
+ * 
+ * Provides abstraction over available stores
+ * passes on operations on collections to appropriate storage.
  */
 public class CollectionManager<T, E extends IWithId<? extends ISerializableKey>> {
-  private Map<IStorage<Collection<T, E>>, Set<Collection<T, E>>> storageToCollectionMap;
+  private Map<IBaseStorage<Collection<T, E>>, Set<Collection<T, E>>> storageToCollectionMap;
 
-  public void addStorage(IStorage<Collection<T, E>> storage, DataSinkSource<T, E, Collection<T, E>> dataSink) {
+  // makes collections available for loading
+  public void addStorage(IBaseStorage<Collection<T, E>> storage, DataSinkSource<T, E, Collection<T, E>> dataSink) {
     // create appropriate mapping for storage
     final var collectionSet = new HashSet<Collection<T, E>>();
     storageToCollectionMap.put(storage, collectionSet);
-    // when storage is ready, request all collections it stores
+
+    // request default collection
+
+    // when storage is ready, request all collection prototypes it stores
     // if nothing provided
-      // create at least one collection
-    // wrap those elements into `insert` command
+      // create at least one empty collection
+    // create collection from prototype. May be wrap elements into insert command
     // supply insert command with appropriate collection
+    // publish commands on queue
   }
 
   /**
    * Get collection by id
    * @throws NoSuchCollection
    */
-  public Collection<T, E> getCollection(CollectionId id) throws NoSuchCollection {
+  public IBaseCollection<T, E> getCollection(CollectionId id) throws NoSuchCollection {
     // if no collection specified, return default collection
     return getCollectionAndStorage(id).getValue1();
     
   }
 
-  private Pair<IStorage<Collection<T, E>>, Collection<T, E>> getCollectionAndStorage(CollectionId collectionId) throws NoSuchCollection {
+  private Pair<IBaseStorage<Collection<T, E>>, Collection<T, E>> getCollectionAndStorage(CollectionId collectionId) throws NoSuchCollection {
     for (var entry : storageToCollectionMap.entrySet()) {
       for (var collection : entry.getValue()) {
         if (collection.getMetadataSnapshot().getId().equals(collectionId)) {
-          return new Pair<IStorage<Collection<T, E>>,Collection<T,E>>(entry.getKey(), collection);
+          return new Pair<IBaseStorage<Collection<T, E>>,Collection<T,E>>(entry.getKey(), collection);
         }
       }
     }
@@ -56,7 +67,13 @@ public class CollectionManager<T, E extends IWithId<? extends ISerializableKey>>
     final var storageAndCollection = getCollectionAndStorage(collectionId);
     final var storage = storageAndCollection.getValue0();
     final var collection = storageAndCollection.getValue1();
-
-    Observable.just(collection).subscribe(storage);
+    final var ready = Observable.empty();
+    Observable.just(collection);
+    // Single.just(collection).doOnSuccess(storage).;
+    // new SaveCommand
+    // commandQueue.getErrors$().subscribe(, reportErrors)
+    // commandQueue.add(saveCommand)
+    // command.execute().catch(errors)
+    // collectionManager.save(collection.getMetadataSnapshot().getId())
   }
 }

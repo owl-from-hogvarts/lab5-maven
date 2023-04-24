@@ -13,14 +13,14 @@ import net.whitehorizont.apps.organization_collection_manager.lib.ValidationErro
  * @param <P> what is supplied, prepared and transformed into collection element
  * @param <E> type of collection element
  */
-public abstract class DataSinkSource<P, E, C> extends Observable<E> implements IDataSink<P> {
+public abstract class DataSinkSource<P, E, V> extends Observable<E> implements IDataSink<P> {
   private Subject<E> elements = PublishSubject.<E>create();
-  private C validationObject;
+  private V validationObject;
   
-  protected C getValidationObject() {
+  protected V getValidationObject() {
     return validationObject;
   }
-  public void setValidationObject(C validationObject) {
+  public void setValidationObject(V validationObject) {
     this.validationObject = validationObject;
   }
   final public void supply(P prototype) throws ValidationError {

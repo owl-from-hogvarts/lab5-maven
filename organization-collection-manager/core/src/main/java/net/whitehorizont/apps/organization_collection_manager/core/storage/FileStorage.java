@@ -1,63 +1,68 @@
 package net.whitehorizont.apps.organization_collection_manager.core.storage;
 
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.channels.SeekableByteChannel;
 import java.nio.file.Files;
+import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-
+import java.nio.file.StandardOpenOption;
 import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.Observable;
-import io.reactivex.rxjava3.core.ObservableEmitter;
-import io.reactivex.rxjava3.core.Observer;
-import io.reactivex.rxjava3.disposables.Disposable;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.CollectionId;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.IBaseCollection;
+import net.whitehorizont.apps.organization_collection_manager.core.storage.errors.StorageInaccessibleError;
 
 // provides adapter with file content
 // adapters operate on collections
-public class FileStorage<E, M, C extends IStorableKeyedCollection<E, M>> extends Observable<C> implements IStorage<C> {
-  private IFileAdapter<E, M> adapter;
-  
-  public FileStorage(String path, IFileAdapter<E, M> adapter) throws StorageInaccessibleError {
+// treat data as opaque just write and read it
+// composition and aggregation of data should be done somewhere else
+// can store only one collection
+public class FileStorage<C extends IBaseCollection<?, ?, M>, M>
+    implements IBaseStorage<C, CollectionId, M> {
+  private final IFileAdapter<C> adapter;
+  private static final OpenOption[] DEFAULT_FILE_OPEN_OPTIONS = {
+      StandardOpenOption.CREATE /* creates file if it does not exist */, StandardOpenOption.WRITE,
+      StandardOpenOption.READ };
+  // private ReplaySubject<C> collectionsLoaded = ReplaySubject.create();
+  private final SeekableByteChannel fileChannel;
+
+  public FileStorage(String path, IFileAdapter<C> adapter) throws StorageInaccessibleError {
     this.adapter = adapter;
-    
+
     // create file object
     Path file = PathHelpers.preparePath(Paths.get(path));
     // verify that file exists
-    // if file does not exist, create it
     if (!Files.exists(file)) {
       // create all missing parent directories
       // if could not create parent dirs, report what when wrong (perm)
+
       PathHelpers.createParentDirectories(file);
     }
-    // may be just use iterators
-    // 
-    // if file exists
-      // create observable
-      // apply delayWhen(ready)
-      // emit two observables and complete
-      // one observable represents warnings
-      // the other one represents collections
-      // verify integrity
-      // check if hash sum stored in file match the computed one
-    // error if data was modified (integrity check failed) by external factors
-    // report that resource is available
+
+    try (var channel = Files.newByteChannel(file, FileStorage.DEFAULT_FILE_OPEN_OPTIONS)) {
+      fileChannel = channel;
+    } catch (IOException e) {
+      throw new StorageInaccessibleError();
+    }
   }
 
-  public void load() {
-    // if no collection id specified, consider default or all collections
-
-    
-  }
 
   @Override
-  public void onSubscribe(@NonNull Disposable d) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'onSubscribe'");
-  }
-
-  @Override
-  public void onNext(@NonNull C t) {
+  public void save(@NonNull C t) {
     // receive collection to store
-    // use adaptor to serialize collections
-    this.adapter.serialize(t);
+    // use adaptor to serialize collection
+    // adapter may decide not to serialize collection
+    // in that case it returns null or throws error
+
+    final ByteBuffer fileContent = this.adapter.serialize(t);
+    try {
+      fileChannel.write(fileContent);
+    } catch (IOException e) {
+    }
+    
+
     // accumulate file content
     // compute file metadata using adapter
     // check if file is still available
@@ -68,21 +73,48 @@ public class FileStorage<E, M, C extends IStorableKeyedCollection<E, M>> extends
     throw new UnsupportedOperationException("Unimplemented method 'onNext'");
   }
 
-  @Override
-  public void onError(@NonNull Throwable e) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'onError'");
-  }
 
   @Override
-  public void onComplete() {
+  public Observable<C> load() {
     // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'onComplete'");
+    throw new UnsupportedOperationException("Unimplemented method 'load'");
   }
 
+
   @Override
-  protected void subscribeActual(@NonNull Observer<? super @NonNull C> observer) {
+  public Observable<C> load(CollectionId key) {
     // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'subscribeActual'");
+    throw new UnsupportedOperationException("Unimplemented method 'load'");
   }
+
+
+  @Override
+  public Observable<C> loadAll() {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'loadAll'");
+  }
+
+
+  @Override
+  public Observable<M> loadMetadata() {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'loadMetadata'");
+  }
+
+
+  @Override
+  public Observable<M> loadMetadata(CollectionId key) {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'loadMetadata'");
+  }
+
+    // create observable
+    // apply delayWhen(ready)
+    // emit two observables and complete
+    // one observable represents warnings
+    // the other one represents collections
+    // verify integrity
+    // check if hash sum stored in file match the computed one
+    // error if data was modified (integrity check failed) by external factors
+    // report that resource is available
 }

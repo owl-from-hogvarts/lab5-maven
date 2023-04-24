@@ -10,11 +10,10 @@ import java.util.Map.Entry;
 import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.Observable;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.CollectionMetadata.Builder;
-import net.whitehorizont.apps.organization_collection_manager.core.storage.IStorableKeyedCollection;
 
-// collection defines id type to use. adapter is responsible to properly serialize it
-public class Collection<T, E extends IWithId<? extends ISerializableKey>>
-    implements IStorableKeyedCollection<E, CollectionMetadata> {
+// collection defines id type to use. adapter is responsible for properly serializing it
+public class Collection<T, E extends IWithId<? extends BaseId>>
+    implements IBaseCollection<IDataSink<T>, E, CollectionMetadata> {
 
   private final Map<ISerializableKey, E> elements = new LinkedHashMap<>();
   private final CollectionMetadata metadata;
@@ -33,10 +32,12 @@ public class Collection<T, E extends IWithId<? extends ISerializableKey>>
   /**
    * Collection listens on returned sink to receive new elements
    */
+  @Override
   public IDataSink<T> getDataSink() {
     return dataSink;
   }
 
+  @Override
   public Observable<E> getEvery$() {
     return Observable.just(elements).flatMap((elements) -> {
       var elementsList = elements.values();
@@ -45,8 +46,7 @@ public class Collection<T, E extends IWithId<? extends ISerializableKey>>
     });
   }
 
-  // @Override
-  // @SuppressWarnings("unchecked") // FUCK JAVA!!!
+  @Override
   public Observable<Entry<ISerializableKey, E>> getEveryWithKey$() {
     return Observable.just(elements).flatMap((elements) -> {
       final Set<Entry<ISerializableKey, E>> keyValuePairs = elements.entrySet();
@@ -55,19 +55,23 @@ public class Collection<T, E extends IWithId<? extends ISerializableKey>>
     });
   }
 
-  public Observable<E> getById$(ElementId id) {
+  @Override
+  public Observable<E> getById$(UUID_ElementId id) {
     return Observable.just(this.elements.get(id));
   }
 
+  @Override
   public Observable<List<E>> getAll$() {
     return Observable.just(new ArrayList<>(elements.values()));
   }
 
   // stores creation time
+  @Override
   public CollectionMetadata getMetadataSnapshot() {
     return this.metadata;
   }
 
+  @Override
   public void clear() {
     this.elements.clear();
   }
@@ -85,6 +89,10 @@ public class Collection<T, E extends IWithId<? extends ISerializableKey>>
       throw new DuplicateElementsError(duplicate.get().getValue());
     }
     this.elements.put(element.getId(), element);
+  }
+
+  void generateElementKey(E element) {
+    // TODO: implement
   }
 
 }
