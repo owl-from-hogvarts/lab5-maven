@@ -8,6 +8,7 @@ import net.whitehorizont.apps.organization_collection_manager.core.collection.Ba
 import net.whitehorizont.apps.organization_collection_manager.core.collection.IBaseCollection;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.IWithId;
 import net.whitehorizont.apps.organization_collection_manager.core.storage.errors.CollectionNotFound;
+import net.whitehorizont.apps.organization_collection_manager.core.storage.errors.StorageInaccessibleError;
 
 
 /**
@@ -48,5 +49,5 @@ public interface IBaseStorage<C extends IBaseCollection<?, ?, M>, K extends Base
   Observable<M> loadMetadata() throws CollectionNotFound;
   Observable<M> loadMetadata(K key) throws CollectionNotFound;
 
-  void save(@NonNull C collection);
+  void save(@NonNull C collection) throws StorageInaccessibleError;
 }
