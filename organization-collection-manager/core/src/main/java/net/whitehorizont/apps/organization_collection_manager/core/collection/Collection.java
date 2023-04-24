@@ -13,7 +13,7 @@ import net.whitehorizont.apps.organization_collection_manager.core.collection.Co
 
 // collection defines id type to use. adapter is responsible for properly serializing it
 public class Collection<T, E extends IWithId<? extends BaseId>>
-    implements IBaseCollection<IDataSink<T>, E, CollectionMetadata> {
+    implements IBaseCollection<T, E, CollectionMetadata> {
 
   private final Map<ISerializableKey, E> elements = new LinkedHashMap<>();
   private final CollectionMetadata metadata;

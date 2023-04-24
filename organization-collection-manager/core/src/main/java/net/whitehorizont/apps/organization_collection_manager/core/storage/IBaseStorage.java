@@ -6,6 +6,7 @@ import org.eclipse.jdt.annotation.NonNull;
 import io.reactivex.rxjava3.core.Observable;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.BaseId;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.IBaseCollection;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.IWithId;
 
 
 /**
@@ -21,7 +22,7 @@ import net.whitehorizont.apps.organization_collection_manager.core.collection.IB
  * @param <K> key by which collection can be addressed
  * @param <M> collection metadata (pray on type inference)
  */
-public interface IBaseStorage<C extends IBaseCollection<?, ?, M>, K extends BaseId, M> {
+public interface IBaseStorage<C extends IBaseCollection<?, ?, M>, K extends BaseId, M extends IWithId<K>> {
   /**
    * Loads default collection. 
    * 

@@ -5,12 +5,12 @@ import java.util.Map.Entry;
 
 import io.reactivex.rxjava3.core.Observable;
 
-public interface IBaseCollection<D extends IDataSink<?>, E extends IWithId<? extends BaseId>, M> {
+public interface IBaseCollection<P, E extends IWithId<? extends BaseId>, M extends IWithId<? extends BaseId>> {
 
   /**
    * Collection listens on returned sink to receive new elements
    */
-  D getDataSink();
+  IDataSink<P> getDataSink();
 
   Observable<E> getEvery$();
 

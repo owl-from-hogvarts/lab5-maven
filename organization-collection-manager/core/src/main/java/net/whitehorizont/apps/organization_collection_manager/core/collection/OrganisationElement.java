@@ -7,37 +7,37 @@ import net.whitehorizont.apps.organization_collection_manager.lib.ValidationResu
 
 public class OrganisationElement implements IWithId<UUID_ElementId> {
   // TODO: make itertor for fields
-  private static final FieldMetadata<String, Collection<Builder, OrganisationElement>> NAME_METADATA = new FieldMetadata<String, Collection<Builder, OrganisationElement>>(
-      new FieldMetadata.Metadata<String, Collection<Builder, OrganisationElement>>()
+  private static final FieldMetadata<String, IBaseCollection<OrganisationElement.Builder, OrganisationElement, ?>> NAME_METADATA = new FieldMetadata<String, IBaseCollection<OrganisationElement.Builder, OrganisationElement, ?>>(
+      new FieldMetadata.Metadata<String, IBaseCollection<OrganisationElement.Builder, OrganisationElement, ?>>()
           .setNullable(false, "Company name must be specified")
           .addValidator((value, _unused) -> new ValidationResult<>(value.length() < 1, "")));
 
-  private static final FieldMetadata<UUID_ElementId, Collection<Builder, OrganisationElement>> ID_METADATA = new FieldMetadata<>(
-      new FieldMetadata.Metadata<UUID_ElementId, Collection<Builder, OrganisationElement>>().setNullable(false,
+  private static final FieldMetadata<UUID_ElementId, IBaseCollection<OrganisationElement.Builder, OrganisationElement, ?>> ID_METADATA = new FieldMetadata<>(
+      new FieldMetadata.Metadata<UUID_ElementId, IBaseCollection<OrganisationElement.Builder, OrganisationElement, ?>>().setNullable(false,
           "ID must be provided for collection element"));
 
-  public static FieldMetadata<String, Collection<Builder, OrganisationElement>> getNameMetadata() {
+  public static FieldMetadata<String, IBaseCollection<OrganisationElement.Builder, OrganisationElement, ?>> getNameMetadata() {
     return NAME_METADATA;
   }
 
-  private final FieldDefinition<String, Collection<Builder, OrganisationElement>> name;
-  private final FieldDefinition<UUID_ElementId, Collection<Builder, OrganisationElement>> ID;
+  private final FieldDefinition<String, IBaseCollection<OrganisationElement.Builder, OrganisationElement, ?>> name;
+  private final FieldDefinition<UUID_ElementId, IBaseCollection<OrganisationElement.Builder, OrganisationElement, ?>> ID;
 
-  public FieldDefinition<String, Collection<Builder, OrganisationElement>> getName() {
+  public FieldDefinition<String, IBaseCollection<OrganisationElement.Builder, OrganisationElement, ?>> getName() {
     return name;
   }
 
-  public FieldDefinition<UUID_ElementId, Collection<Builder, OrganisationElement>> getID() {
+  public FieldDefinition<UUID_ElementId, IBaseCollection<OrganisationElement.Builder, OrganisationElement, ?>> getID() {
     return ID;
   }
 
-  public OrganisationElement(IBaseCollection<Builder, OrganisationElement> collection, Builder builder)
+  public OrganisationElement(IBaseCollection<Builder, OrganisationElement, CollectionMetadata> collection, Builder builder)
       throws ValidationError {
-    this.name = new FieldDefinition<String, Collection<Builder, OrganisationElement>>(OrganisationElement.NAME_METADATA,
+    this.name = new FieldDefinition<String, IBaseCollection<OrganisationElement.Builder, OrganisationElement, ?>>(OrganisationElement.NAME_METADATA,
         builder.name,
         collection);
 
-    this.ID = new FieldDefinition<UUID_ElementId, Collection<Builder, OrganisationElement>>(ID_METADATA, builder.ID,
+    this.ID = new FieldDefinition<UUID_ElementId, IBaseCollection<OrganisationElement.Builder, OrganisationElement, ?>>(ID_METADATA, builder.ID,
         collection);
   }
 
