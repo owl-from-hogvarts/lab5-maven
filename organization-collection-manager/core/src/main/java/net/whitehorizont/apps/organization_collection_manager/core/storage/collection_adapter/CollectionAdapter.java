@@ -15,7 +15,7 @@ public class CollectionAdapter<C extends IBaseCollection<?, ?, M>, M> implements
   }
   
   @Override
-  public ByteBuffer serialize(IStorableKeyedCollection<E, M> toSerialize) {
+  public ByteBuffer serialize(C toSerialize) {
     
     final String xml = serializer.toXML(toSerialize);
     return ByteBuffer.wrap(xml.getBytes(StandardCharsets.UTF_8));
@@ -33,15 +33,8 @@ public class CollectionAdapter<C extends IBaseCollection<?, ?, M>, M> implements
   }
 
   @Override
-  public IStorableKeyedCollection<E, M> deserialize(ByteBuffer fileContent) {
+  public C deserialize(ByteBuffer fileContent) {
     // TODO Auto-generated method stub
     throw new UnsupportedOperationException("Unimplemented method 'deserialize'");
   }
-
-  @Override
-  public ByteBuffer serializeFileMetadata(ByteBuffer fileBodyContent) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'serializeFileMetadata'");
-  }
-
 }
