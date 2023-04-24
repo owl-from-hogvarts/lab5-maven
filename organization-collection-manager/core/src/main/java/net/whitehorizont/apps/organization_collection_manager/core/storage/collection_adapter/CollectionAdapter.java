@@ -5,10 +5,12 @@ import java.nio.charset.StandardCharsets;
 
 import com.thoughtworks.xstream.XStream;
 
+import net.whitehorizont.apps.organization_collection_manager.core.collection.CollectionId;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.IBaseCollection;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.IWithId;
 import net.whitehorizont.apps.organization_collection_manager.core.storage.IFileAdapter;
 
-public class CollectionAdapter<C extends IBaseCollection<?, ?, M>, M> implements IFileAdapter<C> {
+public class CollectionAdapter<C extends IBaseCollection<?, ?, M>, M extends IWithId<CollectionId>> implements IFileAdapter<C> {
   private final XStream serializer = new XStream();
   
   public CollectionAdapter() {

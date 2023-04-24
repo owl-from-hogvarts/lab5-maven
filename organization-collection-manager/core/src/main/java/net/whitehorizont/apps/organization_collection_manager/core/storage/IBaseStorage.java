@@ -7,6 +7,7 @@ import io.reactivex.rxjava3.core.Observable;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.BaseId;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.IBaseCollection;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.IWithId;
+import net.whitehorizont.apps.organization_collection_manager.core.storage.errors.CollectionNotFound;
 
 
 /**
@@ -28,8 +29,8 @@ public interface IBaseStorage<C extends IBaseCollection<?, ?, M>, K extends Base
    * 
    * Implementation choose default collection 
    */
-  Observable<C> load();
-  Observable<C> load(K key);
+  Observable<C> load() throws CollectionNotFound;
+  Observable<C> load(K key) throws CollectionNotFound;
 
   /**
    * Loads all collections. USE WITH CAUTION!
@@ -44,8 +45,8 @@ public interface IBaseStorage<C extends IBaseCollection<?, ?, M>, K extends Base
    * Useful for ui for user to choose collection
    * @return
    */
-  Observable<M> loadMetadata();
-  Observable<M> loadMetadata(K key);
+  Observable<M> loadMetadata() throws CollectionNotFound;
+  Observable<M> loadMetadata(K key) throws CollectionNotFound;
 
   void save(@NonNull C collection);
 }

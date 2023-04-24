@@ -10,8 +10,9 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.Observable;
-import net.whitehorizont.apps.organization_collection_manager.core.collection.CollectionId;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.BaseId;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.IBaseCollection;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.IWithId;
 import net.whitehorizont.apps.organization_collection_manager.core.storage.errors.StorageInaccessibleError;
 
 // provides adapter with file content
@@ -19,8 +20,8 @@ import net.whitehorizont.apps.organization_collection_manager.core.storage.error
 // treat data as opaque just write and read it
 // composition and aggregation of data should be done somewhere else
 // can store only one collection
-public class FileStorage<C extends IBaseCollection<?, ?, M>, M>
-    implements IBaseStorage<C, CollectionId, M> {
+public class FileStorage<C extends IBaseCollection<?, ?, M>, M extends IWithId<BaseId>>
+    implements IBaseStorage<C, BaseId, M> {
   private final IFileAdapter<C> adapter;
   private static final OpenOption[] DEFAULT_FILE_OPEN_OPTIONS = {
       StandardOpenOption.CREATE /* creates file if it does not exist */, StandardOpenOption.WRITE,
@@ -82,7 +83,7 @@ public class FileStorage<C extends IBaseCollection<?, ?, M>, M>
 
 
   @Override
-  public Observable<C> load(CollectionId key) {
+  public Observable<C> load(BaseId key) {
     // TODO Auto-generated method stub
     throw new UnsupportedOperationException("Unimplemented method 'load'");
   }
@@ -103,7 +104,7 @@ public class FileStorage<C extends IBaseCollection<?, ?, M>, M>
 
 
   @Override
-  public Observable<M> loadMetadata(CollectionId key) {
+  public Observable<M> loadMetadata(BaseId key) {
     // TODO Auto-generated method stub
     throw new UnsupportedOperationException("Unimplemented method 'loadMetadata'");
   }

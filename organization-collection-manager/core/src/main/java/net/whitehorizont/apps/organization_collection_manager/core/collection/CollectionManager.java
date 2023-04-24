@@ -1,12 +1,14 @@
 package net.whitehorizont.apps.organization_collection_manager.core.collection;
 
-import java.util.HashSet;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import org.javatuples.Pair;
 
 import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.core.Single;
 import net.whitehorizont.apps.organization_collection_manager.core.storage.IBaseStorage;
+import net.whitehorizont.apps.organization_collection_manager.core.storage.errors.CollectionNotFound;
 
 /**
  * Looks up storage for collection.
@@ -16,48 +18,40 @@ import net.whitehorizont.apps.organization_collection_manager.core.storage.IBase
  * passes on operations on collections to appropriate storage.
  */
 public class CollectionManager<C extends IBaseCollection<?, ?, ?>, S extends IBaseStorage<C, K, ?>, K extends BaseId> {
-  private Map<S, Set<C>> storageToCollectionMap;
+  private Set<S> storageSet;
 
   // makes collections available for loading
-  public Observable<C> addStorage(S storage, DataSinkSource<?, ?, C> dataSink) {
+  public void addStorage(S storage, DataSinkSource<?, ?, C> dataSink) {
     // create appropriate mapping for storage
-    final var collectionSet = new HashSet<C>();
-    storageToCollectionMap.put(storage, collectionSet);
-
-    final var defaultCollection$ = storage.load();
-    defaultCollection$.doOnNext((defaultCollection) -> collectionSet.add(defaultCollection));
-
-    return defaultCollection$;
+    storageSet.add(storage);
   }
 
   /**
    * Get collection by id
-   * @throws NoSuchCollection
+   * @throws CollectionNotFound
    */
-  public C getCollection(K id) throws NoSuchCollection {
+  public C getCollection(K id) throws CollectionNotFound {
     // if no collection specified, return default collection
-    return getCollectionAndStorage(id).getValue1();
-    
+    return getCollectionAndStorage(id).blockingGet().getValue1();
   }
 
-  private Pair<S, C> getCollectionAndStorage(K collectionId) throws NoSuchCollection {
-    for (var entry : storageToCollectionMap.entrySet()) {
-      for (var collection : entry.getValue()) {
-        if (collection.getMetadataSnapshot().getId().equals(collectionId)) {
-          return new Pair<S,C>(entry.getKey(), collection);
-        }
-      }
+  private Single<Pair<S, C>> getCollectionAndStorage(K collectionId) throws CollectionNotFound {
+    List<Observable<Pair<S, C>>> collections = new ArrayList<>();
+    
+    for (var store : storageSet) {
+      final var collection$ = store.load(collectionId);
+      collections.add(collection$.map((collection) -> new Pair<>(store, collection)));
     }
 
-    throw new NoSuchCollection();
+    return Observable.mergeDelayError(collections).first(null);
   }
 
   /**
    * Saves collection by collection id
-   * @throws NoSuchCollection
+   * @throws CollectionNotFound
    */
-  public void save(K collectionId) throws NoSuchCollection {
-    final var storageAndCollection = getCollectionAndStorage(collectionId);
+  public void save(K collectionId) throws CollectionNotFound {
+    final var storageAndCollection = getCollectionAndStorage(collectionId).blockingGet();
     final var storage = storageAndCollection.getValue0();
     final var collection = storageAndCollection.getValue1();
 

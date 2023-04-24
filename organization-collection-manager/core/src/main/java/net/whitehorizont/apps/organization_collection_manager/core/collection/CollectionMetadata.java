@@ -1,6 +1,6 @@
 package net.whitehorizont.apps.organization_collection_manager.core.collection;
 
-public class CollectionMetadata {
+public class CollectionMetadata implements IWithId<CollectionId> {
   private final CollectionId collectionId;
   
   public CollectionMetadata(Builder builder) {
