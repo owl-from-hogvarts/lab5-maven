@@ -43,6 +43,7 @@ public class CollectionManager<C extends IBaseCollection<?, ?, ?>, S extends IBa
       collections.add(collection$.map((collection) -> new Pair<>(store, collection)));
     }
 
+    // TODO: handle collection id collisions (when same collection somehow stored in multiple storages)
     return Observable.mergeDelayError(collections).first(null);
   }
 

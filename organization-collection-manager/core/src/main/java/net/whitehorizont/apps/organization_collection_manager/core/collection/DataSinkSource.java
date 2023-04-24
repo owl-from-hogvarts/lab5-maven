@@ -15,14 +15,16 @@ import net.whitehorizont.apps.organization_collection_manager.lib.ValidationErro
  */
 public abstract class DataSinkSource<P, E, V> extends Observable<E> implements IDataSink<P> {
   private Subject<E> elements = PublishSubject.<E>create();
-  private V validationObject;
+  private final V validationObject;
   
-  protected V getValidationObject() {
-    return validationObject;
-  }
-  public void setValidationObject(V validationObject) {
+  public DataSinkSource(V validationObject) {
     this.validationObject = validationObject;
   }
+
+  final protected V getValidationObject() {
+    return validationObject;
+  }
+
   final public void supply(P prototype) throws ValidationError {
     supply(prototype, false);
   }
