@@ -12,20 +12,20 @@ import io.reactivex.rxjava3.core.Observable;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.CollectionMetadata.Builder;
 
 // collection defines id type to use. adapter is responsible for properly serializing it
-public class Collection<T, E extends IWithId<? extends BaseId>>
-    implements IBaseCollection<T, E, CollectionMetadata> {
+public class Collection<P, E extends ICollectionElement<P, ? extends BaseId>>
+    implements IBaseCollection<P, E, CollectionMetadata> {
 
   private final Map<ISerializableKey, E> elements = new LinkedHashMap<>();
   private final CollectionMetadata metadata;
-  private final IDataSink<T> dataSink;
+  private final IDataSink<P> dataSink;
 
-  public Collection(DataSinkSource<T, E, Collection<T, E>> dataSink, CollectionMetadata metadata) {
+  public Collection(DataSinkSource<P, E, Collection<P, E>> dataSink, CollectionMetadata metadata) {
     dataSink.subscribe(this::onNextElement);
     this.dataSink = dataSink;
     this.metadata = metadata;
   }
 
-  public Collection(DataSinkSource<T, E, Collection<T, E>> dataSink) {
+  public Collection(DataSinkSource<P, E, Collection<P, E>> dataSink) {
     this(dataSink, new CollectionMetadata(new Builder(new CollectionId())));
   }
 
@@ -33,7 +33,7 @@ public class Collection<T, E extends IWithId<? extends BaseId>>
    * Collection listens on returned sink to receive new elements
    */
   @Override
-  public IDataSink<T> getDataSink() {
+  public IDataSink<P> getDataSink() {
     return dataSink;
   }
 

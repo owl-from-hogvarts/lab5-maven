@@ -5,7 +5,7 @@ import net.whitehorizont.apps.organization_collection_manager.lib.FieldMetadata;
 import net.whitehorizont.apps.organization_collection_manager.lib.ValidationError;
 import net.whitehorizont.apps.organization_collection_manager.lib.ValidationResult;
 
-public class OrganisationElement implements IWithId<UUID_ElementId> {
+public class OrganisationElement implements ICollectionElement<OrganisationElement.Builder, UUID_ElementId> {
   // TODO: make itertor for fields
   private static final FieldMetadata<String, IBaseCollection<OrganisationElement.Builder, OrganisationElement, ?>> NAME_METADATA = new FieldMetadata<String, IBaseCollection<OrganisationElement.Builder, OrganisationElement, ?>>(
       new FieldMetadata.Metadata<String, IBaseCollection<OrganisationElement.Builder, OrganisationElement, ?>>()
@@ -59,5 +59,9 @@ public class OrganisationElement implements IWithId<UUID_ElementId> {
   @Override
   public UUID_ElementId getId() {
     return this.ID.getValue();
+  }
+
+  @Override
+  public Builder getPrototype() {
   }
 }
