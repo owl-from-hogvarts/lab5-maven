@@ -5,29 +5,34 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import com.thoughtworks.xstream.XStream;
-
 import net.whitehorizont.apps.organization_collection_manager.core.collection.BaseId;
-import net.whitehorizont.apps.organization_collection_manager.core.collection.CollectionId;
-import net.whitehorizont.apps.organization_collection_manager.core.collection.IBaseCollection;
-import net.whitehorizont.apps.organization_collection_manager.core.collection.IWithId;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.Collection;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.CollectionMetadata;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.DataSinkSource;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollectionElement;
 import net.whitehorizont.apps.organization_collection_manager.core.storage.IFileAdapter;
+import net.whitehorizont.apps.organization_collection_manager.lib.ValidationError;
 
-public class CollectionAdapter<C extends IBaseCollection<?, E, M>, M extends IWithId<CollectionId>, E extends IWithId<? extends BaseId>>
-    implements IFileAdapter<C> {
+public class CollectionAdapter<P, E extends ICollectionElement<P, ? extends BaseId>>
+    implements IFileAdapter<Collection<P, E>> {
   private final XStream serializer = new XStream();
+  private final DataSinkSource<P, E, Collection<P, E>> dataSinkSource;
 
-  public CollectionAdapter() {
+  public CollectionAdapter(DataSinkSource<P, E, Collection<P, E>> dataSinkSource) {
+    // ! this is potentially dangerous. same data source 
+    // ! may be used in several collections resulting in mixing elements
+    this.dataSinkSource = dataSinkSource;
   }
 
-  private CollectionXml<E, M> prepareCollection(C collection) {
-    final List<ElementXml<E>> elements = collection.getEvery$()
-        .map(element -> new ElementXml<>(element.getId().serialize(), element))
+  private CollectionXml<P, CollectionMetadata> prepareCollection(Collection<P, E> collection) {
+    final List<ElementXml<P>> elements = collection.getEvery$()
+        .map(element -> new ElementXml<>(element.getId().serialize(), element.getPrototype()))
         .toList().blockingGet();
     return new CollectionXml<>(collection.getMetadataSnapshot(), elements);
   }
 
   @Override
-  public byte[] serialize(C toSerialize) {
+  public byte[] serialize(Collection<P, E> toSerialize) {
     final var collectionXml = prepareCollection(toSerialize);
 
     final String collectionXmlSerialized = serializer.toXML(collectionXml);
@@ -41,28 +46,29 @@ public class CollectionAdapter<C extends IBaseCollection<?, E, M>, M extends IWi
     return serializer.toXML(storageXml).getBytes(StandardCharsets.UTF_8);
   }
 
-  public void parse(ByteBuffer fileContent) {
+  public Collection<P, E> parse(ByteBuffer fileContent) throws ValidationError {
     // receive buffer
     // cast to string
     final String xml_content = StandardCharsets.UTF_8.decode(fileContent).toString();
     // parse xml:
     @SuppressWarnings("unchecked")
-    StorageXml<?, M> storageXmlRepresentation = (StorageXml<?, M>) serializer.fromXML(xml_content);
+    StorageXml<P, CollectionMetadata> storageXmlRepresentation = (StorageXml<P, CollectionMetadata>) serializer.fromXML(xml_content);
 
-    final var integrityAlgorithm = new Sha256();
-    if (storageXmlRepresentation.metadata.integrity.algorithmName == integrityAlgorithm.getDisplayedName()) {
+    final CollectionMetadata collectionMetadata = new CollectionMetadata(new CollectionMetadata.Builder(storageXmlRepresentation.collection.metadata.getId()));
+    
+    final Collection<P, E> collection = new Collection<>(this.dataSinkSource, collectionMetadata);
 
+    final var collectionDataSink = collection.getDataSink();
+    for (var elementXmlRepresentation : storageXmlRepresentation.collection.elements) {
+      collectionDataSink.supply(elementXmlRepresentation.body);
     }
-    // storageXmlRepresentation.metadata.integrity.integrityData
-      // file metadata
-      // check integrity
-      // collection metadata
-      // array of key element pairs
+
+    return collection;
+    //! reliable integrity check is impossible to implement without custom XML parser 
   }
 
   @Override
-  public C deserialize(byte[] fileContent) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'deserialize'");
+  public Collection<P, E> deserialize(byte[] fileContent) throws ValidationError {
+    return parse(ByteBuffer.wrap(fileContent));
   }
 }
