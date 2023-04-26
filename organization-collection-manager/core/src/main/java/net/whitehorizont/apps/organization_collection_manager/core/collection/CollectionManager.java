@@ -10,6 +10,7 @@ import org.javatuples.Pair;
 import io.reactivex.rxjava3.core.Single;
 import net.whitehorizont.apps.organization_collection_manager.core.storage.IBaseStorage;
 import net.whitehorizont.apps.organization_collection_manager.core.storage.errors.CollectionNotFound;
+import net.whitehorizont.apps.organization_collection_manager.core.storage.errors.StorageInaccessibleError;
 
 /**
  * Looks up storage for collection.
@@ -22,7 +23,7 @@ public class CollectionManager<C extends IBaseCollection<?, ?, ?>, S extends IBa
   private Map<S, Set<C>> storageAssociations;
 
   // makes collections available for loading
-  public void addStorage(S storage, DataSinkSource<?, ?, C> dataSink) {
+  public void addStorage(S storage) {
     // create appropriate mapping for storage
     storageAssociations.put(storage, new HashSet<>());
   }
@@ -74,8 +75,9 @@ public class CollectionManager<C extends IBaseCollection<?, ?, ?>, S extends IBa
    * Saves collection by collection id
    * 
    * @throws CollectionNotFound
+   * @throws StorageInaccessibleError
    */
-  public void save(K collectionId) throws CollectionNotFound {
+  public void save(K collectionId) throws CollectionNotFound, StorageInaccessibleError {
     final var storageAndCollection = getCollectionAndStorage(collectionId).blockingGet();
     final var storage = storageAndCollection.getValue0();
     final var collection = storageAndCollection.getValue1();

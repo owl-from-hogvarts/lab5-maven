@@ -25,7 +25,7 @@ import net.whitehorizont.apps.organization_collection_manager.core.storage.error
 // treat data as opaque just write and read it
 // composition and aggregation of data should be done somewhere else
 // can store only one collection
-public class FileStorage<C extends IBaseCollection<?, ?, M>, M extends IWithId<BaseId>>
+public class FileStorage<C extends IBaseCollection<?, ?, M>, M extends IWithId<? extends BaseId>>
     implements IBaseStorage<C, BaseId, M> {
   private final IFileAdapter<C> adapter;
   private final Path path;

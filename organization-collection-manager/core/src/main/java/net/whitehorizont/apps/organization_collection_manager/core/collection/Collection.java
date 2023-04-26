@@ -19,7 +19,7 @@ public class Collection<P, E extends ICollectionElement<P, ? extends BaseId>>
   private final CollectionMetadata metadata;
   private final IDataSink<P> dataSink;
 
-  public Collection(IDataSinkSourceFactory<P, E, Collection<P, E>> dataSinkFactory, CollectionMetadata metadata) {
+  public Collection(IDataSinkSourceFactory<P, E, ? super Collection<P, E>> dataSinkFactory, CollectionMetadata metadata) {
     this.metadata = metadata;
 
     final var dataSink = dataSinkFactory.getDataSinkSourceFor(this);

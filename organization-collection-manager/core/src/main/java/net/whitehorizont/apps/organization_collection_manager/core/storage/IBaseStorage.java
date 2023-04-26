@@ -24,7 +24,7 @@ import net.whitehorizont.apps.organization_collection_manager.core.storage.error
  * @param <K> key by which collection can be addressed
  * @param <M> collection metadata (pray on type inference)
  */
-public interface IBaseStorage<C extends IBaseCollection<?, ?, M>, K extends BaseId, M extends IWithId<K>> {
+public interface IBaseStorage<C extends IBaseCollection<?, ?, M>, K extends BaseId, M extends IWithId< ? extends K>> {
   /**
    * Loads default collection. 
    * 
