@@ -1,6 +1,7 @@
 package net.whitehorizont.apps.organization_collection_manager.core.storage.collection_adapter;
 
 import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
@@ -12,12 +13,14 @@ import net.whitehorizont.apps.organization_collection_manager.core.collection.IB
 import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollectionElement;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.IDataSinkSourceFactory;
 import net.whitehorizont.apps.organization_collection_manager.core.storage.IFileAdapter;
+import net.whitehorizont.apps.organization_collection_manager.core.storage.errors.ResourceEmpty;
 import net.whitehorizont.apps.organization_collection_manager.lib.ValidationError;
 
 public class CollectionAdapter<P, E extends ICollectionElement<P, ? extends BaseId>, F extends IDataSinkSourceFactory<P, E, ? super IBaseCollection<P, E, ?>>>
-    implements IFileAdapter<Collection<P, E>> {
+    implements IFileAdapter<Collection<P, E>, CollectionMetadata> {
   private final XStream serializer = new XStream();
   private final F dataSinkSourceFactory;
+  private static final Charset DEFAULT_ENCODING = StandardCharsets.UTF_8;
 
   public CollectionAdapter(F dataSinkSourceFactory) {
     this.dataSinkSourceFactory = dataSinkSourceFactory;
@@ -36,19 +39,19 @@ public class CollectionAdapter<P, E extends ICollectionElement<P, ? extends Base
 
     final String collectionXmlSerialized = serializer.toXML(collectionXml);
     // algorithm hardcoded for now
-    final var storageIntegrity = new FileIntegrity(new Sha256(), collectionXmlSerialized.getBytes(StandardCharsets.UTF_8));
+    final var storageIntegrity = new FileIntegrity(new Sha256(), collectionXmlSerialized.getBytes(DEFAULT_ENCODING));
     final var storageMetadata = new FileMetadataXml(storageIntegrity);
 
     final var storageXml = new StorageXml<>(collectionXml, storageMetadata);
 
     // hard code UTF-8 cause who the fuck except shitty windows uses other encoding for files?
-    return serializer.toXML(storageXml).getBytes(StandardCharsets.UTF_8);
+    return serializer.toXML(storageXml).getBytes(DEFAULT_ENCODING);
   }
 
   public Collection<P, E> parse(ByteBuffer fileContent) throws ValidationError {
     // receive buffer
     // cast to string
-    final String xml_content = StandardCharsets.UTF_8.decode(fileContent).toString();
+    final String xml_content = DEFAULT_ENCODING.decode(fileContent).toString();
     // parse xml:
     @SuppressWarnings("unchecked")
     StorageXml<P, CollectionMetadata> storageXmlRepresentation = (StorageXml<P, CollectionMetadata>) serializer.fromXML(xml_content);
@@ -67,7 +70,16 @@ public class CollectionAdapter<P, E extends ICollectionElement<P, ? extends Base
   }
 
   @Override
-  public Collection<P, E> deserialize(byte[] fileContent) throws ValidationError {
+  public Collection<P, E> deserialize(byte[] fileContent) throws ValidationError, ResourceEmpty {
+    if (fileContent.length == 0) {
+      throw new ResourceEmpty();
+    }
+    
     return parse(ByteBuffer.wrap(fileContent));
+  }
+
+  @Override
+  public Collection<P, E> fromMetadata(CollectionMetadata metadata) {
+    return new Collection<>(dataSinkSourceFactory, metadata);
   }
 }

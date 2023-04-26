@@ -1,12 +1,16 @@
 package net.whitehorizont.apps.organization_collection_manager.core.collection;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
 import org.javatuples.Pair;
 
+import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Single;
 import net.whitehorizont.apps.organization_collection_manager.core.storage.IBaseStorage;
 import net.whitehorizont.apps.organization_collection_manager.core.storage.errors.CollectionNotFound;
@@ -28,6 +32,10 @@ public class CollectionManager<C extends IBaseCollection<?, ?, ?>, S extends IBa
     storageAssociations.put(storage, new HashSet<>());
   }
 
+  public Observable<C> getCollection() {
+    return getDefaultCollections();
+  }
+
   /**
    * Get collection by id
    * 
@@ -36,6 +44,19 @@ public class CollectionManager<C extends IBaseCollection<?, ?, ?>, S extends IBa
   public C getCollection(K id) throws CollectionNotFound {
     // if no collection specified, return default collection
     return getCollectionAndStorage(id).blockingGet().getValue1();
+  }
+
+  private Observable<C> getDefaultCollections() {
+    final List<Observable<C>> defaultCollections = new ArrayList<>();
+    
+    for (final var store : storageAssociations.entrySet()) {
+      final var storage =  store.getKey();
+      final var collection = storage.load();
+
+      defaultCollections.add(collection);
+    }
+    
+    return Observable.concat(defaultCollections);
   }
 
   private Single<Pair<S, C>> getCollectionAndStorage(K collectionId) throws CollectionNotFound {
@@ -61,7 +82,7 @@ public class CollectionManager<C extends IBaseCollection<?, ?, ?>, S extends IBa
 
   private C getOpenedCollection(Entry<S, Set<C>> storageAssociation, K collectionId) throws CollectionNotFound {
     final var collectionMaybe = storageAssociation.getValue().stream()
-        .filter(colleciton -> colleciton.getMetadataSnapshot().getId().equals(collectionId)).findAny();
+        .filter(collection -> collection.getMetadataSnapshot().getId().equals(collectionId)).findAny();
 
     if (collectionMaybe.isPresent()) {
       final var collection = collectionMaybe.get();

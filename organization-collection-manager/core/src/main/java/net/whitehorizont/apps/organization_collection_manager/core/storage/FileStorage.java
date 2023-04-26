@@ -17,6 +17,8 @@ import net.whitehorizont.apps.organization_collection_manager.core.collection.Ba
 import net.whitehorizont.apps.organization_collection_manager.core.collection.IBaseCollection;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.IWithId;
 import net.whitehorizont.apps.organization_collection_manager.core.storage.errors.CollectionNotFound;
+import net.whitehorizont.apps.organization_collection_manager.core.storage.errors.DeserializationError;
+import net.whitehorizont.apps.organization_collection_manager.core.storage.errors.ResourceEmpty;
 import net.whitehorizont.apps.organization_collection_manager.core.storage.errors.StorageInaccessibleError;
 import net.whitehorizont.apps.organization_collection_manager.core.storage.errors.TooLargeFile;
 
@@ -27,10 +29,10 @@ import net.whitehorizont.apps.organization_collection_manager.core.storage.error
 // can store only one collection
 public class FileStorage<C extends IBaseCollection<?, ?, M>, M extends IWithId<? extends BaseId>>
     implements IBaseStorage<C, BaseId, M> {
-  private final IFileAdapter<C> adapter;
+  private final IFileAdapter<C, M> adapter;
   private final Path path;
 
-  public IFileAdapter<C> getAdapter() {
+  public IFileAdapter<C, M> getAdapter() {
     return adapter;
   }
 
@@ -38,7 +40,7 @@ public class FileStorage<C extends IBaseCollection<?, ?, M>, M extends IWithId<?
       StandardOpenOption.CREATE /* creates file if it does not exist */, StandardOpenOption.WRITE,
       StandardOpenOption.READ };
 
-  public FileStorage(String path, IFileAdapter<C> adapter) throws StorageInaccessibleError {
+  public FileStorage(String path, IFileAdapter<C, M> adapter) throws StorageInaccessibleError {
     this.adapter = adapter;
     this.path = PathHelpers.preparePath(Paths.get(path));
   }
@@ -68,8 +70,14 @@ public class FileStorage<C extends IBaseCollection<?, ?, M>, M extends IWithId<?
       try {
         final var fileContent = readFile();
 
-        subscriber.onNext(this.getAdapter().deserialize(fileContent.array()));
-        subscriber.onComplete();
+        try {
+
+          subscriber.onNext(this.getAdapter().deserialize(fileContent.array()));
+          subscriber.onComplete();
+        } catch (ResourceEmpty e) {
+
+        }
+
       } catch (Exception e) {
         subscriber.onError(e);
       }
@@ -142,6 +150,19 @@ public class FileStorage<C extends IBaseCollection<?, ?, M>, M extends IWithId<?
           return Single.error(error);
         }).toObservable();
   }
+
+  @Override
+  public Observable<C> load(M metadata, boolean createIfAbsent) {
+    return this.load(metadata.getId()).onErrorResumeNext(error -> {
+      if (error instanceof CollectionNotFound) {
+        return Observable.just(adapter.fromMetadata(metadata));
+      }
+
+      return Observable.error(error);
+    });
+  }
+
+  // private void initEmptyCollection
 
   // create observable
   // apply delayWhen(ready)

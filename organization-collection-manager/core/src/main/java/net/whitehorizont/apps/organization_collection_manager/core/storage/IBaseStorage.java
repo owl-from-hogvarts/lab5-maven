@@ -30,8 +30,14 @@ public interface IBaseStorage<C extends IBaseCollection<?, ?, M>, K extends Base
    * 
    * Implementation choose default collection 
    */
-  Observable<C> load() throws CollectionNotFound;
+  Observable<C> load();
   Observable<C> load(K key) throws CollectionNotFound;
+  /**
+   * Loads collection with id. If it does not exist, creates 
+   * new collection with specified id and returns it
+   * 
+   */
+  Observable<C> load(M metadata, boolean createIfAbsent);
 
   /**
    * Loads all collections. USE WITH CAUTION!
