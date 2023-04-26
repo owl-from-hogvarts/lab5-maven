@@ -28,7 +28,7 @@ public class Collection<P, E extends ICollectionElement<P, ? extends BaseId>>
   }
 
   public Collection(IDataSinkSourceFactory<P, E, Collection<P, E>> dataSinkFactory) {
-    this(dataSinkFactory, new CollectionMetadata(new Builder(new CollectionId())));
+    this(dataSinkFactory, new CollectionMetadata(new Builder(new UUID_CollectionId())));
   }
 
   /**

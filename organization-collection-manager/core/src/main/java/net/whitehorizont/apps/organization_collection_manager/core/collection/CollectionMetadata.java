@@ -1,20 +1,20 @@
 package net.whitehorizont.apps.organization_collection_manager.core.collection;
 
-public class CollectionMetadata implements IWithId<CollectionId> {
-  private final CollectionId collectionId;
+public class CollectionMetadata implements IWithId<UUID_CollectionId> {
+  private final UUID_CollectionId collectionId;
   
   public CollectionMetadata(Builder builder) {
     collectionId = builder.collectionId;
   }
 
-  public CollectionId getId() {
+  public UUID_CollectionId getId() {
     return collectionId;
   }
 
   public static class Builder {
-    private CollectionId collectionId;
+    private UUID_CollectionId collectionId;
 
-    public Builder(CollectionId collectionId) {
+    public Builder(UUID_CollectionId collectionId) {
       this.collectionId = collectionId;
     }
     
