@@ -19,14 +19,16 @@ public class Collection<P, E extends ICollectionElement<P, ? extends BaseId>>
   private final CollectionMetadata metadata;
   private final IDataSink<P> dataSink;
 
-  public Collection(DataSinkSource<P, E, Collection<P, E>> dataSink, CollectionMetadata metadata) {
-    dataSink.subscribe(this::onNextElement);
-    this.dataSink = dataSink;
+  public Collection(IDataSinkSourceFactory<P, E, Collection<P, E>> dataSinkFactory, CollectionMetadata metadata) {
     this.metadata = metadata;
+
+    final var dataSink = dataSinkFactory.getDataSinkSourceFor(this);
+    this.dataSink = dataSink;
+    dataSink.subscribe(this::onNextElement);
   }
 
-  public Collection(DataSinkSource<P, E, Collection<P, E>> dataSink) {
-    this(dataSink, new CollectionMetadata(new Builder(new CollectionId())));
+  public Collection(IDataSinkSourceFactory<P, E, Collection<P, E>> dataSinkFactory) {
+    this(dataSinkFactory, new CollectionMetadata(new Builder(new CollectionId())));
   }
 
   /**

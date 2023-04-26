@@ -8,20 +8,20 @@ import com.thoughtworks.xstream.XStream;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.BaseId;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.Collection;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.CollectionMetadata;
-import net.whitehorizont.apps.organization_collection_manager.core.collection.DataSinkSource;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollectionElement;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.IDataSinkSourceFactory;
 import net.whitehorizont.apps.organization_collection_manager.core.storage.IFileAdapter;
 import net.whitehorizont.apps.organization_collection_manager.lib.ValidationError;
 
 public class CollectionAdapter<P, E extends ICollectionElement<P, ? extends BaseId>>
     implements IFileAdapter<Collection<P, E>> {
   private final XStream serializer = new XStream();
-  private final DataSinkSource<P, E, Collection<P, E>> dataSinkSource;
+  private final IDataSinkSourceFactory<P, E, Collection<P, E>> dataSinkSourceFactory;
 
-  public CollectionAdapter(DataSinkSource<P, E, Collection<P, E>> dataSinkSource) {
+  public CollectionAdapter(IDataSinkSourceFactory<P, E, Collection<P, E>> dataSinkSourceFactory) {
     // ! this is potentially dangerous. same data source 
     // ! may be used in several collections resulting in mixing elements
-    this.dataSinkSource = dataSinkSource;
+    this.dataSinkSourceFactory = dataSinkSourceFactory;
   }
 
   private CollectionXml<P, CollectionMetadata> prepareCollection(Collection<P, E> collection) {
@@ -56,7 +56,7 @@ public class CollectionAdapter<P, E extends ICollectionElement<P, ? extends Base
 
     final CollectionMetadata collectionMetadata = new CollectionMetadata(new CollectionMetadata.Builder(storageXmlRepresentation.collection.metadata.getId()));
     
-    final Collection<P, E> collection = new Collection<>(this.dataSinkSource, collectionMetadata);
+    final Collection<P, E> collection = new Collection<>(this.dataSinkSourceFactory, collectionMetadata);
 
     final var collectionDataSink = collection.getDataSink();
     for (var elementXmlRepresentation : storageXmlRepresentation.collection.elements) {
