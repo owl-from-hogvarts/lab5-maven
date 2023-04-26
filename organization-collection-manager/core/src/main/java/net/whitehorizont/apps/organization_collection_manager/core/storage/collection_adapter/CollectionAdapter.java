@@ -54,7 +54,7 @@ public class CollectionAdapter<P, E extends ICollectionElement<P, ? extends Base
     @SuppressWarnings("unchecked")
     StorageXml<P, CollectionMetadata> storageXmlRepresentation = (StorageXml<P, CollectionMetadata>) serializer.fromXML(xml_content);
 
-    final CollectionMetadata collectionMetadata = new CollectionMetadata(new CollectionMetadata.Builder(storageXmlRepresentation.collection.metadata.getId()));
+    final CollectionMetadata collectionMetadata = storageXmlRepresentation.collection.metadata;
     
     final Collection<P, E> collection = new Collection<>(this.dataSinkSourceFactory, collectionMetadata);
 
