@@ -31,7 +31,7 @@ public class OrganisationElement implements ICollectionElement<OrganisationEleme
     return ID;
   }
 
-  public OrganisationElement(IBaseCollection<Builder, OrganisationElement, CollectionMetadata> collection, Builder builder)
+  public OrganisationElement(IBaseCollection<Builder, OrganisationElement, ?> collection, Builder builder)
       throws ValidationError {
     this.name = new FieldDefinition<String, IBaseCollection<OrganisationElement.Builder, OrganisationElement, ?>>(OrganisationElement.NAME_METADATA,
         builder.name,

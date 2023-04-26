@@ -3,9 +3,9 @@ package net.whitehorizont.apps.organization_collection_manager.core.collection;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.OrganisationElement.Builder;
 import net.whitehorizont.apps.organization_collection_manager.lib.ValidationError;
 
-public class OrganisationDataSink extends DataSinkSource<Builder, OrganisationElement, Collection<Builder, OrganisationElement>> {
+public class OrganisationDataSink extends DataSinkSource<Builder, OrganisationElement, IBaseCollection<Builder, OrganisationElement, ?>> {
 
-  public OrganisationDataSink(Collection<Builder, OrganisationElement> validationObject) {
+  public OrganisationDataSink(IBaseCollection<Builder, OrganisationElement, ?> validationObject) {
     super(validationObject);
   }
 
