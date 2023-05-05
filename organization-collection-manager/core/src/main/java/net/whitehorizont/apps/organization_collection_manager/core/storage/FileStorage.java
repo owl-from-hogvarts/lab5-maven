@@ -3,7 +3,9 @@ package net.whitehorizont.apps.organization_collection_manager.core.storage;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SeekableByteChannel;
+import java.nio.file.FileSystemException;
 import java.nio.file.Files;
+import java.nio.file.NotDirectoryException;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -17,10 +19,10 @@ import net.whitehorizont.apps.organization_collection_manager.core.collection.Ba
 import net.whitehorizont.apps.organization_collection_manager.core.collection.IBaseCollection;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.IWithId;
 import net.whitehorizont.apps.organization_collection_manager.core.storage.errors.CollectionNotFound;
-import net.whitehorizont.apps.organization_collection_manager.core.storage.errors.DeserializationError;
 import net.whitehorizont.apps.organization_collection_manager.core.storage.errors.ResourceEmpty;
 import net.whitehorizont.apps.organization_collection_manager.core.storage.errors.StorageInaccessibleError;
 import net.whitehorizont.apps.organization_collection_manager.core.storage.errors.TooLargeFile;
+import net.whitehorizont.libs.file_system.PathHelpers;
 
 // provides adapter with file content
 // adapters operate on collections
@@ -40,7 +42,7 @@ public class FileStorage<C extends IBaseCollection<?, ?, M>, M extends IWithId<?
       StandardOpenOption.CREATE /* creates file if it does not exist */, StandardOpenOption.WRITE,
       StandardOpenOption.READ };
 
-  public FileStorage(String path, IFileAdapter<C, M> adapter) throws StorageInaccessibleError {
+  public FileStorage(String path, IFileAdapter<C, M> adapter) {
     this.adapter = adapter;
     this.path = PathHelpers.preparePath(Paths.get(path));
   }
@@ -91,7 +93,7 @@ public class FileStorage<C extends IBaseCollection<?, ?, M>, M extends IWithId<?
 
       final var fullFileSize = channel.size();
       final int fileSizeTruncated = (int) fullFileSize;
-      if (fullFileSize != fileSizeTruncated) {
+      if (fullFileSize != (long) fileSizeTruncated) {
         throw new TooLargeFile();
       }
 
@@ -109,7 +111,11 @@ public class FileStorage<C extends IBaseCollection<?, ?, M>, M extends IWithId<?
     if (!Files.exists(path)) {
       // create all missing parent directories
       // if could not create parent dirs, report what when wrong (perm)
-      PathHelpers.createParentDirectories(path);
+      try {
+        PathHelpers.createParentDirectories(path);
+      } catch (FileSystemException e) {
+        throw new StorageInaccessibleError();
+      }
     }
 
     try (var channel = Files.newByteChannel(path, FileStorage.DEFAULT_FILE_OPEN_OPTIONS)) {
