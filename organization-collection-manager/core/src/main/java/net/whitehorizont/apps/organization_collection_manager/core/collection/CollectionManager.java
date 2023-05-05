@@ -1,7 +1,6 @@
 package net.whitehorizont.apps.organization_collection_manager.core.collection;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -23,11 +22,11 @@ import net.whitehorizont.apps.organization_collection_manager.core.storage.error
  * Provides abstraction over available stores
  * passes on operations on collections to appropriate storage.
  */
-public class CollectionManager<C extends IBaseCollection<?, ?, ?>, S extends IBaseStorage<C, K, ?>, K extends BaseId> {
-  private Map<S, Set<C>> storageAssociations;
+public class CollectionManager<C extends IBaseCollection<?, ?, ?>> {
+  private Map<IBaseStorage<C, BaseId, ?>, Set<C>> storageAssociations;
 
   // makes collections available for loading
-  public void addStorage(S storage) {
+  public void addStorage(IBaseStorage<C, BaseId, ?> storage) {
     // create appropriate mapping for storage
     storageAssociations.put(storage, new HashSet<>());
   }
@@ -41,7 +40,7 @@ public class CollectionManager<C extends IBaseCollection<?, ?, ?>, S extends IBa
    * 
    * @throws CollectionNotFound
    */
-  public C getCollection(K id) throws CollectionNotFound {
+  public C getCollection(BaseId id) throws CollectionNotFound {
     // if no collection specified, return default collection
     return getCollectionAndStorage(id).blockingGet().getValue1();
   }
@@ -59,7 +58,7 @@ public class CollectionManager<C extends IBaseCollection<?, ?, ?>, S extends IBa
     return Observable.concat(defaultCollections);
   }
 
-  private Single<Pair<S, C>> getCollectionAndStorage(K collectionId) throws CollectionNotFound {
+  private Single<Pair<IBaseStorage<C, BaseId, ?>, C>> getCollectionAndStorage(BaseId collectionId) throws CollectionNotFound {
     for (var store : storageAssociations.entrySet()) {
       try {
         final var collection = getOpenedCollection(store, collectionId);
@@ -80,7 +79,7 @@ public class CollectionManager<C extends IBaseCollection<?, ?, ?>, S extends IBa
     // multiple storages)
   }
 
-  private C getOpenedCollection(Entry<S, Set<C>> storageAssociation, K collectionId) throws CollectionNotFound {
+  private C getOpenedCollection(Entry<IBaseStorage<C, BaseId, ?>, Set<C>> storageAssociation, BaseId collectionId) throws CollectionNotFound {
     final var collectionMaybe = storageAssociation.getValue().stream()
         .filter(collection -> collection.getMetadataSnapshot().getId().equals(collectionId)).findAny();
 
@@ -98,7 +97,7 @@ public class CollectionManager<C extends IBaseCollection<?, ?, ?>, S extends IBa
    * @throws CollectionNotFound
    * @throws StorageInaccessibleError
    */
-  public void save(K collectionId) throws CollectionNotFound, StorageInaccessibleError {
+  public void save(BaseId collectionId) throws CollectionNotFound, StorageInaccessibleError {
     final var storageAndCollection = getCollectionAndStorage(collectionId).blockingGet();
     final var storage = storageAndCollection.getValue0();
     final var collection = storageAndCollection.getValue1();
