@@ -7,11 +7,14 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
 
-import io.reactivex.rxjava3.annotations.NonNull;
+import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 import io.reactivex.rxjava3.core.Observable;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.CollectionMetadata.Builder;
 
 // collection defines id type to use. adapter is responsible for properly serializing it
+@NonNullByDefault
 public class Collection<P, E extends ICollectionElement<P, ? extends BaseId>>
     implements IBaseCollection<P, E, CollectionMetadata> {
 
@@ -41,16 +44,16 @@ public class Collection<P, E extends ICollectionElement<P, ? extends BaseId>>
   }
 
   @Override
-  public Observable<E> getEvery$() {
+  public @NonNull Observable<E> getEvery$() {
     return Observable.just(elements).flatMap((elements) -> {
-      var elementsList = elements.values();
+      final var elementsList = elements.values();
 
       return Observable.fromIterable(elementsList);
     });
   }
 
   @Override
-  public Observable<Entry<ISerializableKey, E>> getEveryWithKey$() {
+  public @NonNull Observable<Entry<ISerializableKey, E>> getEveryWithKey$() {
     return Observable.just(elements).flatMap((elements) -> {
       final Set<Entry<ISerializableKey, E>> keyValuePairs = elements.entrySet();
 
@@ -64,13 +67,13 @@ public class Collection<P, E extends ICollectionElement<P, ? extends BaseId>>
   }
 
   @Override
-  public Observable<List<E>> getAll$() {
+  public @NonNull Observable<List<E>> getAll$() {
     return Observable.just(new ArrayList<>(elements.values()));
   }
 
   // stores creation time
   @Override
-  public CollectionMetadata getMetadataSnapshot() {
+  public @NonNull CollectionMetadata getMetadataSnapshot() {
     return this.metadata;
   }
 

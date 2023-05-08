@@ -34,6 +34,7 @@ public final class PathHelpers {
             throw e;
           } catch (IOException e) {
             assert false : AssertHelpers.getAssertMessageFor("PathHelpers", "createParentDirectories");
+            throw new Error("Unknown error");
             // just ignore it
             // lets pray that IOException will never be thrown
           }

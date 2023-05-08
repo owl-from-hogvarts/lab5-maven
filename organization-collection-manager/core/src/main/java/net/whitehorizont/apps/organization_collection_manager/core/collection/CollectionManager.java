@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.javatuples.Pair;
 
 import io.reactivex.rxjava3.core.Observable;
@@ -22,7 +23,7 @@ import net.whitehorizont.apps.organization_collection_manager.core.storage.error
  * Provides abstraction over available stores
  * passes on operations on collections to appropriate storage.
  */
-public class CollectionManager<C extends IBaseCollection<?, ?, ?>> {
+public class CollectionManager<@NonNull C extends IBaseCollection<?, ?, @NonNull ?>> {
   private Map<IBaseStorage<C, BaseId, ?>, Set<C>> storageAssociations;
 
   // makes collections available for loading

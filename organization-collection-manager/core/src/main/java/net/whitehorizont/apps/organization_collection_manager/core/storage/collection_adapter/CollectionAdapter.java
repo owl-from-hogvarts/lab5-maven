@@ -12,6 +12,7 @@ import net.whitehorizont.apps.organization_collection_manager.core.collection.Co
 import net.whitehorizont.apps.organization_collection_manager.core.collection.IBaseCollection;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollectionElement;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.IDataSinkSourceFactory;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.CollectionMetadata.Builder;
 import net.whitehorizont.apps.organization_collection_manager.core.storage.IFileAdapter;
 import net.whitehorizont.apps.organization_collection_manager.core.storage.errors.ResourceEmpty;
 import net.whitehorizont.apps.organization_collection_manager.lib.ValidationError;
@@ -72,6 +73,10 @@ public class CollectionAdapter<P, E extends ICollectionElement<P, ? extends Base
   @Override
   public Collection<P, E> deserialize(byte[] fileContent) throws ValidationError, ResourceEmpty {
     if (fileContent.length == 0) {
+      //TODO: instead of erroring, create and return empty collection
+
+      final var emptyCollectionMetadata = new CollectionMetadata(new Builder());
+      new Collection<>(dataSinkSourceFactory, emptyCollectionMetadata);
       throw new ResourceEmpty();
     }
     
@@ -79,7 +84,7 @@ public class CollectionAdapter<P, E extends ICollectionElement<P, ? extends Base
   }
 
   @Override
-  public Collection<P, E> fromMetadata(CollectionMetadata metadata) {
+  public Collection<P, E> deserializeSafe(CollectionMetadata metadata) {
     return new Collection<>(dataSinkSourceFactory, metadata);
   }
 }

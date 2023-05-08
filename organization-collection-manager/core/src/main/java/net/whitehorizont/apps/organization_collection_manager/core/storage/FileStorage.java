@@ -5,14 +5,14 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.file.FileSystemException;
 import java.nio.file.Files;
-import java.nio.file.NotDirectoryException;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.NoSuchElementException;
 
-import io.reactivex.rxjava3.annotations.NonNull;
+import org.eclipse.jdt.annotation.NonNull;
+
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Single;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.BaseId;
@@ -29,7 +29,7 @@ import net.whitehorizont.libs.file_system.PathHelpers;
 // treat data as opaque just write and read it
 // composition and aggregation of data should be done somewhere else
 // can store only one collection
-public class FileStorage<C extends IBaseCollection<?, ?, M>, M extends IWithId<? extends BaseId>>
+public class FileStorage<@NonNull C extends IBaseCollection<?, ?, M>, @NonNull M extends IWithId<? extends BaseId>>
     implements IBaseStorage<C, BaseId, M> {
   private final IFileAdapter<C, M> adapter;
   private final Path path;
@@ -48,14 +48,14 @@ public class FileStorage<C extends IBaseCollection<?, ?, M>, M extends IWithId<?
   }
 
   @Override
-  public void save(@NonNull C t) throws StorageInaccessibleError {
+  public void save(@NonNull C collection) throws StorageInaccessibleError {
     // receive collection to store
     // use adaptor to serialize collection
     // adapter may decide not to serialize collection
     // in that case it returns null or throws error
     // ? supply content of file to adapter so it can enrich it
     // ? and not just override
-    final byte[] fileContent = this.getAdapter().serialize(t);
+    final byte[] fileContent = this.getAdapter().serialize(collection);
     try {
       final var fileChannel = getFileChannel();
       fileChannel.write(ByteBuffer.wrap(fileContent));
@@ -161,7 +161,7 @@ public class FileStorage<C extends IBaseCollection<?, ?, M>, M extends IWithId<?
   public Observable<C> load(M metadata, boolean createIfAbsent) {
     return this.load(metadata.getId()).onErrorResumeNext(error -> {
       if (error instanceof CollectionNotFound) {
-        return Observable.just(adapter.fromMetadata(metadata));
+        return Observable.just(adapter.deserializeSafe(metadata));
       }
 
       return Observable.error(error);
