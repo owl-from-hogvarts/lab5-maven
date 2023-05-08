@@ -1,6 +1,5 @@
 package net.whitehorizont.apps.organization_collection_manager.core.collection;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import net.whitehorizont.apps.organization_collection_manager.core.collection.OrganisationElement.Builder;

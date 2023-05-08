@@ -32,7 +32,7 @@ import net.whitehorizont.libs.file_system.PathHelpers;
 // can store only one collection
 @NonNullByDefault
 public class FileStorage<C extends IBaseCollection<?, ?, M>, M extends IWithId<? extends BaseId>>
-    implements IBaseStorage<C, BaseId, M> {
+    implements IBaseStorage<C, M> {
   private final IFileAdapter<C, M> adapter;
   private final Path path;
 

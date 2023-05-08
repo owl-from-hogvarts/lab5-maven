@@ -7,9 +7,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.Observable;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.CollectionMetadata.Builder;
 
@@ -44,18 +44,20 @@ public class Collection<P, E extends ICollectionElement<P, ? extends BaseId>>
   }
 
   @Override
-  public @NonNull Observable<E> getEvery$() {
+  public Observable<E> getEvery$() {
     return Observable.just(elements).flatMap((elements) -> {
-      final var elementsList = elements.values();
+      @SuppressWarnings("null")
+      final @io.reactivex.rxjava3.annotations.NonNull var elementsList = elements.values();
 
       return Observable.fromIterable(elementsList);
     });
   }
 
   @Override
-  public @NonNull Observable<Entry<ISerializableKey, E>> getEveryWithKey$() {
+  public Observable<Entry<ISerializableKey, E>> getEveryWithKey$() {
     return Observable.just(elements).flatMap((elements) -> {
-      final Set<Entry<ISerializableKey, E>> keyValuePairs = elements.entrySet();
+      @SuppressWarnings("null")
+      final @NonNull Set<Entry<ISerializableKey, E>> keyValuePairs = elements.entrySet();
 
       return Observable.fromIterable(keyValuePairs);
     });
@@ -67,13 +69,13 @@ public class Collection<P, E extends ICollectionElement<P, ? extends BaseId>>
   }
 
   @Override
-  public @NonNull Observable<List<E>> getAll$() {
+  public Observable<List<E>> getAll$() {
     return Observable.just(new ArrayList<>(elements.values()));
   }
 
   // stores creation time
   @Override
-  public @NonNull CollectionMetadata getMetadataSnapshot() {
+  public CollectionMetadata getMetadataSnapshot() {
     return this.metadata;
   }
 
@@ -82,7 +84,7 @@ public class Collection<P, E extends ICollectionElement<P, ? extends BaseId>>
     this.elements.clear();
   }
 
-  private void onNextElement(@NonNull E element) throws DuplicateElementsError {
+  private void onNextElement(E element) throws DuplicateElementsError {
     // integrity should be checked during validation stage
     // when new elements arrives from data sink
     // if duplicate elements are encountered, warn a user;
