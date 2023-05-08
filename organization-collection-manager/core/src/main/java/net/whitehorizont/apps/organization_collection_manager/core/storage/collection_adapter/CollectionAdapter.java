@@ -3,7 +3,9 @@ package net.whitehorizont.apps.organization_collection_manager.core.storage.coll
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
+
+import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import com.thoughtworks.xstream.XStream;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.BaseId;
@@ -17,10 +19,12 @@ import net.whitehorizont.apps.organization_collection_manager.core.storage.IFile
 import net.whitehorizont.apps.organization_collection_manager.core.storage.errors.ResourceEmpty;
 import net.whitehorizont.apps.organization_collection_manager.lib.ValidationError;
 
+@NonNullByDefault
 public class CollectionAdapter<P, E extends ICollectionElement<P, ? extends BaseId>, F extends IDataSinkSourceFactory<P, E, ? super IBaseCollection<P, E, ?>>>
     implements IFileAdapter<Collection<P, E>, CollectionMetadata> {
   private final XStream serializer = new XStream();
   private final F dataSinkSourceFactory;
+  @SuppressWarnings("null")
   private static final Charset DEFAULT_ENCODING = StandardCharsets.UTF_8;
 
   public CollectionAdapter(F dataSinkSourceFactory) {
@@ -28,7 +32,7 @@ public class CollectionAdapter<P, E extends ICollectionElement<P, ? extends Base
   }
 
   private CollectionXml<P, CollectionMetadata> prepareCollection(IBaseCollection<P, E, CollectionMetadata> collection) {
-    final List<ElementXml<P>> elements = collection.getEvery$()
+    final var elements = collection.getEvery$()
         .map(element -> new ElementXml<>(element.getId().serialize(), element.getPrototype()))
         .toList().blockingGet();
     return new CollectionXml<>(collection.getMetadataSnapshot(), elements);
@@ -46,7 +50,11 @@ public class CollectionAdapter<P, E extends ICollectionElement<P, ? extends Base
     final var storageXml = new StorageXml<>(collectionXml, storageMetadata);
 
     // hard code UTF-8 cause who the fuck except shitty windows uses other encoding for files?
-    return serializer.toXML(storageXml).getBytes(DEFAULT_ENCODING);
+    // any element of array should never be null
+    @SuppressWarnings("null")
+    final byte @NonNull[] serializedContent = serializer.toXML(storageXml).getBytes(DEFAULT_ENCODING);
+    
+    return serializedContent;
   }
 
   public Collection<P, E> parse(ByteBuffer fileContent) throws ValidationError {
@@ -79,12 +87,15 @@ public class CollectionAdapter<P, E extends ICollectionElement<P, ? extends Base
       new Collection<>(dataSinkSourceFactory, emptyCollectionMetadata);
       throw new ResourceEmpty();
     }
-    
-    return parse(ByteBuffer.wrap(fileContent));
+
+    final var fileContentBuffer = ByteBuffer.wrap(fileContent);
+    assert fileContentBuffer != null;
+
+    return parse(fileContentBuffer);
   }
 
   @Override
-  public Collection<P, E> deserializeSafe(CollectionMetadata metadata) {
+  public Collection<P, @NonNull E> deserializeSafe(CollectionMetadata metadata) {
     return new Collection<>(dataSinkSourceFactory, metadata);
   }
 }

@@ -11,8 +11,9 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.NoSuchElementException;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Single;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.BaseId;
@@ -29,7 +30,8 @@ import net.whitehorizont.libs.file_system.PathHelpers;
 // treat data as opaque just write and read it
 // composition and aggregation of data should be done somewhere else
 // can store only one collection
-public class FileStorage<@NonNull C extends IBaseCollection<?, ?, M>, @NonNull M extends IWithId<? extends BaseId>>
+@NonNullByDefault
+public class FileStorage<C extends IBaseCollection<?, ?, M>, M extends IWithId<? extends BaseId>>
     implements IBaseStorage<C, BaseId, M> {
   private final IFileAdapter<C, M> adapter;
   private final Path path;
@@ -44,11 +46,13 @@ public class FileStorage<@NonNull C extends IBaseCollection<?, ?, M>, @NonNull M
 
   public FileStorage(String path, IFileAdapter<C, M> adapter) {
     this.adapter = adapter;
-    this.path = PathHelpers.preparePath(Paths.get(path));
+    @SuppressWarnings("null")
+    final @NonNull Path pathConverted = PathHelpers.preparePath(Paths.get(path));
+    this.path = pathConverted;
   }
 
   @Override
-  public void save(@NonNull C collection) throws StorageInaccessibleError {
+  public void save(C collection) throws StorageInaccessibleError {
     // receive collection to store
     // use adaptor to serialize collection
     // adapter may decide not to serialize collection
@@ -73,8 +77,9 @@ public class FileStorage<@NonNull C extends IBaseCollection<?, ?, M>, @NonNull M
         final var fileContent = readFile();
 
         try {
-
-          subscriber.onNext(this.getAdapter().deserialize(fileContent.array()));
+          @SuppressWarnings("null")
+          final byte @NonNull[] fileContentBytes = fileContent.array();
+          subscriber.onNext(this.getAdapter().deserialize(fileContentBytes));
           subscriber.onComplete();
         } catch (ResourceEmpty e) {
 
@@ -97,7 +102,8 @@ public class FileStorage<@NonNull C extends IBaseCollection<?, ?, M>, @NonNull M
         throw new TooLargeFile();
       }
 
-      final var fileContent = ByteBuffer.allocate(fileSizeTruncated);
+      @SuppressWarnings("null")
+      final @NonNull ByteBuffer fileContent = ByteBuffer.allocate(fileSizeTruncated);
       channel.read(fileContent);
       return fileContent;
     } catch (IOException e) {
@@ -118,7 +124,9 @@ public class FileStorage<@NonNull C extends IBaseCollection<?, ?, M>, @NonNull M
       }
     }
 
-    try (var channel = Files.newByteChannel(path, FileStorage.DEFAULT_FILE_OPEN_OPTIONS)) {
+    try (final var channel0 = Files.newByteChannel(path, FileStorage.DEFAULT_FILE_OPEN_OPTIONS)) {
+      @SuppressWarnings("null")
+      final @NonNull SeekableByteChannel channel = channel0;
       return channel;
     } catch (IOException e) {
       throw new StorageInaccessibleError();

@@ -1,6 +1,6 @@
 eclipse.preferences.version=1
 org.eclipse.jdt.core.compiler.annotation.missingNonNullByDefaultAnnotation=warning
-org.eclipse.jdt.core.compiler.annotation.nonnull=org.eclipse.jdt.annotation.NonNull
+org.eclipse.jdt.core.compiler.annotation.nonnull=io.reactivex.rxjava3.annotations.NonNull
 org.eclipse.jdt.core.compiler.annotation.nullable=org.eclipse.jdt.annotation.Nullable
 org.eclipse.jdt.core.compiler.annotation.nullanalysis=enabled
 org.eclipse.jdt.core.compiler.codegen.targetPlatform=17

@@ -1,7 +1,8 @@
 package net.whitehorizont.apps.organization_collection_manager.core.collection;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
+@NonNullByDefault
 public class CollectionMetadata implements IWithId<UUID_CollectionId> {
   private final UUID_CollectionId collectionId;
   
@@ -16,7 +17,7 @@ public class CollectionMetadata implements IWithId<UUID_CollectionId> {
   public static class Builder {
     private UUID_CollectionId collectionId;
 
-    public Builder(@NonNull UUID_CollectionId collectionId) {
+    public Builder(UUID_CollectionId collectionId) {
       this.collectionId = collectionId;
     }
 

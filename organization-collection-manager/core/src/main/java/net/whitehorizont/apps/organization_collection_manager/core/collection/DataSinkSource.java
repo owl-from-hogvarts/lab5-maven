@@ -1,6 +1,7 @@
 package net.whitehorizont.apps.organization_collection_manager.core.collection;
 
-import io.reactivex.rxjava3.annotations.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Observer;
 import io.reactivex.rxjava3.subjects.PublishSubject;
@@ -13,7 +14,9 @@ import net.whitehorizont.apps.organization_collection_manager.lib.ValidationErro
  * @param <P> what is supplied, prepared and transformed into collection element
  * @param <E> type of collection element
  */
+@NonNullByDefault
 public abstract class DataSinkSource<P, E, V> extends Observable<E> implements IDataSink<P> {
+  @SuppressWarnings("null")
   private Subject<E> elements = PublishSubject.<E>create();
   private final V validationObject;
   
@@ -36,7 +39,7 @@ public abstract class DataSinkSource<P, E, V> extends Observable<E> implements I
   abstract protected E buildElementFrom(P prototype) throws ValidationError; 
 
   @Override
-  protected final void subscribeActual(@NonNull Observer<? super @NonNull E> observer) {
+  protected final void subscribeActual(Observer<? super E> observer) {
     elements.subscribe(observer);
   }
 
