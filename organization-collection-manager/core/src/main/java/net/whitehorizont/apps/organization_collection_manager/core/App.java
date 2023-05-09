@@ -1,9 +1,10 @@
 package net.whitehorizont.apps.organization_collection_manager.core;
 
-import org.eclipse.jdt.annotation.NonNull;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.Collection;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.CollectionManager;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.CollectionMetadata;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.OrganisationDataSinkSourceFactory;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.OrganisationElement;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.UUID_ElementId;
@@ -17,7 +18,7 @@ public class App {
     final var organisationDataSinkFactory = new OrganisationDataSinkSourceFactory();
     final var xmlCollectionAdapter = new CollectionAdapter<>(organisationDataSinkFactory);
     final var testStorage = new FileStorage<>("./test.xml", xmlCollectionAdapter);
-    final CollectionManager<@NonNull Collection<Builder, OrganisationElement>> collectionManager = new CollectionManager<>();
+    final CollectionManager<@NonNull Collection<Builder, @NonNull OrganisationElement>, @NonNull CollectionMetadata> collectionManager = new CollectionManager<>();
     collectionManager.addStorage(testStorage);
    
     final var defaultCollection$ = collectionManager.getCollection();
