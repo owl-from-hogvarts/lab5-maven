@@ -22,7 +22,7 @@ import net.whitehorizont.apps.organization_collection_manager.core.storage.error
  * passes on operations on collections to appropriate storage.
  */
 @NonNullByDefault
-public class CollectionManager<C extends IBaseCollection<?, ?, ?>, M extends IWithId<? extends BaseId>> {
+public class CollectionManager<C extends IBaseCollection<?, ?, ?>, M extends IWithId<? extends BaseId>> implements ICollectionManager<C, M> {
   private Map<IBaseStorage<C, M>, Set<C>> storageAssociations = new HashMap<>();
 
   // makes collections in source available for loading
