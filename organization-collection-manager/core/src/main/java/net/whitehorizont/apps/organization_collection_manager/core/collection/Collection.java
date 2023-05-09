@@ -47,7 +47,7 @@ public class Collection<P, E extends ICollectionElement<P, ? extends BaseId>>
   public Observable<E> getEvery$() {
     return Observable.just(elements).flatMap((elements) -> {
       @SuppressWarnings("null")
-      final @io.reactivex.rxjava3.annotations.NonNull var elementsList = elements.values();
+      final @NonNull var elementsList = elements.values();
 
       return Observable.fromIterable(elementsList);
     });
