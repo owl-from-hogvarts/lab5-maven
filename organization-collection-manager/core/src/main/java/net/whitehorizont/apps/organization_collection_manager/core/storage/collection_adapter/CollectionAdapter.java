@@ -4,10 +4,11 @@ import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import com.thoughtworks.xstream.XStream;
+
+import io.reactivex.rxjava3.annotations.NonNull;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.BaseId;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.Collection;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.CollectionMetadata;
@@ -53,7 +54,6 @@ public class CollectionAdapter<P, E extends ICollectionElement<P, ? extends Base
     // any element of array should never be null
     @SuppressWarnings("null")
     final byte @NonNull[] serializedContent = serializer.toXML(storageXml).getBytes(DEFAULT_ENCODING);
-    
     return serializedContent;
   }
 
@@ -81,10 +81,9 @@ public class CollectionAdapter<P, E extends ICollectionElement<P, ? extends Base
   @Override
   public Collection<P, E> deserialize(byte[] fileContent) throws ValidationError, ResourceEmpty {
     if (fileContent.length == 0) {
-      //TODO: instead of erroring, create and return empty collection
-
-      final var emptyCollectionMetadata = new CollectionMetadata(new Builder());
-      new Collection<>(dataSinkSourceFactory, emptyCollectionMetadata);
+      // if something wrong with file, error any way
+      // this is responsibility of client code what to with errors
+      // TODO: check for file signature (though xstream should throw validation error)
       throw new ResourceEmpty();
     }
 
@@ -97,5 +96,11 @@ public class CollectionAdapter<P, E extends ICollectionElement<P, ? extends Base
   @Override
   public Collection<P, @NonNull E> deserializeSafe(CollectionMetadata metadata) {
     return new Collection<>(dataSinkSourceFactory, metadata);
+  }
+
+  @Override
+  public Collection<P, E> deserializeSafe() {
+    final var emptyCollectionMetadata = new CollectionMetadata(new Builder());
+    return new Collection<>(dataSinkSourceFactory, emptyCollectionMetadata);
   }
 }

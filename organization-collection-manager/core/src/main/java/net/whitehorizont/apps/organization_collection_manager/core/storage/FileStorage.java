@@ -47,8 +47,8 @@ public class FileStorage<C extends IBaseCollection<?, ?, M>, M extends IWithId<?
   public FileStorage(String path, IFileAdapter<C, M> adapter) {
     this.adapter = adapter;
     @SuppressWarnings("null")
-    final @NonNull Path pathConverted = PathHelpers.preparePath(Paths.get(path));
-    this.path = pathConverted;
+    final @NonNull Path preparedPath = PathHelpers.preparePath(Paths.get(path));
+    this.path = preparedPath;
   }
 
   @Override
@@ -82,10 +82,11 @@ public class FileStorage<C extends IBaseCollection<?, ?, M>, M extends IWithId<?
           subscriber.onNext(this.getAdapter().deserialize(fileContentBytes));
           subscriber.onComplete();
         } catch (ResourceEmpty e) {
-
+          subscriber.onNext(this.getAdapter().deserializeSafe());
+          subscriber.onComplete();
         }
 
-      } catch (Exception e) {
+      } catch (IOException e) {
         subscriber.onError(e);
       }
     });
@@ -116,10 +117,12 @@ public class FileStorage<C extends IBaseCollection<?, ?, M>, M extends IWithId<?
     // verify that file exists
     if (!Files.exists(path)) {
       // create all missing parent directories
+      // file itself will be created by open options
       // if could not create parent dirs, report what when wrong (perm)
       try {
         PathHelpers.createParentDirectories(path);
       } catch (FileSystemException e) {
+        // TODO: pass error to clarify what went wrong
         throw new StorageInaccessibleError();
       }
     }
@@ -166,7 +169,7 @@ public class FileStorage<C extends IBaseCollection<?, ?, M>, M extends IWithId<?
   }
 
   @Override
-  public Observable<C> load(M metadata, boolean createIfAbsent) {
+  public Observable<C> loadSafe(M metadata) {
     return this.load(metadata.getId()).onErrorResumeNext(error -> {
       if (error instanceof CollectionNotFound) {
         return Observable.just(adapter.deserializeSafe(metadata));

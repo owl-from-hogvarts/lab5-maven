@@ -19,8 +19,9 @@ public interface IFileAdapter<C extends IBaseCollection<?, ?, M>, @NonNull M ext
   C deserialize(byte[] fileContent) throws DeserializationError, ValidationError, ResourceEmpty;
   /** 
    * If storage is empty or does not contain desired collection, 
-   * this should return new empty collection with provided metadata
+   * this should return new empty collection with provided or default metadata
    * 
    */
+  C deserializeSafe();
   C deserializeSafe(M metadata);
 }

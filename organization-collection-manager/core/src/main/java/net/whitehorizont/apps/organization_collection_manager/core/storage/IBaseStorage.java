@@ -25,7 +25,7 @@ import net.whitehorizont.apps.organization_collection_manager.core.storage.error
  * @param <M> collection metadata (pray on type inference)
  */
 @NonNullByDefault
-public interface IBaseStorage<C extends IBaseCollection<?, ?, M>, M extends IWithId< ? extends BaseId>> {
+public interface IBaseStorage<C extends IBaseCollection<?, ?, ?>, M extends IWithId< ? extends BaseId>> {
   /**
    * Loads default collection. 
    * 
@@ -38,7 +38,7 @@ public interface IBaseStorage<C extends IBaseCollection<?, ?, M>, M extends IWit
    * new collection with specified id and returns it
    * 
    */
-  Observable<C> load(M metadata, boolean createIfAbsent);
+  Observable<C> loadSafe(M metadata);
 
   /**
    * Loads all collections. USE WITH CAUTION!
