@@ -60,8 +60,7 @@ public class FileStorage<C extends IBaseCollection<?, ?, M>, M extends IWithId<?
     // ? supply content of file to adapter so it can enrich it
     // ? and not just override
     final byte[] fileContent = this.getAdapter().serialize(collection);
-    try {
-      final var fileChannel = getFileChannel();
+    try (final var fileChannel = getFileChannel()) {
       fileChannel.write(ByteBuffer.wrap(fileContent));
     } catch (IOException e) {
       throw new StorageInaccessibleError();
@@ -93,10 +92,8 @@ public class FileStorage<C extends IBaseCollection<?, ?, M>, M extends IWithId<?
   }
 
   private ByteBuffer readFile() throws StorageInaccessibleError, TooLargeFile {
-    final var channel = getFileChannel();
 
-    try {
-
+    try (final var channel = getFileChannel()) {
       final var fullFileSize = channel.size();
       final int fileSizeTruncated = (int) fullFileSize;
       if (fullFileSize != (long) fileSizeTruncated) {
@@ -127,9 +124,9 @@ public class FileStorage<C extends IBaseCollection<?, ?, M>, M extends IWithId<?
       }
     }
 
-    try (final var channel0 = Files.newByteChannel(path, FileStorage.DEFAULT_FILE_OPEN_OPTIONS)) {
+    try {
       @SuppressWarnings("null")
-      final @NonNull SeekableByteChannel channel = channel0;
+      final @NonNull SeekableByteChannel channel = Files.newByteChannel(path, FileStorage.DEFAULT_FILE_OPEN_OPTIONS);
       return channel;
     } catch (IOException e) {
       throw new StorageInaccessibleError();
