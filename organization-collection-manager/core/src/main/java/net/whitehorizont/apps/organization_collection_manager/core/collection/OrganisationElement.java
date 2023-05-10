@@ -68,6 +68,6 @@ public class OrganisationElement implements ICollectionElement<OrganisationEleme
 
   @Override
   public Builder getPrototype() {
-    throw new UnsupportedOperationException();
+    return new Builder().ID(this.getID().getValue()).name(this.getName().getValue());
   }
 }
