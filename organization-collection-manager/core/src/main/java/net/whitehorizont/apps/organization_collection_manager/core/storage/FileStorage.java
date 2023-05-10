@@ -94,7 +94,7 @@ public class FileStorage<C extends IBaseCollection<?, ?, M>, M extends IWithId<?
   private ByteBuffer readFile() throws StorageInaccessibleError, TooLargeFile {
 
     try (final var channel = getFileChannel()) {
-      final var fullFileSize = channel.size();
+      final var fullFileSize = Files.size(path);
       final int fileSizeTruncated = (int) fullFileSize;
       if (fullFileSize != (long) fileSizeTruncated) {
         throw new TooLargeFile();
