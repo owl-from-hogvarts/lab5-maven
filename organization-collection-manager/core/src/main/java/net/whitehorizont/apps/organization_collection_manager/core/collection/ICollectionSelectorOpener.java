@@ -8,16 +8,13 @@ import net.whitehorizont.apps.organization_collection_manager.core.storage.error
 
 @NonNullByDefault
 // package private
-interface ICollectionSelector<C extends IBaseCollection<?, ?, ?>, M extends IWithId<? extends BaseId>> {
-    /**
-   * Select collection from list of opened collections
+interface ICollectionSelectorOpener<C extends IBaseCollection<?, ?, ?>, M extends IWithId<? extends BaseId>> extends ICollectionSelector<C, M> {
+  /**
+   * Called when collection could not be looped up by select
    * 
-   * ! THIS METHOD SHOULD NOT OPEN ANY NEW COLLECTIONS ! 
-   * 
-   * @param openedCollections
+   * @param storage
    * @return
    * @throws CollectionNotFound
    */
-  Observable<C> select(IBaseStorage<C, M> storage, Iterable<C> openedCollections) throws CollectionNotFound;
-
+  Observable<C> open(IBaseStorage<C, M> storage) throws CollectionNotFound;
 }

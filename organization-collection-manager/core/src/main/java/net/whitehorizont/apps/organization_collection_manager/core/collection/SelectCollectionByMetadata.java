@@ -7,7 +7,7 @@ import net.whitehorizont.apps.organization_collection_manager.core.storage.IBase
 import net.whitehorizont.apps.organization_collection_manager.core.storage.errors.CollectionNotFound;
 
 @NonNullByDefault
-public class SelectCollectionByMetadata<C extends IBaseCollection<?, ?, ?>, M extends IWithId<? extends BaseId>> implements ICollectionSelector<C, M> {
+class SelectCollectionByMetadata<C extends IBaseCollection<?, ?, ?>, M extends IWithId<? extends BaseId>> implements ICollectionSelectorOpener<C, M> {
   private final M metadata;
 
 
@@ -17,8 +17,19 @@ public class SelectCollectionByMetadata<C extends IBaseCollection<?, ?, ?>, M ex
 
 
   @Override
-  public Observable<C> select(IBaseStorage<C, M> storage) throws CollectionNotFound {
+  public Observable<C> open(IBaseStorage<C, M> storage) throws CollectionNotFound {
     return storage.loadSafe(metadata);
+  }
+
+
+  @Override
+  public Observable<C> select(IBaseStorage<C, M> storage, Iterable<C> openedCollections) throws CollectionNotFound {
+    final var collectionMaybe = Observable.fromIterable(openedCollections).blockingStream().filter(collection -> collection.getMetadataSnapshot().getId().equals(this.metadata.getId())).findAny();
+    if (collectionMaybe.isEmpty()) {
+      throw new CollectionNotFound();
+    }
+
+    return Observable.just(collectionMaybe.get());
   }
   
 }

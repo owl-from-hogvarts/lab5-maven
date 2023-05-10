@@ -71,19 +71,26 @@ public class CollectionManager<C extends IBaseCollection<?, ?, ?>, M extends IWi
    */
   // allow passing custom open functions
   private Single<Pair<IBaseStorage<C, M>, C>> getCollectionAndStorage(IStorageSelector<C, M> storageSelector,
-      ICollectionSelector<C, M> collectionSelector) throws CollectionNotFound, StorageInaccessibleError {
+      ICollectionSelectorOpener<C, M> collectionSelector) throws CollectionNotFound, StorageInaccessibleError {
     for (final var store : storageSelector.select(this.storageAssociations)) {
       assert store != null;
+      // !FIXME
       try {
         // select collection form store
         final var storage = store.getKey();
-        final var collection = collectionSelector.select(storage).blockingFirst();
 
-        // add collection to list of opened collections so it can be saved in the future
-        final var openedCollections = store.getValue();
-        openedCollections.add(collection);
-
-        return Single.just(new Pair<>(storage, collection));
+        try {
+          final var openedCollection = collectionSelector.select(storage, store.getValue()).blockingFirst();
+          return Single.just(new Pair<>(storage, openedCollection));
+        } catch (CollectionNotFound e) {
+          final var collection = collectionSelector.open(storage).blockingFirst();
+          
+          // add collection to list of opened collections so it can be saved in the future
+          final var openedCollections = store.getValue();
+          openedCollections.add(collection);
+          
+          return Single.just(new Pair<>(storage, collection));
+        }
 
       } catch (CollectionNotFound e) {
         continue;
@@ -104,7 +111,7 @@ public class CollectionManager<C extends IBaseCollection<?, ?, ?>, M extends IWi
    */
 
   public void save(BaseId collectionId) throws CollectionNotFound, StorageInaccessibleError {
-    final var storageAndCollection = getCollectionAndStorage(new SelectBestStorage<>(),
+    final var storageAndCollection = getCollectionAndStorage(new StandardSelectStorage<>(),
         new SelectCollectionById<>(collectionId)).blockingGet();
     final var storage = storageAndCollection.getValue0();
     final var collection = storageAndCollection.getValue1();

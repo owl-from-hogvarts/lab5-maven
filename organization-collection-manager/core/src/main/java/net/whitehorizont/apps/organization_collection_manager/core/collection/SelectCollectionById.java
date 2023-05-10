@@ -15,8 +15,14 @@ class SelectCollectionById<C extends IBaseCollection<?, ?, ?>, M extends IWithId
   }
 
   @Override
-  public Observable<C> select(IBaseStorage<C, M> storage) throws CollectionNotFound {
-    return storage.load(id);
+  public Observable<C> select(IBaseStorage<C, M> storage, Iterable<C> openedCollections) throws CollectionNotFound {
+    final var collectionMaybe = Observable.fromIterable(openedCollections).blockingStream().filter(collection -> collection.getMetadataSnapshot().getId().equals(this.id)).findAny();
+    if (collectionMaybe.isEmpty()) {
+      throw new CollectionNotFound();
+    }
+
+    return Observable.just(collectionMaybe.get());
   }
+
   
 }
