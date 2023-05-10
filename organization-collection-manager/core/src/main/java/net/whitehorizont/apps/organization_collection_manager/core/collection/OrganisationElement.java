@@ -15,7 +15,7 @@ public class OrganisationElement implements ICollectionElement<OrganisationEleme
   private static final FieldMetadata<String, IBaseCollection<OrganisationElement.Builder, OrganisationElement, ?>> NAME_METADATA = new FieldMetadata<String, IBaseCollection<OrganisationElement.Builder, OrganisationElement, ?>>(
       new FieldMetadata.Metadata<String, IBaseCollection<OrganisationElement.Builder, OrganisationElement, ?>>()
           .setNullable(false, "Company name must be specified")
-          .addValidator((value, _unused) -> new ValidationResult<>(value.length() < 1, "")));
+          .addValidator((value, _unused) -> new ValidationResult<>(value.length() >= 1, "")));
 
   private static final FieldMetadata<UUID_ElementId, IBaseCollection<OrganisationElement.Builder, OrganisationElement, ?>> ID_METADATA = new FieldMetadata<>(
       new FieldMetadata.Metadata<UUID_ElementId, IBaseCollection<OrganisationElement.Builder, OrganisationElement, ?>>().setNullable(false,
@@ -68,6 +68,6 @@ public class OrganisationElement implements ICollectionElement<OrganisationEleme
 
   @Override
   public Builder getPrototype() {
-    
+    throw new UnsupportedOperationException();
   }
 }
