@@ -8,8 +8,8 @@ public class FieldDefinition<V, T> {
 
   @SuppressWarnings("null")
   public FieldDefinition(FieldMetadata<V, T> metadata, V initValue, T t) throws ValidationError {
-    setValue(initValue, t);
     this.metadata = metadata;
+    setValue(initValue, t);
   }
 
   public FieldMetadata<V, T> getMetadata() {
