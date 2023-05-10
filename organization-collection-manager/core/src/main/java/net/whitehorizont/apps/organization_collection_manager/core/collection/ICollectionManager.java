@@ -31,18 +31,20 @@ public interface ICollectionManager<C extends IBaseCollection<?, ?, ?>, M extend
    * Get collection by id
    * 
    * @throws CollectionNotFound
+   * @throws StorageInaccessibleError
    */
-  C getCollection(BaseId id) throws CollectionNotFound;
+  C getCollection(BaseId id) throws CollectionNotFound, StorageInaccessibleError;
   /**
    * Creates collection by metadata or id. If collection
    *  already exists returns existing one
    * @param id
    * @return
    * @throws StorageInaccessibleError
+   * @throws CollectionNotFound
    */
   // impossible to load collection safe (create it) with just key 
   // 'cause impossible to deduce other metadata
-  C getCollectionSafe(M metadata) throws StorageInaccessibleError;
+  C getCollectionSafe(M metadata) throws StorageInaccessibleError, CollectionNotFound;
 
   // no safe counterpart 'cause save should accept only known 
   // collections that is associated with certain store

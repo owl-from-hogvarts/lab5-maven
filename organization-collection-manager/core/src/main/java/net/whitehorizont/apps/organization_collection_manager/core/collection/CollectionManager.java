@@ -3,7 +3,6 @@ package net.whitehorizont.apps.organization_collection_manager.core.collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.javatuples.Pair;
@@ -13,6 +12,7 @@ import io.reactivex.rxjava3.core.Single;
 import net.whitehorizont.apps.organization_collection_manager.core.storage.IBaseStorage;
 import net.whitehorizont.apps.organization_collection_manager.core.storage.errors.CollectionNotFound;
 import net.whitehorizont.apps.organization_collection_manager.core.storage.errors.StorageInaccessibleError;
+import net.whitehorizont.libs.file_system.AssertHelpers;
 
 /**
  * Looks up storage for collection.
@@ -22,48 +22,67 @@ import net.whitehorizont.apps.organization_collection_manager.core.storage.error
  * passes on operations on collections to appropriate storage.
  */
 @NonNullByDefault
-public class CollectionManager<C extends IBaseCollection<?, ?, ?>, M extends IWithId<? extends BaseId>> implements ICollectionManager<C, M> {
+public class CollectionManager<C extends IBaseCollection<?, ?, ?>, M extends IWithId<? extends BaseId>>
+    implements ICollectionManager<C, M> {
   private Map<IBaseStorage<C, M>, Set<C>> storageAssociations = new HashMap<>();
 
   // makes collections in source available for loading
-  
+
   public void addStorage(IBaseStorage<C, M> storage) {
     // create appropriate mapping for storage
     storageAssociations.put(storage, new HashSet<>());
   }
 
-  
   public Observable<C> getCollection() throws StorageInaccessibleError {
-    return getBestStorage().flatMap(storage -> storage.load());
+    // request best storage
+    // try open default collection on it
+    try {
+      return this.getCollectionAndStorage(new SelectBestStorage<>(), new SelectDefaultCollection<>()).toObservable()
+          .map(association -> association.getValue1());
+    } catch (CollectionNotFound e) {
+      assert false : AssertHelpers.getAssertMessageFor("CollectionManager.java", "getCollection");
+      return Observable.error(new StorageInaccessibleError());
+    }
   }
 
   /**
    * Get collection by id
    * 
    * @throws CollectionNotFound
+   * @throws StorageInaccessibleError
    */
-  
-  public C getCollection(BaseId id) throws CollectionNotFound {
-    return getCollectionAndStorage(id).blockingGet().getValue1();
+
+  public C getCollection(BaseId id) throws CollectionNotFound, StorageInaccessibleError {
+    // request storage holding collection with id
+    // try open collection by id on it
+    return this.getCollectionAndStorage(new StandardSelectStorage<>(), new SelectCollectionById<>(id)).blockingGet()
+        .getValue1();
   }
 
-  private Observable<IBaseStorage<C, M>> getBestStorage() throws StorageInaccessibleError {
-    for (final var store : storageAssociations.entrySet()) {
-      final var storage = store.getKey();
-      return Observable.just(storage);
-    }
-
-    // TODO: think up better error type; something like NoStoragesAvailable
-    throw new StorageInaccessibleError();
-  }
-
-  private Single<Pair<IBaseStorage<C, M>, C>> getCollectionAndStorage(BaseId collectionId) throws CollectionNotFound {
-    for (final var store : storageAssociations.entrySet()) {
+  /**
+   * 
+   * @param storageSelector
+   * @param collectionSelector
+   * @return
+   * @throws CollectionNotFound
+   * @throws StorageInaccessibleError thrown when no stores have been added to
+   *                                  collection manager or all added stores are
+   *                                  inaccessible
+   */
+  // allow passing custom open functions
+  private Single<Pair<IBaseStorage<C, M>, C>> getCollectionAndStorage(IStorageSelector<C, M> storageSelector,
+      ICollectionSelector<C, M> collectionSelector) throws CollectionNotFound, StorageInaccessibleError {
+    for (final var store : storageSelector.select(this.storageAssociations)) {
       assert store != null;
-      final var storage = store.getKey();
-
       try {
-        final var collection = openCollectionSafe(store, collectionId);
+        // select collection form store
+        final var storage = store.getKey();
+        final var collection = collectionSelector.select(storage).blockingFirst();
+
+        // add collection to list of opened collections so it can be saved in the future
+        final var openedCollections = store.getValue();
+        openedCollections.add(collection);
+
         return Single.just(new Pair<>(storage, collection));
 
       } catch (CollectionNotFound e) {
@@ -78,38 +97,15 @@ public class CollectionManager<C extends IBaseCollection<?, ?, ?>, M extends IWi
   }
 
   /**
-   * Opens collection. If collection is already opened, returns that instance
-   * @param storageAssociation
-   * @param collectionId
-   * @return
-   * @throws CollectionNotFound
-   */
-  private C openCollectionSafe(Entry<IBaseStorage<C, M>, Set<C>> storageAssociation, BaseId collectionId) throws CollectionNotFound {
-    final var openedCollectionMaybe = storageAssociation.getValue().stream()
-        .filter(collection -> collection.getMetadataSnapshot().getId().equals(collectionId)).findAny();
-
-    if (openedCollectionMaybe.isEmpty()) {
-      return openCollection(storageAssociation.getKey(), collectionId).blockingFirst();
-    }
-    
-    final var collection = openedCollectionMaybe.get();
-    return collection;
-
-  }
-
-  private Observable<C> openCollection(IBaseStorage<C, M> storage, BaseId collectionId) throws CollectionNotFound {
-    return storage.load(collectionId);
-  }
-
-  /**
    * Saves collection by collection id
    * 
    * @throws CollectionNotFound
    * @throws StorageInaccessibleError
    */
-  
+
   public void save(BaseId collectionId) throws CollectionNotFound, StorageInaccessibleError {
-    final var storageAndCollection = getCollectionAndStorage(collectionId).blockingGet();
+    final var storageAndCollection = getCollectionAndStorage(new SelectBestStorage<>(),
+        new SelectCollectionById<>(collectionId)).blockingGet();
     final var storage = storageAndCollection.getValue0();
     final var collection = storageAndCollection.getValue1();
 
@@ -122,13 +118,8 @@ public class CollectionManager<C extends IBaseCollection<?, ?, ?>, M extends IWi
     // collectionManager.save(collection.getMetadataSnapshot().getId())
   }
 
-  
-  public C getCollectionSafe(M metadata) throws StorageInaccessibleError {
-    try {
-      return getCollection(metadata.getId());
-    } catch (CollectionNotFound e) {
-      final Observable<C> newCollection = getBestStorage().flatMap(storage -> storage.loadSafe(metadata));
-      return newCollection.blockingFirst();
-    }
+  public C getCollectionSafe(M metadata) throws StorageInaccessibleError, CollectionNotFound {
+    return this.getCollectionAndStorage(new SelectBestStorage<>(), new SelectCollectionByMetadata<>(metadata))
+        .blockingGet().getValue1();
   }
 }

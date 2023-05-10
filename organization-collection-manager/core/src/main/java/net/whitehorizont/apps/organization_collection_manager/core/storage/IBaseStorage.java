@@ -50,6 +50,7 @@ public interface IBaseStorage<C extends IBaseCollection<?, ?, ?>, M extends IWit
   /**
    * Loads only collection metadata without body. 
    * 
+   * When key not supplied, gets default collection metadata
    * Useful for ui for user to choose collection
    * @return
    */
