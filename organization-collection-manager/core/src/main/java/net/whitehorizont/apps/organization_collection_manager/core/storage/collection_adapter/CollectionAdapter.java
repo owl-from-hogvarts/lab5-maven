@@ -8,19 +8,19 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import com.thoughtworks.xstream.XStream;
 import io.reactivex.rxjava3.annotations.NonNull;
-import net.whitehorizont.apps.organization_collection_manager.core.collection.BaseId;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.Collection;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.CollectionMetadata;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.IBaseCollection;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollectionElement;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.IDataSinkSourceFactory;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.IElementPrototype;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.CollectionMetadata.Builder;
 import net.whitehorizont.apps.organization_collection_manager.core.storage.IFileAdapter;
 import net.whitehorizont.apps.organization_collection_manager.core.storage.errors.ResourceEmpty;
 import net.whitehorizont.apps.organization_collection_manager.lib.ValidationError;
 
 @NonNullByDefault
-public class CollectionAdapter<P, E extends ICollectionElement<P, ? extends BaseId>, F extends IDataSinkSourceFactory<P, E, ? super IBaseCollection<P, E, ?>>>
+public class CollectionAdapter<P extends IElementPrototype, E extends ICollectionElement<P>, F extends IDataSinkSourceFactory<P, E, ? super IBaseCollection<P, E, ?>>>
     implements IFileAdapter<Collection<P, E>, CollectionMetadata> {
   private final XStream serializer = new XStream();
   {
