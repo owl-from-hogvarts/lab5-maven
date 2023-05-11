@@ -3,6 +3,7 @@ package net.whitehorizont.apps.organization_collection_manager.core.storage.coll
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
+@XStreamAlias("storage")
 public class StorageXml<E, M> {
   final CollectionXml<E, M> collection;
 
