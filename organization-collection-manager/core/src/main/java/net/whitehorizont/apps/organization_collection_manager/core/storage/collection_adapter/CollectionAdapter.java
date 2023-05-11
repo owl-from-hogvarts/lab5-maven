@@ -7,7 +7,6 @@ import java.nio.charset.StandardCharsets;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import com.thoughtworks.xstream.XStream;
-
 import io.reactivex.rxjava3.annotations.NonNull;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.BaseId;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.Collection;
@@ -24,6 +23,9 @@ import net.whitehorizont.apps.organization_collection_manager.lib.ValidationErro
 public class CollectionAdapter<P, E extends ICollectionElement<P, ? extends BaseId>, F extends IDataSinkSourceFactory<P, E, ? super IBaseCollection<P, E, ?>>>
     implements IFileAdapter<Collection<P, E>, CollectionMetadata> {
   private final XStream serializer = new XStream();
+  {
+    serializer.allowTypesByWildcard(new String[]{"net.whitehorizont.apps.organization_collection_manager.core.storage.collection_adapter.*"});
+  }
   private final F dataSinkSourceFactory;
   @SuppressWarnings("null")
   private static final Charset DEFAULT_ENCODING = StandardCharsets.UTF_8;
