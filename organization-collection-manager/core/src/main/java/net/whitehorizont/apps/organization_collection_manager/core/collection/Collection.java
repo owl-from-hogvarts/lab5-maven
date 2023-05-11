@@ -15,7 +15,7 @@ import net.whitehorizont.apps.organization_collection_manager.core.collection.Co
 
 // collection defines id type to use. adapter is responsible for properly serializing it
 @NonNullByDefault
-public class Collection<P, E extends ICollectionElement<P, ? extends BaseId>>
+public class Collection<P extends IElementPrototype, E extends ICollectionElement<P>>
     implements IBaseCollection<P, E, CollectionMetadata> {
 
   private final Map<ISerializableKey, E> elements = new LinkedHashMap<>();
@@ -23,6 +23,7 @@ public class Collection<P, E extends ICollectionElement<P, ? extends BaseId>>
   private final IDataSink<P> dataSink;
 
   // takes such dataSink factory which accepts any parent class of collection
+  // we undertake to provide class not higher than collection
   public Collection(IDataSinkSourceFactory<P, E, ? super Collection<P, E>> dataSinkFactory, CollectionMetadata metadata) {
     this.metadata = metadata;
 

@@ -9,7 +9,7 @@ import net.whitehorizont.apps.organization_collection_manager.lib.ValidationErro
 import net.whitehorizont.apps.organization_collection_manager.lib.ValidationResult;
 
 @NonNullByDefault
-public class OrganisationElement implements ICollectionElement<OrganisationElement.Builder, UUID_ElementId> {
+public class OrganisationElement implements ICollectionElement<OrganisationElement.Builder> {
   // TODO: make itertor for fields
   private static final FieldMetadata<String, IBaseCollection<OrganisationElement.Builder, OrganisationElement, ?>> NAME_METADATA = new FieldMetadata<>(
       new FieldMetadata.Metadata<String, IBaseCollection<OrganisationElement.Builder, OrganisationElement, ?>>()
@@ -45,7 +45,7 @@ public class OrganisationElement implements ICollectionElement<OrganisationEleme
         collection);
   }
 
-  public static class Builder {
+  public static class Builder implements IElementPrototype {
     private @Nullable String name;
     private UUID_ElementId ID = new UUID_ElementId(); // init with default value which is easily overridable
 

@@ -16,7 +16,7 @@ import net.whitehorizont.apps.organization_collection_manager.lib.ValidationErro
  * @param <E> type of collection element
  */
 @NonNullByDefault
-public abstract class DataSinkSource<P, E, V> extends Observable<@NonNull E> implements IDataSink<P> {
+public abstract class DataSinkSource<P extends IElementPrototype, E, V> extends Observable<@NonNull E> implements IDataSink<P> {
   private Subject<E> elements = PublishSubject.<E>create();
   private final V validationObject;
   

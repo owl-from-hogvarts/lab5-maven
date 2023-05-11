@@ -1,5 +1,8 @@
 package net.whitehorizont.apps.organization_collection_manager.core.collection;
 
-public interface ICollectionElement<P, I extends BaseId> extends IWithId<I> {
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
+@NonNullByDefault
+public interface ICollectionElement<P> extends IWithId<BaseId> {
   P getPrototype();
 }

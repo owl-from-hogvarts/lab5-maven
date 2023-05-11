@@ -1,7 +1,8 @@
 package net.whitehorizont.apps.organization_collection_manager.core.collection;
 
-import io.reactivex.rxjava3.annotations.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
-public interface IDataSinkSourceFactory<P, E, V> {
-  @NonNull DataSinkSource<P, E, V> getDataSinkSourceFor(V validationObject);
+@NonNullByDefault
+public interface IDataSinkSourceFactory<P extends IElementPrototype, E, V> {
+  DataSinkSource<P, E, V> getDataSinkSourceFor(V validationObject);
 }
