@@ -1,6 +1,5 @@
 package net.whitehorizont.apps.organization_collection_manager.core.collection;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -12,7 +11,7 @@ import net.whitehorizont.apps.organization_collection_manager.lib.ValidationResu
 @NonNullByDefault
 public class OrganisationElement implements ICollectionElement<OrganisationElement.Builder, UUID_ElementId> {
   // TODO: make itertor for fields
-  private static final FieldMetadata<String, IBaseCollection<OrganisationElement.Builder, OrganisationElement, ?>> NAME_METADATA = new FieldMetadata<String, IBaseCollection<OrganisationElement.Builder, OrganisationElement, ?>>(
+  private static final FieldMetadata<String, IBaseCollection<OrganisationElement.Builder, OrganisationElement, ?>> NAME_METADATA = new FieldMetadata<>(
       new FieldMetadata.Metadata<String, IBaseCollection<OrganisationElement.Builder, OrganisationElement, ?>>()
           .setNullable(false, "Company name must be specified")
           .addValidator((value, _unused) -> new ValidationResult<>(value.length() >= 1, "")));
@@ -62,7 +61,7 @@ public class OrganisationElement implements ICollectionElement<OrganisationEleme
   }
 
   @Override
-  public @NonNull UUID_ElementId getId() {
+  public UUID_ElementId getId() {
     return this.ID.getValue();
   }
 
