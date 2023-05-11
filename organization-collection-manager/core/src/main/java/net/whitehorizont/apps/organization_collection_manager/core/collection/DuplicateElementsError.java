@@ -1,5 +1,8 @@
 package net.whitehorizont.apps.organization_collection_manager.core.collection;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
+@NonNullByDefault
 public class DuplicateElementsError extends Exception {
   private final IWithId<? extends ISerializableKey> elementStored;
   
