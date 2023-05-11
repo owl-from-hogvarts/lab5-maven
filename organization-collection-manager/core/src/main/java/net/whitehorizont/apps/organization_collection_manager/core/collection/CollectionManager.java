@@ -55,7 +55,7 @@ public class CollectionManager<C extends IBaseCollection<?, ?, ?>, M extends IWi
   public C getCollection(BaseId id) throws CollectionNotFound, StorageInaccessibleError {
     // request storage holding collection with id
     // try open collection by id on it
-    return this.getCollectionAndStorage(new StandardSelectStorage<>(), new SelectCollectionById<>(id)).blockingGet()
+    return this.getCollectionAndStorage(new StandardSelectStorage<>(), new SelectCollectionById<C, M>(id)).blockingGet()
         .getValue1();
   }
 
@@ -70,28 +70,16 @@ public class CollectionManager<C extends IBaseCollection<?, ?, ?>, M extends IWi
    *                                  inaccessible
    */
   // allow passing custom open functions
-  private Single<Pair<IBaseStorage<C, M>, C>> getCollectionAndStorage(IStorageSelector<C, M> storageSelector,
-      ICollectionSelectorOpener<C, M> collectionSelector) throws CollectionNotFound, StorageInaccessibleError {
+  private Single<Pair<IBaseStorage<C, M>, C>> _getCollectionAndStorage(IStorageSelector<C, M> storageSelector, ICollectionSelectorWriteable<C, M> collectionSelector) throws CollectionNotFound, StorageInaccessibleError {
     for (final var store : storageSelector.select(this.storageAssociations)) {
       assert store != null;
-      // !FIXME
+      // select collection form store
+      final var storage = store.getKey();
+      final var openedCollections = store.getValue();
+
       try {
-        // select collection form store
-        final var storage = store.getKey();
-
-        try {
-          final var openedCollection = collectionSelector.select(storage, store.getValue()).blockingFirst();
-          return Single.just(new Pair<>(storage, openedCollection));
-        } catch (CollectionNotFound e) {
-          final var collection = collectionSelector.open(storage).blockingFirst();
-          
-          // add collection to list of opened collections so it can be saved in the future
-          final var openedCollections = store.getValue();
-          openedCollections.add(collection);
-          
-          return Single.just(new Pair<>(storage, collection));
-        }
-
+        final var collection = collectionSelector.select(storage, openedCollections).blockingFirst();
+        return Single.just(new Pair<>(storage, collection));
       } catch (CollectionNotFound e) {
         continue;
       }
@@ -101,6 +89,39 @@ public class CollectionManager<C extends IBaseCollection<?, ?, ?>, M extends IWi
 
     // TODO: handle collection id collisions (when same collection somehow stored in
     // multiple storages)
+  }
+
+  private Single<Pair<IBaseStorage<C, M>, C>> getCollectionAndStorage(IStorageSelector<C, M> storageSelector, ICollectionSelectorOpener<C, M> collectionSelector) throws CollectionNotFound, StorageInaccessibleError {
+    return _getCollectionAndStorage(storageSelector, selectOrOpenCollection(collectionSelector));
+  }
+
+  private Single<Pair<IBaseStorage<C, M>, C>> getCollectionAndStorage(IStorageSelector<C, M> storageSelector, ICollectionSelector<C, M> collectionSelector) throws CollectionNotFound, StorageInaccessibleError {
+    return _getCollectionAndStorage(storageSelector, selectCollection(collectionSelector));
+  }
+
+
+  // select and open
+  private ICollectionSelectorWriteable<C, M> selectOrOpenCollection(ICollectionSelectorOpener<C, M> selector) {
+    // select
+    // lamba needs write access for opened collections
+    return (IBaseStorage<C, M> storage, Set<C> openedCollections) -> {
+      try {
+        return selector.select(storage, openedCollections);
+      } catch (CollectionNotFound e) {
+        // if fails: open
+        final var openedCollection = selector.open(storage).blockingFirst();
+        openedCollections.add(openedCollection);
+        // reuse received collection to prevent loading it again
+        // ? may be better use subject
+        return Observable.just(openedCollection);
+      }
+    };
+  }
+
+  private ICollectionSelectorWriteable<C, M> selectCollection(ICollectionSelector<C, M> selector) {
+    return (IBaseStorage<C, M> storage, Set<C> openedCollections) -> {
+      return selector.select(storage, openedCollections);
+    };
   }
 
   /**
@@ -117,8 +138,8 @@ public class CollectionManager<C extends IBaseCollection<?, ?, ?>, M extends IWi
     final var collection = storageAndCollection.getValue1();
 
     storage.save(collection);
-    // Single.just(collection).doOnSuccess(storage).;
     // new SaveCommand
+    // result$ = commandQueue.add(saveCommand)
     // commandQueue.getErrors$().subscribe(, reportErrors)
     // commandQueue.add(saveCommand)
     // command.execute().catch(errors)
@@ -129,4 +150,9 @@ public class CollectionManager<C extends IBaseCollection<?, ?, ?>, M extends IWi
     return this.getCollectionAndStorage(new SelectBestStorage<>(), new SelectCollectionByMetadata<>(metadata))
         .blockingGet().getValue1();
   }
+}
+
+@NonNullByDefault
+interface ICollectionSelectorWriteable<C extends IBaseCollection<?, ?, ?>, M extends IWithId<? extends BaseId>> {
+  Observable<C> select(IBaseStorage<C, M> storage, Set<C> openedCollections) throws CollectionNotFound;
 }
