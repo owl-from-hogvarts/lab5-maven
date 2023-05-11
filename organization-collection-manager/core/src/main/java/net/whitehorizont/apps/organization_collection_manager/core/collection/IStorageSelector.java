@@ -11,6 +11,6 @@ import net.whitehorizont.apps.organization_collection_manager.core.storage.error
 
 @NonNullByDefault
 @FunctionalInterface
-public interface IStorageSelector<C extends IBaseCollection<?, ?, ?>, M extends IWithId<? extends BaseId>> {
+public interface IStorageSelector<C extends IBaseCollection<?, ?, M>, M extends IWithId<? extends BaseId>> {
   Iterable<Entry<IBaseStorage<C, M>, Set<C>>> select(Map<IBaseStorage<C, M>, Set<C>> storageAssociations) throws StorageInaccessibleError;
 }

@@ -7,7 +7,7 @@ import net.whitehorizont.apps.organization_collection_manager.core.storage.IBase
 import net.whitehorizont.apps.organization_collection_manager.core.storage.errors.CollectionNotFound;
 
 @NonNullByDefault
-class SelectCollectionByMetadata<C extends IBaseCollection<?, ?, ?>, M extends IWithId<? extends BaseId>> implements ICollectionSelectorOpener<C, M> {
+class SelectCollectionByMetadata<C extends IBaseCollection<?, ?, M>, M extends IWithId<? extends BaseId>> implements ICollectionSelectorOpener<C, M> {
   private final M metadata;
 
 

@@ -7,7 +7,7 @@ import net.whitehorizont.apps.organization_collection_manager.core.storage.IBase
 import net.whitehorizont.apps.organization_collection_manager.core.storage.errors.CollectionNotFound;
 
 @NonNullByDefault
-class SelectDefaultCollection<C extends IBaseCollection<?, ?, ?>, M extends IWithId<? extends BaseId>> implements ICollectionSelectorOpener<C, M> {
+class SelectDefaultCollection<C extends IBaseCollection<?, ?, M>, M extends IWithId<? extends BaseId>> implements ICollectionSelectorOpener<C, M> {
 
   @Override
   public Observable<C> open(IBaseStorage<C, M> storage) {

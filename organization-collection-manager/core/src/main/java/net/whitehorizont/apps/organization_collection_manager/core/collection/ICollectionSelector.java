@@ -8,7 +8,7 @@ import net.whitehorizont.apps.organization_collection_manager.core.storage.error
 
 @NonNullByDefault
 // package private
-interface ICollectionSelector<C extends IBaseCollection<?, ?, ?>, M extends IWithId<? extends BaseId>> {
+interface ICollectionSelector<C extends IBaseCollection<?, ?, M>, M extends IWithId<? extends BaseId>> {
     /**
    * Select collection from list of opened collections
    * 

@@ -22,7 +22,7 @@ import net.whitehorizont.libs.file_system.AssertHelpers;
  * passes on operations on collections to appropriate storage.
  */
 @NonNullByDefault
-public class CollectionManager<C extends IBaseCollection<?, ?, ?>, M extends IWithId<? extends BaseId>>
+public class CollectionManager<C extends IBaseCollection<?, ?, M>, M extends IWithId<? extends BaseId>>
     implements ICollectionManager<C, M> {
   private Map<IBaseStorage<C, M>, Set<C>> storageAssociations = new HashMap<>();
 
@@ -153,6 +153,6 @@ public class CollectionManager<C extends IBaseCollection<?, ?, ?>, M extends IWi
 }
 
 @NonNullByDefault
-interface ICollectionSelectorWriteable<C extends IBaseCollection<?, ?, ?>, M extends IWithId<? extends BaseId>> {
+interface ICollectionSelectorWriteable<C extends IBaseCollection<?, ?, M>, M extends IWithId<? extends BaseId>> {
   Observable<C> select(IBaseStorage<C, M> storage, Set<C> openedCollections) throws CollectionNotFound;
 }

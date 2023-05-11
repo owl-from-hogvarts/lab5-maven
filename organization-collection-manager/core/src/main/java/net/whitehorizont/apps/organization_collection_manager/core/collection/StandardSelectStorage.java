@@ -9,7 +9,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import net.whitehorizont.apps.organization_collection_manager.core.storage.IBaseStorage;
 
 @NonNullByDefault
-public class StandardSelectStorage<C extends IBaseCollection<?, ?, ?>, M extends IWithId<? extends BaseId>> implements IStorageSelector<C, M> {
+public class StandardSelectStorage<C extends IBaseCollection<?, ?, M>, M extends IWithId<? extends BaseId>> implements IStorageSelector<C, M> {
 
   @Override
   public Iterable<Entry<IBaseStorage<C, M>, Set<C>>> select(Map<IBaseStorage<C, M>, Set<C>> storageAssociations) {

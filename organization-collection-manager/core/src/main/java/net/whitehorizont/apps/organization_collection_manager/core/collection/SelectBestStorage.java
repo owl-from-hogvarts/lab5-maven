@@ -11,7 +11,7 @@ import net.whitehorizont.apps.organization_collection_manager.core.storage.IBase
 import net.whitehorizont.apps.organization_collection_manager.core.storage.errors.StorageInaccessibleError;
 
 @NonNullByDefault
-public class SelectBestStorage<C extends IBaseCollection<?, ?, ?>, M extends IWithId<? extends BaseId>>
+public class SelectBestStorage<C extends IBaseCollection<?, ?, M>, M extends IWithId<? extends BaseId>>
     implements IStorageSelector<C, M> {
 
   @Override
