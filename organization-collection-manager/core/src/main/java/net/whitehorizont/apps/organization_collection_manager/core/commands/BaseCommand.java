@@ -7,7 +7,7 @@ import io.reactivex.rxjava3.core.Observable;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.IBaseCollection;
 
 @NonNullByDefault
-public abstract class BaseCommand<T, C extends IBaseCollection<?,?,?>>{
+public abstract class BaseCommand<T, C extends IBaseCollection<?,?,?>> implements ICommand<T, C> {
   private @Nullable C collection;
 
   final public boolean hasPreferredCollection() {

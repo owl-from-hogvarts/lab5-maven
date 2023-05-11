@@ -12,7 +12,7 @@ import net.whitehorizont.apps.organization_collection_manager.core.collection.IB
 import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollectionManager;
 
 @NonNullByDefault
-public class CommandQueue<CM extends ICollectionManager<C, ?>, C extends IBaseCollection<?, ?, ?>> {
+public class CommandQueue<CM extends ICollectionManager<C, ?>, C extends IBaseCollection<?, ?, ?>> implements ICommandQueue<CM, C> {
   private final CM collectionManager;
   private final Subject<ConnectableObservable<?>> commands = PublishSubject.create();
 
@@ -21,7 +21,8 @@ public class CommandQueue<CM extends ICollectionManager<C, ?>, C extends IBaseCo
     commands.subscribe(this::executeNext);
   }
 
-  public <@NonNull T> Observable<T> push(BaseCommand<T, ? super C> command) {
+  @Override
+  public <@NonNull T> Observable<T> push(BaseCommand<T, C> command) {
     return Observable.create((subscriber) -> {
 
       if (!command.hasPreferredCollection()) {
@@ -37,6 +38,7 @@ public class CommandQueue<CM extends ICollectionManager<C, ?>, C extends IBaseCo
     });
   }
 
+  @Override
   public <@NonNull T> void push(ISystemCommand<T> command) {
     command.setCommandQueue(this);
     command.setCollectionManager(collectionManager);
@@ -45,6 +47,7 @@ public class CommandQueue<CM extends ICollectionManager<C, ?>, C extends IBaseCo
     commands.onNext(execution$);
   }
 
+  @Override
   public void executeNext(ConnectableObservable<?> command) {
     command.connect();
   }

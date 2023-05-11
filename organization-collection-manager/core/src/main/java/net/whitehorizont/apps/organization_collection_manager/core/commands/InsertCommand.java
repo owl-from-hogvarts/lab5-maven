@@ -4,10 +4,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import io.reactivex.rxjava3.core.Observable;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.IBaseCollection;
-import net.whitehorizont.apps.organization_collection_manager.core.collection.IElementPrototype;
 
 @NonNullByDefault
-public class InsertCommand<P> extends BaseCommand<Void, IBaseCollection<P, ?, ?>> {
+public class InsertCommand<P, C extends IBaseCollection<P, ?, ?>> extends BaseCommand<Void, C> {
   private final P prototype;
 
   public InsertCommand(P prototype) {
@@ -16,7 +15,7 @@ public class InsertCommand<P> extends BaseCommand<Void, IBaseCollection<P, ?, ?>
     this.prototype = prototype;
   }
 
-  @Override
+  // @Override
   public Observable<Void> execute() {
     return Observable.create(subscriber -> {
       final var collection = getCollection();
