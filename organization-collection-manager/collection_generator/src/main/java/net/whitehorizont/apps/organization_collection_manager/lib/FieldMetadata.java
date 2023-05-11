@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
+@NonNullByDefault
 public class FieldMetadata<V, T> implements IValidatorsProvider<V, T> {
   private final Metadata<V, T> metadata;
 
@@ -50,11 +52,11 @@ public class FieldMetadata<V, T> implements IValidatorsProvider<V, T> {
     }
 
     @Override
-    protected Object clone() throws CloneNotSupportedException {
-      return super.clone();
+    protected Metadata<V, T> clone() throws CloneNotSupportedException {
+      return (Metadata<V, T>) super.clone();
     }
   }
-
+  
   public String getDisplayedName() {
     return metadata.displayedName;
   }
@@ -64,15 +66,16 @@ public class FieldMetadata<V, T> implements IValidatorsProvider<V, T> {
   public boolean isNullable() {
     return metadata.isNullable;
   }
-  public List<Validator<V, T>> getValidators() {
+  @Override
+  public List<Validator<V, T>> getValidators() { // ok at this point I don' know what happens. Java is just mad at me I guess
     return metadata.validators;
   }
   public String getOnNullMessage() {
     return metadata.onNullMessage;
   }
   @Override
-  public Validator<V, T> getNullCheckValidator() {
-    return (value, t) -> {
+  public SimpleValidator<V> getNullCheckValidator() {
+    return (value) -> {
       return new ValidationResult<Boolean>(value != null, getOnNullMessage());
     };
   }

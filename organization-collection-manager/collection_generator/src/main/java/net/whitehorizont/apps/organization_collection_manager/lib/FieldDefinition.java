@@ -1,44 +1,25 @@
 package net.whitehorizont.apps.organization_collection_manager.lib;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
-
-public class FieldDefinition<V, T> {
-  private V value;
-  private FieldMetadata<V, T> metadata;
+@NonNullByDefault
+public class FieldDefinition<V, T> extends BaseFieldDefinition<V, FieldMetadata<V, T>> {
 
   @SuppressWarnings("null")
   public FieldDefinition(FieldMetadata<V, T> metadata, V initValue, T t) throws ValidationError {
-    this.metadata = metadata;
-    setValue(initValue, t);
+    super(metadata, checkValue(metadata, initValue, t));
   }
 
-  public FieldMetadata<V, T> getMetadata() {
-    return this.metadata;
+  private static <V, T> V checkValue(FieldMetadata<V, T> metadata, V value, T t) throws ValidationError {
+    runValidators(metadata.getValidators(), value, t, metadata);
+    return value;
   }
 
-  private FieldDefinition<V, T> setValue(V value, T t) throws ValidationError {
-    reportValidationError(getMetadata().getNullCheckValidator().validate(value, t));
-    runValidators(this.getMetadata().getValidators(), value, t);
-
-    this.value = value;
-    return this;
-  }
-
-  private void runValidators(Iterable<Validator<V, T>> validators, V value, T t) throws ValidationError {
+  private static <V, T> void runValidators(Iterable<Validator<V, T>> validators, V value, T t, FieldMetadata<V, T> metadata) throws ValidationError {
     for (Validator<V, T> validator : validators) {
-      ValidationResult<Boolean> validationResult = validator.validate(value, t);
-      reportValidationError(validationResult);
+      final var validationResult = validator.validate(value, t);
+      reportValidationError(validationResult, metadata);
     }
-  }
-
-  private void reportValidationError(ValidationResult<Boolean> validationResult) throws ValidationError {
-    if (!validationResult.getResult()) {
-      throw new ValidationError(this.getMetadata().getDisplayedName() + ": " + validationResult.getDisplayedMessage());
-    }
-  }
-  
-  public V getValue() {
-    return this.value;
   }
 
 }

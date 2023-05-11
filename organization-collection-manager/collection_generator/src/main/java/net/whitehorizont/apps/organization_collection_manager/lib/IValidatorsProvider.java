@@ -4,5 +4,5 @@ import java.util.List;
 
 public interface IValidatorsProvider<V, T> {
   List<Validator<V, T>> getValidators();
-  Validator<V, T> getNullCheckValidator();
+  SimpleValidator<V> getNullCheckValidator();
 }
