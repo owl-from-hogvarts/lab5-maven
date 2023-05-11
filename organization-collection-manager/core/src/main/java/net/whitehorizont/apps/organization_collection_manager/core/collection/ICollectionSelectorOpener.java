@@ -7,6 +7,7 @@ import net.whitehorizont.apps.organization_collection_manager.core.storage.IBase
 import net.whitehorizont.apps.organization_collection_manager.core.storage.errors.CollectionNotFound;
 
 @NonNullByDefault
+// single interface with two methods to emphasis their semantically interconnection
 // package private
 interface ICollectionSelectorOpener<C extends IBaseCollection<?, ?, ?>, M extends IWithId<? extends BaseId>> extends ICollectionSelector<C, M> {
   /**
@@ -16,5 +17,5 @@ interface ICollectionSelectorOpener<C extends IBaseCollection<?, ?, ?>, M extend
    * @return
    * @throws CollectionNotFound
    */
-  Observable<C> open(IBaseStorage<C, M> storage) throws CollectionNotFound;
+  Observable<C> open(IBaseStorage<C, M> storage);
 }

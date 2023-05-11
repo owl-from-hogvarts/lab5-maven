@@ -17,7 +17,7 @@ class SelectCollectionByMetadata<C extends IBaseCollection<?, ?, ?>, M extends I
 
 
   @Override
-  public Observable<C> open(IBaseStorage<C, M> storage) throws CollectionNotFound {
+  public Observable<C> open(IBaseStorage<C, M> storage) {
     return storage.loadSafe(metadata);
   }
 
