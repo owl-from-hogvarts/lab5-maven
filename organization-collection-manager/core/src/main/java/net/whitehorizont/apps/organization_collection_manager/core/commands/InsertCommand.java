@@ -1,15 +1,28 @@
 package net.whitehorizont.apps.organization_collection_manager.core.commands;
 
-public class InsertCommand implements ICommand {
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
+import io.reactivex.rxjava3.core.Observable;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.IBaseCollection;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.IElementPrototype;
+
+@NonNullByDefault
+public class InsertCommand<P> extends BaseCommand<Void, IBaseCollection<P, ?, ?>> {
+  private final P prototype;
+
+  public InsertCommand(P prototype) {
+    // receive collection prototype
+    // store it
+    this.prototype = prototype;
+  }
 
   @Override
-  public void execute() {
-    // if no collection specified, request default collection from CollectionManager
-    // get collection's data sink
-    // supply elements into data sink
-
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'execute'");
+  public Observable<Void> execute() {
+    return Observable.create(subscriber -> {
+      final var collection = getCollection();
+      assert collection != null;
+      collection.getDataSink().supply(prototype);
+    });
   }
   
 }
