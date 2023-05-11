@@ -1,4 +1,4 @@
-package net.whitehorizont.apps;
+package net.whitehorizont.apps.organization_collection_manager.cli;
 
 /**
  * Hello world!
