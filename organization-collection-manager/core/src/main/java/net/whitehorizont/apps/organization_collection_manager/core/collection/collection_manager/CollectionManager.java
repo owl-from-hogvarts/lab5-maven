@@ -1,4 +1,4 @@
-package net.whitehorizont.apps.organization_collection_manager.core.collection;
+package net.whitehorizont.apps.organization_collection_manager.core.collection.collection_manager;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -9,6 +9,8 @@ import org.javatuples.Pair;
 
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Single;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.IBaseCollection;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollectionManager;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.BaseId;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.IWithId;
 import net.whitehorizont.apps.organization_collection_manager.core.storage.IBaseStorage;

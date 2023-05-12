@@ -4,12 +4,12 @@ package net.whitehorizont.apps.organization_collection_manager.core;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import net.whitehorizont.apps.organization_collection_manager.core.collection.Collection;
-import net.whitehorizont.apps.organization_collection_manager.core.collection.CollectionManager;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.CollectionMetadata;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollectionManager;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.OrganisationElement;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.OrganisationElementFactory;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.OrganisationElement.Builder;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.collection_manager.CollectionManager;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.UUID_ElementId;
 import net.whitehorizont.apps.organization_collection_manager.core.commands.CommandQueue;
 import net.whitehorizont.apps.organization_collection_manager.core.commands.ICommand;

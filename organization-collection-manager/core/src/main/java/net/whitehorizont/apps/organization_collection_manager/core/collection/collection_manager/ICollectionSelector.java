@@ -1,8 +1,9 @@
-package net.whitehorizont.apps.organization_collection_manager.core.collection;
+package net.whitehorizont.apps.organization_collection_manager.core.collection.collection_manager;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import io.reactivex.rxjava3.core.Observable;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.IBaseCollection;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.BaseId;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.IWithId;
 import net.whitehorizont.apps.organization_collection_manager.core.storage.IBaseStorage;
