@@ -4,7 +4,7 @@ package net.whitehorizont.apps.organization_collection_manager.core.storage;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import io.reactivex.rxjava3.core.Observable;
-import net.whitehorizont.apps.organization_collection_manager.core.collection.IBaseCollection;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollection;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.BaseId;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.IWithId;
 import net.whitehorizont.apps.organization_collection_manager.core.storage.errors.CollectionNotFound;
@@ -25,7 +25,7 @@ import net.whitehorizont.apps.organization_collection_manager.core.storage.error
  * @param <M> collection metadata (pray on type inference)
  */
 @NonNullByDefault
-public interface IBaseStorage<C extends IBaseCollection<?, ?, M>, M extends IWithId< ? extends BaseId>> {
+public interface IBaseStorage<C extends ICollection<?, ?, M>, M extends IWithId< ? extends BaseId>> {
   /**
    * Loads default collection. 
    * 

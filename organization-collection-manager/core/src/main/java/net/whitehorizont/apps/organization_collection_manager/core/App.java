@@ -3,7 +3,7 @@ package net.whitehorizont.apps.organization_collection_manager.core;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
-import net.whitehorizont.apps.organization_collection_manager.core.collection.Collection;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.RamCollection;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.CollectionMetadata;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollectionManager;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.OrganisationElement;
@@ -24,7 +24,7 @@ public class App {
     final OrganisationElementFactory organisationElementFactory = new OrganisationElementFactory();
     final var xmlCollectionAdapter = new CollectionAdapter<>(organisationElementFactory);
     final var testStorage = new FileStorage<>("./test.xml", xmlCollectionAdapter);
-    final ICollectionManager<Collection<Builder, OrganisationElement>, CollectionMetadata> collectionManager = new CollectionManager<>();
+    final ICollectionManager<RamCollection<Builder, OrganisationElement>, CollectionMetadata> collectionManager = new CollectionManager<>();
     testStorage.loadMetadata();
     collectionManager.addStorage(testStorage);
     
@@ -38,7 +38,7 @@ public class App {
           .name("Google")
           .ID(new UUID_ElementId());
           
-      final ICommand<Void> testInsert = new InsertCommand<Builder, Collection<Builder, OrganisationElement>>(testElement, collection);
+      final ICommand<Void> testInsert = new InsertCommand<Builder, RamCollection<Builder, OrganisationElement>>(testElement, collection);
       commandQueue.push(testInsert);
     });
       // sometimes java can't infer types for us so we should help it to kill itself and write in some better language

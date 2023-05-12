@@ -6,11 +6,11 @@ import net.whitehorizont.apps.organization_collection_manager.core.collection.Or
 import net.whitehorizont.apps.organization_collection_manager.lib.ValidationError;
 
 @NonNullByDefault
-public class OrganisationElementFactory implements IElementFactory<Builder, OrganisationElement, IBaseCollection<Builder, OrganisationElement, ?>> {
+public class OrganisationElementFactory implements IElementFactory<Builder, OrganisationElement, ICollection<Builder, OrganisationElement, ?>> {
 
   @Override
   public OrganisationElement buildElementFrom(Builder prototype,
-      IBaseCollection<Builder, OrganisationElement, ?> validationObject) throws ValidationError {
+      ICollection<Builder, OrganisationElement, ?> validationObject) throws ValidationError {
         return new OrganisationElement(validationObject, prototype);
       }
   

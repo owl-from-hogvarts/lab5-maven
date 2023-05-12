@@ -13,7 +13,7 @@ import net.whitehorizont.apps.organization_collection_manager.core.storage.error
 // !It should choose storage and pass collection creation request to it
 
 @NonNullByDefault
-public interface ICollectionManager<C extends IBaseCollection<?, ?, M>, M extends IWithId<? extends BaseId>> {
+public interface ICollectionManager<C extends ICollection<?, ?, M>, M extends IWithId<? extends BaseId>> {
 
   // makes collections available for loading
   void addStorage(IBaseStorage<C, M> storage);

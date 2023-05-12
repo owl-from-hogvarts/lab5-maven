@@ -13,7 +13,7 @@ import net.whitehorizont.apps.organization_collection_manager.core.collection.ke
 import net.whitehorizont.apps.organization_collection_manager.lib.ValidationError;
 
 @NonNullByDefault
-public interface IBaseCollection<P, E extends IWithId<? extends BaseId>, M extends IWithId<? extends BaseId>> {
+public interface ICollection<P, E extends IWithId<? extends BaseId>, M extends IWithId<? extends BaseId>> {
 
   /**
    * Collection listens on returned sink to receive new elements

@@ -3,14 +3,14 @@ package net.whitehorizont.apps.organization_collection_manager.core.collection.c
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import io.reactivex.rxjava3.core.Observable;
-import net.whitehorizont.apps.organization_collection_manager.core.collection.IBaseCollection;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollection;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.BaseId;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.IWithId;
 import net.whitehorizont.apps.organization_collection_manager.core.storage.IBaseStorage;
 import net.whitehorizont.apps.organization_collection_manager.core.storage.errors.CollectionNotFound;
 
 @NonNullByDefault
-class SelectDefaultCollection<C extends IBaseCollection<?, ?, M>, M extends IWithId<? extends BaseId>> implements ICollectionSelectorOpener<C, M> {
+class SelectDefaultCollection<C extends ICollection<?, ?, M>, M extends IWithId<? extends BaseId>> implements ICollectionSelectorOpener<C, M> {
 
   @Override
   public Observable<C> open(IBaseStorage<C, M> storage) {

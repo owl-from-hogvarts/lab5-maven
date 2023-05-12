@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Single;
-import net.whitehorizont.apps.organization_collection_manager.core.collection.IBaseCollection;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollection;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.BaseId;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.IWithId;
 import net.whitehorizont.apps.organization_collection_manager.core.storage.errors.CollectionNotFound;
@@ -31,7 +31,7 @@ import net.whitehorizont.libs.file_system.PathHelpers;
 // composition and aggregation of data should be done somewhere else
 // can store only one collection
 @NonNullByDefault
-public class FileStorage<C extends IBaseCollection<?, ?, M>, M extends IWithId<? extends BaseId>>
+public class FileStorage<C extends ICollection<?, ?, M>, M extends IWithId<? extends BaseId>>
     implements IBaseStorage<C, M> {
   private final IFileAdapter<C, M> adapter;
   private final Path path;

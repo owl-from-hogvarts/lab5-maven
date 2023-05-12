@@ -8,9 +8,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import com.thoughtworks.xstream.XStream;
 import io.reactivex.rxjava3.annotations.NonNull;
-import net.whitehorizont.apps.organization_collection_manager.core.collection.Collection;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.RamCollection;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.CollectionMetadata;
-import net.whitehorizont.apps.organization_collection_manager.core.collection.IBaseCollection;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollection;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollectionElement;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.IElementFactory;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.IElementPrototype;
@@ -20,8 +20,8 @@ import net.whitehorizont.apps.organization_collection_manager.core.storage.error
 import net.whitehorizont.apps.organization_collection_manager.lib.ValidationError;
 
 @NonNullByDefault
-public class CollectionAdapter<P extends IElementPrototype, E extends ICollectionElement<P>, F extends IElementFactory<P, E, IBaseCollection<P, E, ?>>>
-    implements IFileAdapter<Collection<P, E>, CollectionMetadata> {
+public class CollectionAdapter<P extends IElementPrototype, E extends ICollectionElement<P>, F extends IElementFactory<P, E, ICollection<P, E, ?>>>
+    implements IFileAdapter<RamCollection<P, E>, CollectionMetadata> {
   private final XStream serializer = new XStream();
   {
     serializer.allowTypesByWildcard(new String[]{"net.whitehorizont.apps.organization_collection_manager.core.storage.collection_adapter.*"});
@@ -34,7 +34,7 @@ public class CollectionAdapter<P extends IElementPrototype, E extends ICollectio
     this.elementFactory = dataSinkSourceFactory;
   }
 
-  private CollectionXml<P, CollectionMetadata> prepareCollection(IBaseCollection<P, E, CollectionMetadata> collection) {
+  private CollectionXml<P, CollectionMetadata> prepareCollection(ICollection<P, E, CollectionMetadata> collection) {
     final var elements = collection.getEvery$()
         .map(element -> new ElementXml<>(element.getId().serialize(), element.getPrototype()))
         .toList().blockingGet();
@@ -42,7 +42,7 @@ public class CollectionAdapter<P extends IElementPrototype, E extends ICollectio
   }
 
   @Override
-  public byte[] serialize(Collection<P, E> toSerialize) {
+  public byte[] serialize(RamCollection<P, E> toSerialize) {
     final var collectionXml = prepareCollection(toSerialize);
 
     final String collectionXmlSerialized = serializer.toXML(collectionXml);
@@ -59,7 +59,7 @@ public class CollectionAdapter<P extends IElementPrototype, E extends ICollectio
     return serializedContent;
   }
 
-  public Collection<P, E> parse(ByteBuffer fileContent) throws ValidationError {
+  public RamCollection<P, E> parse(ByteBuffer fileContent) throws ValidationError {
     // receive buffer
     // cast to string
     final String xml_content = DEFAULT_ENCODING.decode(fileContent).toString();
@@ -69,7 +69,7 @@ public class CollectionAdapter<P extends IElementPrototype, E extends ICollectio
 
     final CollectionMetadata collectionMetadata = storageXmlRepresentation.collection.metadata;
     
-    final var collection = new Collection<P, E>(this.elementFactory, collectionMetadata);
+    final var collection = new RamCollection<P, E>(this.elementFactory, collectionMetadata);
 
     for (var elementXmlRepresentation : storageXmlRepresentation.collection.elements) {
       collection.insert(elementXmlRepresentation.body);
@@ -80,7 +80,7 @@ public class CollectionAdapter<P extends IElementPrototype, E extends ICollectio
   }
 
   @Override
-  public Collection<P, E> deserialize(byte[] fileContent) throws ValidationError, ResourceEmpty {
+  public RamCollection<P, E> deserialize(byte[] fileContent) throws ValidationError, ResourceEmpty {
     if (fileContent.length == 0) {
       // if something wrong with file, error any way
       // this is responsibility of client code what to with errors
@@ -95,13 +95,13 @@ public class CollectionAdapter<P extends IElementPrototype, E extends ICollectio
   }
 
   @Override
-  public Collection<P, @NonNull E> deserializeSafe(CollectionMetadata metadata) {
-    return new Collection<>(elementFactory, metadata);
+  public RamCollection<P, @NonNull E> deserializeSafe(CollectionMetadata metadata) {
+    return new RamCollection<>(elementFactory, metadata);
   }
 
   @Override
-  public Collection<P, E> deserializeSafe() {
+  public RamCollection<P, E> deserializeSafe() {
     final var emptyCollectionMetadata = new CollectionMetadata(new Builder());
-    return new Collection<>(elementFactory, emptyCollectionMetadata);
+    return new RamCollection<>(elementFactory, emptyCollectionMetadata);
   }
 }

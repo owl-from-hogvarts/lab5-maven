@@ -17,23 +17,25 @@ import net.whitehorizont.apps.organization_collection_manager.core.collection.ke
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.UUID_ElementId;
 import net.whitehorizont.apps.organization_collection_manager.lib.ValidationError;
 
-// collection defines id type to use. adapter is responsible for properly serializing it
+/**
+ * Holds collection in memory, without auto saving to disk
+ */
 @NonNullByDefault
-public class Collection<P extends IElementPrototype, E extends ICollectionElement<P>>
-    implements IBaseCollection<P, E, CollectionMetadata> {
+public class RamCollection<P extends IElementPrototype, E extends ICollectionElement<P>>
+    implements ICollection<P, E, CollectionMetadata> {
 
   private final Map<ISerializableKey, E> elements = new LinkedHashMap<>();
   private final CollectionMetadata metadata;
-  private final IElementFactory<P, E, IBaseCollection<P, E, ?>> elementFactory;
+  private final IElementFactory<P, E, ICollection<P, E, ?>> elementFactory;
 
   // takes such dataSink factory which accepts any parent class of collection
   // we undertake to provide class not higher than collection
-  public Collection(IElementFactory<P, E, IBaseCollection<P, E, ?>> elementFactory, CollectionMetadata metadata) {
+  public RamCollection(IElementFactory<P, E, ICollection<P, E, ?>> elementFactory, CollectionMetadata metadata) {
     this.metadata = metadata;
     this.elementFactory = elementFactory;
   }
 
-  public Collection(IElementFactory<P, E, IBaseCollection<P, E, ?>> elementFactory) {
+  public RamCollection(IElementFactory<P, E, ICollection<P, E, ?>> elementFactory) {
     this(elementFactory, new CollectionMetadata(new Builder(new UUID_CollectionId())));
   }
 

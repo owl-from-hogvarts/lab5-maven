@@ -9,7 +9,7 @@ import org.javatuples.Pair;
 
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Single;
-import net.whitehorizont.apps.organization_collection_manager.core.collection.IBaseCollection;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollection;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollectionManager;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.BaseId;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.IWithId;
@@ -26,7 +26,7 @@ import net.whitehorizont.libs.file_system.AssertHelpers;
  * passes on operations on collections to appropriate storage.
  */
 @NonNullByDefault
-public class CollectionManager<C extends IBaseCollection<?, ?, M>, M extends IWithId<? extends BaseId>>
+public class CollectionManager<C extends ICollection<?, ?, M>, M extends IWithId<? extends BaseId>>
     implements ICollectionManager<C, M> {
   private Map<IBaseStorage<C, M>, Set<C>> storageAssociations = new HashMap<>();
 
@@ -157,6 +157,6 @@ public class CollectionManager<C extends IBaseCollection<?, ?, M>, M extends IWi
 }
 
 @NonNullByDefault
-interface ICollectionSelectorWriteable<C extends IBaseCollection<?, ?, M>, M extends IWithId<? extends BaseId>> {
+interface ICollectionSelectorWriteable<C extends ICollection<?, ?, M>, M extends IWithId<? extends BaseId>> {
   Observable<C> select(IBaseStorage<C, M> storage, Set<C> openedCollections) throws CollectionNotFound;
 }

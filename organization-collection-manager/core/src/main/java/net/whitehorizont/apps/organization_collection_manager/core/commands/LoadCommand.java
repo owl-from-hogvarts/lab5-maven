@@ -2,7 +2,7 @@ package net.whitehorizont.apps.organization_collection_manager.core.commands;
 
 import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.Observable;
-import net.whitehorizont.apps.organization_collection_manager.core.collection.IBaseCollection;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollection;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollectionElement;
 
 public class LoadCommand<E extends ICollectionElement<?>> implements ICommand<E> {
@@ -14,7 +14,7 @@ public class LoadCommand<E extends ICollectionElement<?>> implements ICommand<E>
   }
 
   @Override
-  public void setCollection(@NonNull Observable<@NonNull IBaseCollection<?, ?, ?>> collection) {
+  public void setCollection(@NonNull Observable<@NonNull ICollection<?, ?, ?>> collection) {
     // TODO Auto-generated method stub
     throw new UnsupportedOperationException("Unimplemented method 'setCollection'");
   }
