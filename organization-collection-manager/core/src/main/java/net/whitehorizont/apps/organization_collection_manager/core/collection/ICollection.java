@@ -28,8 +28,9 @@ public interface ICollection<P, E extends IWithId<? extends BaseId>, M extends I
    * at runtime other elements should be ignored
    * @param key
    * @return
+   * @throws ValidationError
    */
-  void replace(ISerializableKey key, P prototype);
+  void replace(ISerializableKey key, P prototype) throws ValidationError;
 
   void delete(ISerializableKey key);
 

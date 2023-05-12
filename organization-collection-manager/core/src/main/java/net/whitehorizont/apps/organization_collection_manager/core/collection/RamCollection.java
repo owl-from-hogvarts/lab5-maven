@@ -42,10 +42,19 @@ public class RamCollection<P extends IElementPrototype, E extends ICollectionEle
   /**
    * Collection listens on returned sink to receive new elements
    * @throws ValidationError
+   * @throws DuplicateElementsError
    */
   @Override
   public void insert(P prototype) throws ValidationError {
-    this.elementFactory.buildElementFrom(prototype, this);
+    insert(generateElementKey(), prototype);
+  }
+
+  private void insert(ISerializableKey key, P prototype) throws ValidationError {
+    insert(key, this.elementFactory.buildElementFrom(prototype, this));
+  }
+  
+  private void insert(ISerializableKey key, E element) throws ValidationError {
+    this.elements.put(key, element);
   }
 
   @Override
@@ -89,34 +98,18 @@ public class RamCollection<P extends IElementPrototype, E extends ICollectionEle
     this.elements.clear();
   }
 
-  private void onNextElement(E element) throws DuplicateElementsError {
-    // integrity should be checked during validation stage
-    // when new elements arrives from data sink
-    // if duplicate elements are encountered, warn a user;
-    // supplier must propose element with different id if user wants to store
-    // duplicates
-    // it is impossible to store two or more completely identical objects
-    final var duplicate = elements.entrySet().stream().filter(entry -> entry.getValue().equals(element)).findFirst();
-    if (duplicate.isPresent()) {
-      // ask if he would like to remove or store duplicates
-      throw new DuplicateElementsError(duplicate.get().getValue());
-    }
-    this.elements.put(element.getId(), element);
-  }
-
-  ElementKey generateElementKey(E element) {
+  ElementKey generateElementKey() {
     return ElementKey.next();
   }
 
   @Override
-  public void replace(ISerializableKey key, P prototype) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'replace'");
+  public void replace(ISerializableKey key, P prototype) throws ValidationError {
+    this.delete(key);
+    this.insert(key, prototype);
   }
 
   @Override
   public void delete(ISerializableKey key) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'delete'");
+    this.elements.remove(key);
   }
 }
