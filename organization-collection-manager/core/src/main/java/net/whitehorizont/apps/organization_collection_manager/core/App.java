@@ -7,8 +7,8 @@ import net.whitehorizont.apps.organization_collection_manager.core.collection.Co
 import net.whitehorizont.apps.organization_collection_manager.core.collection.CollectionManager;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.CollectionMetadata;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollectionManager;
-import net.whitehorizont.apps.organization_collection_manager.core.collection.OrganisationDataSinkSourceFactory;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.OrganisationElement;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.OrganisationElementFactory;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.UUID_ElementId;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.OrganisationElement.Builder;
 import net.whitehorizont.apps.organization_collection_manager.core.commands.BaseCommand;
@@ -21,8 +21,8 @@ import net.whitehorizont.apps.organization_collection_manager.core.storage.error
 @NonNullByDefault
 public class App {
   public static void main(String[] args) throws StorageInaccessibleError {
-    final var organisationDataSinkFactory = new OrganisationDataSinkSourceFactory();
-    final var xmlCollectionAdapter = new CollectionAdapter<>(organisationDataSinkFactory);
+    final OrganisationElementFactory organisationElementFactory = new OrganisationElementFactory();
+    final var xmlCollectionAdapter = new CollectionAdapter<>(organisationElementFactory);
     final var testStorage = new FileStorage<>("./test.xml", xmlCollectionAdapter);
     final ICollectionManager<Collection<Builder, OrganisationElement>, CollectionMetadata> collectionManager = new CollectionManager<>();
     testStorage.loadMetadata();

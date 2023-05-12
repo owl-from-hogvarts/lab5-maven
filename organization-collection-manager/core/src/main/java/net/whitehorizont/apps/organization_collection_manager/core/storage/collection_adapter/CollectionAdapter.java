@@ -12,7 +12,7 @@ import net.whitehorizont.apps.organization_collection_manager.core.collection.Co
 import net.whitehorizont.apps.organization_collection_manager.core.collection.CollectionMetadata;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.IBaseCollection;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollectionElement;
-import net.whitehorizont.apps.organization_collection_manager.core.collection.IDataSinkSourceFactory;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.IElementFactory;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.IElementPrototype;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.CollectionMetadata.Builder;
 import net.whitehorizont.apps.organization_collection_manager.core.storage.IFileAdapter;
@@ -20,18 +20,18 @@ import net.whitehorizont.apps.organization_collection_manager.core.storage.error
 import net.whitehorizont.apps.organization_collection_manager.lib.ValidationError;
 
 @NonNullByDefault
-public class CollectionAdapter<P extends IElementPrototype, E extends ICollectionElement<P>, F extends IDataSinkSourceFactory<P, E, ? super IBaseCollection<P, E, ?>>>
+public class CollectionAdapter<P extends IElementPrototype, E extends ICollectionElement<P>, F extends IElementFactory<P, E, IBaseCollection<P, E, ?>>>
     implements IFileAdapter<Collection<P, E>, CollectionMetadata> {
   private final XStream serializer = new XStream();
   {
     serializer.allowTypesByWildcard(new String[]{"net.whitehorizont.apps.organization_collection_manager.core.storage.collection_adapter.*"});
   }
-  private final F dataSinkSourceFactory;
+  private final F elementFactory;
   @SuppressWarnings("null")
   private static final Charset DEFAULT_ENCODING = StandardCharsets.UTF_8;
 
   public CollectionAdapter(F dataSinkSourceFactory) {
-    this.dataSinkSourceFactory = dataSinkSourceFactory;
+    this.elementFactory = dataSinkSourceFactory;
   }
 
   private CollectionXml<P, CollectionMetadata> prepareCollection(IBaseCollection<P, E, CollectionMetadata> collection) {
@@ -69,11 +69,10 @@ public class CollectionAdapter<P extends IElementPrototype, E extends ICollectio
 
     final CollectionMetadata collectionMetadata = storageXmlRepresentation.collection.metadata;
     
-    final Collection<P, E> collection = new Collection<P, E>(this.dataSinkSourceFactory, collectionMetadata);
+    final var collection = new Collection<P, E>(this.elementFactory, collectionMetadata);
 
-    final var collectionDataSink = collection.getDataSink();
     for (var elementXmlRepresentation : storageXmlRepresentation.collection.elements) {
-      collectionDataSink.supply(elementXmlRepresentation.body);
+      collection.insert(elementXmlRepresentation.body);
     }
 
     return collection;
@@ -97,12 +96,12 @@ public class CollectionAdapter<P extends IElementPrototype, E extends ICollectio
 
   @Override
   public Collection<P, @NonNull E> deserializeSafe(CollectionMetadata metadata) {
-    return new Collection<>(dataSinkSourceFactory, metadata);
+    return new Collection<>(elementFactory, metadata);
   }
 
   @Override
   public Collection<P, E> deserializeSafe() {
     final var emptyCollectionMetadata = new CollectionMetadata(new Builder());
-    return new Collection<>(dataSinkSourceFactory, emptyCollectionMetadata);
+    return new Collection<>(elementFactory, emptyCollectionMetadata);
   }
 }
