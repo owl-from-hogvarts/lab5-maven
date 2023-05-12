@@ -3,16 +3,15 @@ package net.whitehorizont.apps.organization_collection_manager.core.commands;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import io.reactivex.rxjava3.core.Observable;
-import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollection;
 
 @NonNullByDefault
-public class InsertCommand<P, C extends ICollection<P, ?, ?>> implements ICommand<Void> {
+public class InsertCommand<P> implements ICommand<Void> {
   private final P prototype;
-  private final C collection;
+  private final CollectionCommandReceiver<P, ?, ?> collection;
 
-  public InsertCommand(P prototype, C collection) {
+  public InsertCommand(P prototype, CollectionCommandReceiver<P, ?, ?> collectionReceiver) {
     this.prototype = prototype;
-    this.collection = collection;
+    this.collection = collectionReceiver;
   }
 
   // @Override

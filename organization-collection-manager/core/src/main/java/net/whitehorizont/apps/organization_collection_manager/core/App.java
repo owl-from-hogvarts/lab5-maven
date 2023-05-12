@@ -11,6 +11,7 @@ import net.whitehorizont.apps.organization_collection_manager.core.collection.Or
 import net.whitehorizont.apps.organization_collection_manager.core.collection.OrganisationElement.Builder;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.collection_manager.CollectionManager;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.UUID_ElementId;
+import net.whitehorizont.apps.organization_collection_manager.core.commands.CollectionCommandReceiver;
 import net.whitehorizont.apps.organization_collection_manager.core.commands.CommandQueue;
 import net.whitehorizont.apps.organization_collection_manager.core.commands.ICommand;
 import net.whitehorizont.apps.organization_collection_manager.core.commands.InsertCommand;
@@ -38,7 +39,8 @@ public class App {
           .name("Google")
           .ID(new UUID_ElementId());
           
-      final ICommand<Void> testInsert = new InsertCommand<Builder, RamCollection<Builder, OrganisationElement>>(testElement, collection);
+      final var collectionReceiver = new CollectionCommandReceiver<>(collection);
+      final ICommand<Void> testInsert = new InsertCommand<Builder>(testElement, collectionReceiver);
       commandQueue.push(testInsert);
     });
       // sometimes java can't infer types for us so we should help it to kill itself and write in some better language

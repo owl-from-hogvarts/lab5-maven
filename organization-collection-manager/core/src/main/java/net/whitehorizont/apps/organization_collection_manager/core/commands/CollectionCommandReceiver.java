@@ -31,7 +31,7 @@ public class CollectionCommandReceiver<P, E extends IWithId<? extends BaseId>, M
   }
 
   @Override
-  public void replace(ISerializableKey key, P prototype) {
+  public void replace(ISerializableKey key, P prototype) throws ValidationError {
     this.collection.replace(key, prototype);
   }
 
