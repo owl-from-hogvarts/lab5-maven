@@ -8,28 +8,18 @@ import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.observables.ConnectableObservable;
 import io.reactivex.rxjava3.subjects.PublishSubject;
 import io.reactivex.rxjava3.subjects.Subject;
-import net.whitehorizont.apps.organization_collection_manager.core.collection.IBaseCollection;
-import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollectionManager;
 
 @NonNullByDefault
-public class CommandQueue<CM extends ICollectionManager<C, ?>, C extends IBaseCollection<?, ?, ?>> implements ICommandQueue<CM, C> {
-  private final CM collectionManager;
+public class CommandQueue {
   private final Subject<ConnectableObservable<?>> commands = PublishSubject.create();
 
-  public CommandQueue(CM collectionManager) {
-    this.collectionManager = collectionManager;
+  public CommandQueue() {
     commands.subscribe(this::executeNext);
   }
 
-  @Override
-  public <@NonNull T> Observable<T> push(BaseCommand<T, C> command) {
+  public <@NonNull T> Observable<T> push(ICommand<T> command) {
     return Observable.create((subscriber) -> {
 
-      if (!command.hasPreferredCollection()) {
-        // we are at power here so we decide witch collection to supply
-        final var collection = collectionManager.getCollection();
-        command.setCollection(collection);
-      }
       final var execution$ = command.execute().publish();
       // this does not immediately start execution of observable
       // to start actual execution call connect
@@ -38,17 +28,7 @@ public class CommandQueue<CM extends ICollectionManager<C, ?>, C extends IBaseCo
     });
   }
 
-  @Override
-  public <@NonNull T> void push(ISystemCommand<T> command) {
-    command.setCommandQueue(this);
-    command.setCollectionManager(collectionManager);
-
-    final var execution$ = command.execute().publish();
-    commands.onNext(execution$);
-  }
-
-  @Override
-  public void executeNext(ConnectableObservable<?> command) {
+  private void executeNext(ConnectableObservable<?> command) {
     command.connect();
   }
 
@@ -62,5 +42,4 @@ public class CommandQueue<CM extends ICollectionManager<C, ?>, C extends IBaseCo
 
     return Observable.empty();
   }
-
 }
