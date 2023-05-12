@@ -9,10 +9,10 @@ import net.whitehorizont.apps.organization_collection_manager.core.collection.Co
 import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollectionManager;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.OrganisationElement;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.OrganisationElementFactory;
-import net.whitehorizont.apps.organization_collection_manager.core.collection.UUID_ElementId;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.OrganisationElement.Builder;
-import net.whitehorizont.apps.organization_collection_manager.core.commands.BaseCommand;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.UUID_ElementId;
 import net.whitehorizont.apps.organization_collection_manager.core.commands.CommandQueue;
+import net.whitehorizont.apps.organization_collection_manager.core.commands.ICommand;
 import net.whitehorizont.apps.organization_collection_manager.core.commands.InsertCommand;
 import net.whitehorizont.apps.organization_collection_manager.core.storage.FileStorage;
 import net.whitehorizont.apps.organization_collection_manager.core.storage.collection_adapter.CollectionAdapter;
@@ -28,6 +28,8 @@ public class App {
     testStorage.loadMetadata();
     collectionManager.addStorage(testStorage);
     
+    final var commandQueue = new CommandQueue();
+
     final var defaultCollection$ = collectionManager.getCollection();
     defaultCollection$.subscribe((collection) -> {
       // builder = collection.getDataSink().getBuilder()
@@ -35,17 +37,11 @@ public class App {
       final var testElement = new OrganisationElement.Builder()
           .name("Google")
           .ID(new UUID_ElementId());
-
-      collection.insert(testElement);
-      final var collectionId = collection.getMetadataSnapshot().getId();
-      collectionManager.save(collectionId);
-    });
-
-      final CommandQueue<ICollectionManager<Collection<Builder, OrganisationElement>, CollectionMetadata>, Collection<Builder, OrganisationElement>> commandQueue = new CommandQueue<>(collectionManager);
-      final Builder testCompany = new Builder().name("Google").ID(new UUID_ElementId());
-      // sometimes java can't infer types for us so we should help it to kill itself and write in some better language
-      final BaseCommand<Void, Collection<Builder,OrganisationElement>> testInsert = new InsertCommand<>(testCompany);
+          
+      final ICommand<Void> testInsert = new InsertCommand<Builder, Collection<Builder, OrganisationElement>>(testElement, collection);
       commandQueue.push(testInsert);
+    });
+      // sometimes java can't infer types for us so we should help it to kill itself and write in some better language
 
     // get collection
     // get prototype for element
