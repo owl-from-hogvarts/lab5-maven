@@ -24,7 +24,7 @@ public class CollectionAdapter<P extends IElementPrototype, E extends ICollectio
     implements IFileAdapter<RamCollection<P, E>, CollectionMetadata> {
   private final XStream serializer = new XStream();
   {
-    serializer.allowTypesByWildcard(new String[]{"net.whitehorizont.apps.organization_collection_manager.core.storage.collection_adapter.*"});
+    serializer.allowTypesByWildcard(new String[]{"net.whitehorizont.apps.organization_collection_manager.core.**"});
   }
   private final F elementFactory;
   @SuppressWarnings("null")
