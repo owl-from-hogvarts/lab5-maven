@@ -12,6 +12,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.Observable;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.CollectionMetadata.Builder;
+import net.whitehorizont.apps.organization_collection_manager.lib.ValidationError;
 
 // collection defines id type to use. adapter is responsible for properly serializing it
 @NonNullByDefault
@@ -20,28 +21,26 @@ public class Collection<P extends IElementPrototype, E extends ICollectionElemen
 
   private final Map<ISerializableKey, E> elements = new LinkedHashMap<>();
   private final CollectionMetadata metadata;
-  private final IDataSink<P> dataSink;
+  private final IElementFactory<P, E, IBaseCollection<P, E, ?>> elementFactory;
 
   // takes such dataSink factory which accepts any parent class of collection
   // we undertake to provide class not higher than collection
-  public Collection(IDataSinkSourceFactory<P, E, ? super Collection<P, E>> dataSinkFactory, CollectionMetadata metadata) {
+  public Collection(IElementFactory<P, E, IBaseCollection<P, E, ?>> elementFactory, CollectionMetadata metadata) {
     this.metadata = metadata;
-
-    final var dataSink = dataSinkFactory.getDataSinkSourceFor(this);
-    this.dataSink = dataSink;
-    dataSink.subscribe(this::onNextElement);
+    this.elementFactory = elementFactory;
   }
 
-  public Collection(IDataSinkSourceFactory<P, E, Collection<P, E>> dataSinkFactory) {
-    this(dataSinkFactory, new CollectionMetadata(new Builder(new UUID_CollectionId())));
+  public Collection(IElementFactory<P, E, IBaseCollection<P, E, ?>> elementFactory) {
+    this(elementFactory, new CollectionMetadata(new Builder(new UUID_CollectionId())));
   }
 
   /**
    * Collection listens on returned sink to receive new elements
+   * @throws ValidationError
    */
   @Override
-  public IDataSink<P> getDataSink() {
-    return dataSink;
+  public void insert(P prototype) throws ValidationError {
+    this.elementFactory.buildElementFrom(prototype, this);
   }
 
   @Override
@@ -100,8 +99,19 @@ public class Collection<P extends IElementPrototype, E extends ICollectionElemen
     this.elements.put(element.getId(), element);
   }
 
-  void generateElementKey(E element) {
-    // TODO: implement
+  ElementKey generateElementKey(E element) {
+    return ElementKey.next();
   }
 
+  @Override
+  public void replace(ISerializableKey key, P prototype) {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'replace'");
+  }
+
+  @Override
+  public void delete(ISerializableKey key) {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'delete'");
+  }
 }

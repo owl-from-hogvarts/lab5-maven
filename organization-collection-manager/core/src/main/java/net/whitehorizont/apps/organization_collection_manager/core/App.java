@@ -3,11 +3,9 @@ package net.whitehorizont.apps.organization_collection_manager.core;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
-import io.reactivex.rxjava3.annotations.NonNull;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.Collection;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.CollectionManager;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.CollectionMetadata;
-import net.whitehorizont.apps.organization_collection_manager.core.collection.IBaseCollection;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollectionManager;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.OrganisationDataSinkSourceFactory;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.OrganisationElement;
@@ -30,18 +28,18 @@ public class App {
     testStorage.loadMetadata();
     collectionManager.addStorage(testStorage);
     
-    // final var defaultCollection$ = collectionManager.getCollection();
-    // defaultCollection$.subscribe((collection) -> {
-    //   // builder = collection.getDataSink().getBuilder()
-    //   // for (final var field : builder.getFields())
-    //   final var testElement = new OrganisationElement.Builder()
-    //       .name("Google")
-    //       .ID(new UUID_ElementId());
+    final var defaultCollection$ = collectionManager.getCollection();
+    defaultCollection$.subscribe((collection) -> {
+      // builder = collection.getDataSink().getBuilder()
+      // for (final var field : builder.getFields())
+      final var testElement = new OrganisationElement.Builder()
+          .name("Google")
+          .ID(new UUID_ElementId());
 
-    //   collection.getDataSink().supply(testElement);
-    //   final var collectionId = collection.getMetadataSnapshot().getId();
-    //   collectionManager.save(collectionId);
-    // });
+      collection.insert(testElement);
+      final var collectionId = collection.getMetadataSnapshot().getId();
+      collectionManager.save(collectionId);
+    });
 
       final CommandQueue<ICollectionManager<Collection<Builder, OrganisationElement>, CollectionMetadata>, Collection<Builder, OrganisationElement>> commandQueue = new CommandQueue<>(collectionManager);
       final Builder testCompany = new Builder().name("Google").ID(new UUID_ElementId());
