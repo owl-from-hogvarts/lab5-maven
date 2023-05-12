@@ -2,6 +2,9 @@ package net.whitehorizont.apps.organization_collection_manager.core.collection;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
+import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.IWithId;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.UUID_CollectionId;
+
 @NonNullByDefault
 public class CollectionMetadata implements IWithId<UUID_CollectionId> {
   private final UUID_CollectionId collectionId;

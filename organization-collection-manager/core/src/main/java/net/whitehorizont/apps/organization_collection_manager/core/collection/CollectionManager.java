@@ -9,6 +9,8 @@ import org.javatuples.Pair;
 
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Single;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.BaseId;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.IWithId;
 import net.whitehorizont.apps.organization_collection_manager.core.storage.IBaseStorage;
 import net.whitehorizont.apps.organization_collection_manager.core.storage.errors.CollectionNotFound;
 import net.whitehorizont.apps.organization_collection_manager.core.storage.errors.StorageInaccessibleError;

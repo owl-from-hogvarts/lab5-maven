@@ -3,9 +3,9 @@ package net.whitehorizont.apps.organization_collection_manager.core.storage;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
-import net.whitehorizont.apps.organization_collection_manager.core.collection.BaseId;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.IBaseCollection;
-import net.whitehorizont.apps.organization_collection_manager.core.collection.IWithId;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.BaseId;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.IWithId;
 import net.whitehorizont.apps.organization_collection_manager.core.storage.errors.DeserializationError;
 import net.whitehorizont.apps.organization_collection_manager.core.storage.errors.ResourceEmpty;
 import net.whitehorizont.apps.organization_collection_manager.lib.ValidationError;

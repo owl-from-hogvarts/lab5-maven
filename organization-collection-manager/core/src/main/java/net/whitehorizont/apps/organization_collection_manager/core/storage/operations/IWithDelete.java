@@ -1,6 +1,6 @@
 package net.whitehorizont.apps.organization_collection_manager.core.storage.operations;
 
-import net.whitehorizont.apps.organization_collection_manager.core.collection.BaseId;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.BaseId;
 
 public interface IWithDelete<K extends BaseId> {
     /**

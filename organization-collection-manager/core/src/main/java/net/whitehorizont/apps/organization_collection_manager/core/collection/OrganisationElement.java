@@ -3,6 +3,7 @@ package net.whitehorizont.apps.organization_collection_manager.core.collection;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
+import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.UUID_ElementId;
 import net.whitehorizont.apps.organization_collection_manager.lib.FieldDefinition;
 import net.whitehorizont.apps.organization_collection_manager.lib.FieldMetadata;
 import net.whitehorizont.apps.organization_collection_manager.lib.ValidationError;

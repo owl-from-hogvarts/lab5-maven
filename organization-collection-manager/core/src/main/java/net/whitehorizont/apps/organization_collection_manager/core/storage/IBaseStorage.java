@@ -4,9 +4,9 @@ package net.whitehorizont.apps.organization_collection_manager.core.storage;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import io.reactivex.rxjava3.core.Observable;
-import net.whitehorizont.apps.organization_collection_manager.core.collection.BaseId;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.IBaseCollection;
-import net.whitehorizont.apps.organization_collection_manager.core.collection.IWithId;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.BaseId;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.IWithId;
 import net.whitehorizont.apps.organization_collection_manager.core.storage.errors.CollectionNotFound;
 import net.whitehorizont.apps.organization_collection_manager.core.storage.errors.StorageInaccessibleError;
 
