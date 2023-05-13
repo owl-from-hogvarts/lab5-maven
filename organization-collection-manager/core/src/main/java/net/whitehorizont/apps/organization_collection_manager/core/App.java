@@ -3,12 +3,12 @@ package net.whitehorizont.apps.organization_collection_manager.core;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import net.whitehorizont.apps.organization_collection_manager.core.collection.RamCollection;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.CollectionManager;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.CollectionMetadata;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollectionManager;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.OrganisationElement;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.OrganisationElementFactory;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.OrganisationElement.Builder;
-import net.whitehorizont.apps.organization_collection_manager.core.collection.collection_manager.CollectionManager;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.UUID_ElementId;
 import net.whitehorizont.apps.organization_collection_manager.core.commands.CollectionCommandReceiver;
 import net.whitehorizont.apps.organization_collection_manager.core.commands.CommandQueue;
@@ -23,9 +23,8 @@ public class App {
     final OrganisationElementFactory organisationElementFactory = new OrganisationElementFactory();
     final var xmlCollectionAdapter = new CollectionAdapter<>(organisationElementFactory);
     final var testStorage = new FileStorage<>("./test.xml", xmlCollectionAdapter);
-    final ICollectionManager<RamCollection<Builder, OrganisationElement>, CollectionMetadata> collectionManager = new CollectionManager<>();
+    final ICollectionManager<RamCollection<Builder, OrganisationElement>, CollectionMetadata> collectionManager = new CollectionManager<>(testStorage);
     testStorage.loadMetadata();
-    collectionManager.addStorage(testStorage);
 
     final var commandQueue = new CommandQueue();
 

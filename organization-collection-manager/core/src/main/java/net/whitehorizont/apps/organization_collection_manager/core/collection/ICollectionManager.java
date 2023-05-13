@@ -5,7 +5,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import io.reactivex.rxjava3.core.Observable;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.BaseId;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.IWithId;
-import net.whitehorizont.apps.organization_collection_manager.core.storage.IBaseStorage;
 import net.whitehorizont.apps.organization_collection_manager.core.storage.errors.CollectionNotFound;
 import net.whitehorizont.apps.organization_collection_manager.core.storage.errors.StorageInaccessibleError;
 
@@ -14,9 +13,6 @@ import net.whitehorizont.apps.organization_collection_manager.core.storage.error
 
 @NonNullByDefault
 public interface ICollectionManager<C extends ICollection<?, ?, M>, M extends IWithId<? extends BaseId>> {
-
-  // makes collections available for loading
-  void addStorage(IBaseStorage<C, M> storage);
 
   /**
    * Loads default collection. 
@@ -28,25 +24,6 @@ public interface ICollectionManager<C extends ICollection<?, ?, M>, M extends IW
    * @throws StorageInaccessibleError
    */
   Observable<C> getCollection() throws StorageInaccessibleError;
-
-  /**
-   * Get collection by id
-   * 
-   * @throws CollectionNotFound
-   * @throws StorageInaccessibleError
-   */
-  C getCollection(BaseId id) throws CollectionNotFound, StorageInaccessibleError;
-  /**
-   * Creates collection by metadata or id. If collection
-   *  already exists returns existing one
-   * @param id
-   * @return
-   * @throws StorageInaccessibleError
-   * @throws CollectionNotFound
-   */
-  // impossible to load collection safe (create it) with just key 
-  // 'cause impossible to deduce other metadata
-  C getCollectionSafe(M metadata) throws StorageInaccessibleError, CollectionNotFound;
 
   // no safe counterpart 'cause save should accept only known 
   // collections that is associated with certain store
