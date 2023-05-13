@@ -1,0 +1,15 @@
+target
+test.xml
+
+*.odt
+*.odt?
+*.class
+*.jar
+*.pdf
+*.png
+*.jpg
+.directory
+
+.vscode
+build
+dist
