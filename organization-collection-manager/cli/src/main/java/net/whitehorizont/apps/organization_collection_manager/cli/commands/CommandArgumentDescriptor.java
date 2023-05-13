@@ -1,16 +1,13 @@
 package net.whitehorizont.apps.organization_collection_manager.cli.commands;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
+@NonNullByDefault
 public class CommandArgumentDescriptor {
-  private final String name;
   private final boolean isNullable;
 
-  public CommandArgumentDescriptor(String name, boolean isNullable) {
-    this.name = name;
+  public CommandArgumentDescriptor(boolean isNullable) {
     this.isNullable = isNullable;
-  }
-
-  public String getName() {
-    return name;
   }
 
   public boolean isNullable() {
