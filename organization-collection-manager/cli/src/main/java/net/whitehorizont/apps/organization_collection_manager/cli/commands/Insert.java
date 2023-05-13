@@ -1,32 +1,41 @@
 package net.whitehorizont.apps.organization_collection_manager.cli.commands;
 
 import java.io.InputStream;
-import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.io.OutputStream;
+import java.util.Stack;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
+import net.whitehorizont.apps.organization_collection_manager.cli.InsertAdapter;
 import net.whitehorizont.apps.organization_collection_manager.core.commands.InsertCommand;
 
 @NonNullByDefault
-public class Insert<P> implements ICliCommand<Void, P> {
-  private static final List<CommandArgumentDescriptor> argumentDescriptors = new ArrayList<>();
-  static {
-    argumentDescriptors.add(new CommandArgumentDescriptor("key", true));
+public class Insert<P> implements ICliCommand<Void> {
+
+  private static final int REQUIRED_ARGUMENTS_COUNT = 0;
+  private static final int MAX_ARGUMENT_COUNT = 1;
+
+  private final InsertAdapter<P> adapter;
+
+  public Insert(InsertAdapter<P> adapter) {
+    this.adapter = adapter;
   }
 
   @Override
-  public Iterable<CommandArgumentDescriptor> getArgumentDescriptors() {
-    return argumentDescriptors;
+  public int getRequiredArgumentsCount() {
+    return REQUIRED_ARGUMENTS_COUNT;
   }
 
   @Override
-  public InsertCommand<P> getActualCommand(Map<String, CommandArgument> arguments, InputStream in, PrintStream out,
-      PrintStream err) {
-        return new InsertCommand<P>(null);
-      }
+  public InsertCommand<P> getActualCommand(Stack<String> arguments, InputStream in, OutputStream out) {
+    return adapter.getCommand(arguments, in, out);
+  }
+
+  @Override
+  public int getMaxArgumentCount() {
+    return MAX_ARGUMENT_COUNT;
+  }
+
 
     // receive streams
     // get collection we operating on
