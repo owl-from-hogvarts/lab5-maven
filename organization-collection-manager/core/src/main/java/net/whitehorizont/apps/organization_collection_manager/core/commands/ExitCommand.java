@@ -5,15 +5,9 @@ import io.reactivex.rxjava3.core.Observable;
 
 @NonNullByDefault
 public class ExitCommand implements ICommand<Void> {
-  private CommandQueue commandQueue;
-  // private @Nullable ICollectionManager<?, ?> collectionManager;
-
-  public ExitCommand(CommandQueue commandQueue) {
-    this.commandQueue = commandQueue;
-  }
-
   @Override
   public Observable<Void> execute() {
-    return commandQueue.terminate();
+    System.exit(0);
+    return Observable.empty();
   }  
 }
