@@ -14,11 +14,13 @@ import java.util.Stack;
 import java.util.Map.Entry;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.jline.reader.EndOfFileException;
 import org.jline.reader.LineReader;
+import org.jline.reader.UserInterruptException;
 import org.jline.reader.impl.LineReaderImpl;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
-
+import net.whitehorizont.apps.organization_collection_manager.cli.commands.Exit;
 import net.whitehorizont.apps.organization_collection_manager.cli.commands.ICliCommand;
 import net.whitehorizont.apps.organization_collection_manager.cli.errors.IncorrectNumberOfArguments;
 import net.whitehorizont.apps.organization_collection_manager.cli.errors.UnknownCommand;
@@ -30,43 +32,69 @@ public class Greeter {
   private final LineReader reader;
   private final Map<String, ICliCommand<?>> commands;
 
-  public Greeter(Map<String, ICliCommand<?>> commands, InputStream in, PrintStream out, PrintStream err) throws IOException {
+  private static int convertBoolean(boolean b) {
+    return b ? 1 : 0;
+  }
+
+  public Greeter(Map<String, ICliCommand<?>> commands, InputStream in, PrintStream out, PrintStream err)
+      throws IOException {
     this.commands = commands;
     commands.put(HelpCommand.HELP_COMMAND, new HelpCommand(commands));
-    final Terminal defaultTerminal = TerminalBuilder.builder().system(true).streams(in, out).build(); 
+    commands.put(Exit.EXIT_COMMAND, new Exit());
+
+    final Terminal defaultTerminal = TerminalBuilder.builder().system(true).streams(in, out).build();
     this.reader = new LineReaderImpl(defaultTerminal);
   }
-  
+
   public Optional<ICommand<?>> promptCommand() throws IncorrectNumberOfArguments, UnknownCommand {
-    final String userInput = reader.readLine(DEFAULT_PROMPT).trim().toLowerCase();
-    
-    final List<String> words = Arrays.asList(userInput.split(" "));
-    // to first pop command and then first argument and then second and so on 
-    Collections.reverse(words);
-    final Stack<String> wordsStack = new Stack<String>();
-    wordsStack.addAll(words);
-    
-    if (wordsStack.size() < 1 || userInput.length() < 1) {
-      return Optional.empty();
-    }
+    try {
+      final String userInput = reader.readLine(DEFAULT_PROMPT).trim().toLowerCase();
 
-    final String command = wordsStack.pop();
-    if (!commands.containsKey(command)) {
-      throw new UnknownCommand(command);
-    }
-    
-    final var commandDescriptor = commands.get(command);
-    if (commandDescriptor.hasArgument() != (wordsStack.size() == 1)) {
-      // 1 because all command accept either one or zero arguments
-      throw new IncorrectNumberOfArguments(command, commandDescriptor.hasArgument() ? 1 : 0, wordsStack.size());
-    }
+      final List<String> words = Arrays.asList(userInput.split(" "));
+      // first pop command and then first argument and then second and so on
+      Collections.reverse(words);
+      final Stack<String> wordsStack = new Stack<String>();
+      wordsStack.addAll(words);
 
-    final var terminal = reader.getTerminal();
-    return Optional.ofNullable(commandDescriptor.getActualCommand(wordsStack, terminal.input(), terminal.output()));
+      if (wordsStack.size() < 1 || userInput.length() < 1) {
+        return Optional.empty();
+      }
+
+      final String command = wordsStack.pop();
+      if (!commands.containsKey(command)) {
+        throw new UnknownCommand(command);
+      }
+
+      final var commandDescriptor = commands.get(command);
+      if (convertBoolean(commandDescriptor.hasArgument()) != wordsStack.size()) {
+        // 1 because all command accept either one or zero arguments
+        throw new IncorrectNumberOfArguments(command, commandDescriptor.hasArgument() ? 1 : 0, wordsStack.size());
+      }
+
+      return Optional.ofNullable(commandDescriptor.getActualCommand(wordsStack, getInputStream(), getOutputStream()));
+    } catch(UserInterruptException|EndOfFileException e) {
+      return onInterop();
+    }
   }
 
   public OutputStream getErrorStream() {
     return reader.getTerminal().output();
+  }
+
+  private InputStream getInputStream() {
+    return this.reader.getTerminal().input();
+  }
+
+  private OutputStream getOutputStream() {
+    return this.reader.getTerminal().output();
+  }
+
+  private Optional<ICommand<?>> onInterop() {
+    final var exitDescriptor = this.commands.get(Exit.EXIT_COMMAND);
+    assert exitDescriptor != null;
+
+    return Optional.ofNullable(exitDescriptor.getActualCommand(new Stack<>(), getInputStream(), getOutputStream()));
+
   }
 
   private static class HelpCommand implements ICliCommand<Void> {
@@ -76,7 +104,7 @@ public class Greeter {
     private static final String INDENT_SYMBOL = " ";
     private static final String INDENT = INDENT_SYMBOL.repeat(INDENT_SIZE);
     private static final String DESCRIPTION_SEPARATOR = "-";
-    private static final String WORD_SEPARATOR =" ";
+    private static final String WORD_SEPARATOR = " ";
     private static final String HELP_COMMAND = "help";
 
     private final Map<String, ICliCommand<?>> commands;
@@ -101,7 +129,7 @@ public class Greeter {
       for (final var command : commands.entrySet()) {
         output.println(buildCommandDescription(command));
       }
-      
+
       return null;
     }
 
@@ -113,7 +141,6 @@ public class Greeter {
 
       final var commandDescription = String.join(WORD_SEPARATOR, words);
       return INDENT + commandDescription;
-
 
     }
 

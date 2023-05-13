@@ -2,7 +2,6 @@ package net.whitehorizont.apps.organization_collection_manager.cli;
 
 import java.io.PrintStream;
 
-import net.whitehorizont.apps.organization_collection_manager.cli.errors.IncorrectNumberOfArguments;
 import net.whitehorizont.apps.organization_collection_manager.core.commands.CommandQueue;
 
 public class CLI {
@@ -19,7 +18,7 @@ public class CLI {
     // send actual commands to queue
   }
 
-  public void start() throws IncorrectNumberOfArguments {
+  public void start() {
     while (true) {
       try {
 
