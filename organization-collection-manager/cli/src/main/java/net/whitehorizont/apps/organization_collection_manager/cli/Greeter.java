@@ -58,7 +58,7 @@ public class Greeter {
     final var commandDescriptor = commands.get(command);
     if (commandDescriptor.hasArgument() != (wordsStack.size() == 1)) {
       // 1 because all command accept either one or zero arguments
-      throw new IncorrectNumberOfArguments(command, 1, wordsStack.size());
+      throw new IncorrectNumberOfArguments(command, commandDescriptor.hasArgument() ? 1 : 0, wordsStack.size());
     }
 
     final var terminal = reader.getTerminal();

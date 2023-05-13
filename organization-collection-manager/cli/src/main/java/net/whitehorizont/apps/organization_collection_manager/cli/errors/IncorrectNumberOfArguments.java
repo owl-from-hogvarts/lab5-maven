@@ -13,7 +13,7 @@ public class IncorrectNumberOfArguments extends Exception {
 
   @Override
   public String getMessage() {
-    return "Incorrect number of arguments for command \"" + command + "\" supplied. Expected at least" + expected + ". Got "
+    return "Incorrect number of arguments supplied for command \"" + command + "\". Expected " + expected + ". Got "
         + actual;
   }
 
