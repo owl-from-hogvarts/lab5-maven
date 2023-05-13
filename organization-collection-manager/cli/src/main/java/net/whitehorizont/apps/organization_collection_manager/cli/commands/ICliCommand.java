@@ -5,14 +5,16 @@ import java.io.OutputStream;
 import java.util.Stack;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 import io.reactivex.rxjava3.annotations.NonNull;
 import net.whitehorizont.apps.organization_collection_manager.core.commands.ICommand;
 
 @NonNullByDefault
 public interface ICliCommand<@NonNull T> {
-  int getRequiredArgumentsCount();
-  int getMaxArgumentCount();
+  boolean hasArgument();
+  String getCommandDescription();
+
   /**
    * provide full access to input and output for command to 
    * freely communicate with user 
@@ -22,5 +24,5 @@ public interface ICliCommand<@NonNull T> {
    * @param err
    * @return
    */
-  ICommand<T> getActualCommand(Stack<String> arguments, InputStream in, OutputStream out);
+  @Nullable ICommand<T> getActualCommand(Stack<String> arguments, InputStream in, OutputStream out);
 }
