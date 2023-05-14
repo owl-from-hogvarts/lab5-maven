@@ -6,7 +6,7 @@ import net.whitehorizont.apps.organization_collection_manager.core.commands.Comm
 
 public class CLI {
   private final CommandQueue commandQueue;
-  private final Greeter greeter;
+  private final Greeter<?> greeter;
   private final PrintStream err;
 
   public CLI(Greeter greeter, CommandQueue commandQueue) {

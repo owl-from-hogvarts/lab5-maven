@@ -1,19 +1,21 @@
 package net.whitehorizont.apps.organization_collection_manager.cli.commands;
 
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.IOException;
 import java.util.Stack;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.jline.reader.LineReader;
 
+import net.whitehorizont.apps.organization_collection_manager.cli.CliDependencyManager;
 import net.whitehorizont.apps.organization_collection_manager.cli.InsertAdapter;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollection;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollectionManager;
 import net.whitehorizont.apps.organization_collection_manager.core.commands.InsertCommand;
+import net.whitehorizont.apps.organization_collection_manager.core.storage.errors.StorageInaccessibleError;
 
 @NonNullByDefault
-public class Insert<P> implements ICliCommand<Void> {
-
-  private static final int REQUIRED_ARGUMENTS_COUNT = 0;
-  private static final int MAX_ARGUMENT_COUNT = 1;
+public class Insert<P> implements ICliCommand<Void, ICollectionManager<ICollection<P, ?, ?>, ?>> {
+  private static final String DESCRIPTION = "insert element into collection";
 
   private final InsertAdapter<P> adapter;
 
@@ -22,18 +24,19 @@ public class Insert<P> implements ICliCommand<Void> {
   }
 
   @Override
-  public int getRequiredArgumentsCount() {
-    return REQUIRED_ARGUMENTS_COUNT;
+  public InsertCommand<P> getActualCommand(CliDependencyManager<ICollectionManager<ICollection<P, ?, ?>, ?>> dependencyManager, Stack<String> arguments, LineReader lineReader) throws IOException, StorageInaccessibleError {
+    final var collectionManager = dependencyManager.getCollectionManager();
+    return adapter.getCommand(collectionManager, arguments, lineReader);
   }
 
   @Override
-  public InsertCommand<P> getActualCommand(Stack<String> arguments, InputStream in, OutputStream out) {
-    return adapter.getCommand(arguments, in, out);
+  public boolean hasArgument() {
+    return true;
   }
 
   @Override
-  public int getMaxArgumentCount() {
-    return MAX_ARGUMENT_COUNT;
+  public String getCommandDescription() {
+    return DESCRIPTION;
   }
 
 

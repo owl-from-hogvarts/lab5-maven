@@ -14,6 +14,7 @@ public class OrganisationElement implements ICollectionElement<OrganisationEleme
   // TODO: make itertor for fields
   private static final FieldMetadata<String, ICollection<OrganisationElement.Builder, OrganisationElement, ?>> NAME_METADATA = new FieldMetadata<>(
       new FieldMetadata.Metadata<String, ICollection<OrganisationElement.Builder, OrganisationElement, ?>>()
+          .setDisplayedName("name")
           .setNullable(false, "Company name must be specified")
           .addValidator((value, _unused) -> new ValidationResult<>(value.length() >= 1, "")));
 
@@ -50,7 +51,7 @@ public class OrganisationElement implements ICollectionElement<OrganisationEleme
     private @Nullable String name;
     private UUID_ElementId ID = new UUID_ElementId(); // init with default value which is easily overridable
 
-    public Builder name(String name) {
+    public Builder name(@Nullable String name) {
       this.name = name;
       return this;
     }

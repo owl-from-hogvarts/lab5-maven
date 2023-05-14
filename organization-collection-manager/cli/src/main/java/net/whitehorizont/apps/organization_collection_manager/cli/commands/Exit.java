@@ -1,18 +1,18 @@
 package net.whitehorizont.apps.organization_collection_manager.cli.commands;
 
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.PrintStream;
 import java.util.Stack;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.jline.reader.LineReader;
 
+import net.whitehorizont.apps.organization_collection_manager.cli.CliDependencyManager;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollectionManager;
 import net.whitehorizont.apps.organization_collection_manager.core.commands.ExitCommand;
 import net.whitehorizont.apps.organization_collection_manager.core.commands.ICommand;
 
 @NonNullByDefault
-public class Exit implements ICliCommand<Void> {
+public class Exit<CM extends ICollectionManager<?, ?>> implements ICliCommand<Void, CM> {
   public static final String EXIT_COMMAND = "exit";
   private static final String DESCRIPTION = "exit without saving";
   private static final String EXIT_MESSAGE = "Exiting without saving!";
@@ -29,9 +29,10 @@ public class Exit implements ICliCommand<Void> {
   }
 
   @Override
-  public @Nullable ICommand<Void> getActualCommand(Stack<String> arguments, InputStream in, OutputStream out) {
-    final var output = new PrintStream(out);
+  public @Nullable ICommand<Void> getActualCommand(CliDependencyManager<CM> dependencyManager, Stack<String> arguments, LineReader lineReader) {
+    final var output = lineReader.getTerminal().writer();
     output.println(EXIT_MESSAGE);
+    output.flush();
     return new ExitCommand();
   }
   
