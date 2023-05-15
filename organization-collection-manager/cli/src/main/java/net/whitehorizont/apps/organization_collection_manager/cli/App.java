@@ -35,9 +35,9 @@ public class App
         final OrganisationElementFactory organisationElementFactory = new OrganisationElementFactory();
         final var xmlCollectionAdapter = new CollectionAdapter<>(organisationElementFactory);
         final var testStorage = new FileStorage<>("./test.xml", xmlCollectionAdapter);
-        final CollectionManager<RamCollection<OrganisationElementPrototype, OrganisationElement>, CollectionMetadata> collectionManager = new CollectionManager<>(testStorage);    
-        final CliDependencyManager<ICollectionManager<RamCollection<OrganisationElementPrototype, OrganisationElement>, CollectionMetadata>> dependencyManager = new CliDependencyManager<>(collectionManager);
-        final Greeter<ICollectionManager<RamCollection<OrganisationElementPrototype, OrganisationElement>, CollectionMetadata>> greeter = new Greeter<ICollectionManager<RamCollection<OrganisationElementPrototype, OrganisationElement>, CollectionMetadata>>(dependencyManager, commands, System.in, System.out, System.err);
+        final var collectionManager = new CollectionManager<RamCollection<OrganisationElementPrototype, OrganisationElement>, CollectionMetadata>(testStorage);    
+        final var dependencyManager = new CliDependencyManager<ICollectionManager<RamCollection<OrganisationElementPrototype, OrganisationElement>, CollectionMetadata>>(collectionManager);
+        final var greeter = new Greeter<ICollectionManager<RamCollection<OrganisationElementPrototype, OrganisationElement>, CollectionMetadata>>(dependencyManager, commands, System.in, System.out, System.err);
         final var commandQueue = new CommandQueue();
         new CLI(greeter, commandQueue).start();
     }

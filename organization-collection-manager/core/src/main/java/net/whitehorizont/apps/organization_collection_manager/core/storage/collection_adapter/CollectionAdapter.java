@@ -21,7 +21,7 @@ import net.whitehorizont.apps.organization_collection_manager.lib.ValidationErro
 
 @NonNullByDefault
 // FIXME: P generics parameter
-public class CollectionAdapter<P extends IElementPrototype<?>, E extends ICollectionElement<P>, F extends IElementFactory<P, E, ICollection<P, E, ?>>>
+public class CollectionAdapter<R, P extends IElementPrototype<R>, E extends ICollectionElement<P>, F extends IElementFactory<P, E, ICollection<P, E, ?>>>
     implements IFileAdapter<RamCollection<P, E>, CollectionMetadata> {
   private final XStream serializer = new XStream();
   {
@@ -35,9 +35,9 @@ public class CollectionAdapter<P extends IElementPrototype<?>, E extends ICollec
     this.elementFactory = dataSinkSourceFactory;
   }
 
-  private CollectionXml<P, CollectionMetadata> prepareCollection(ICollection<P, E, CollectionMetadata> collection) {
+  private CollectionXml<R, CollectionMetadata> prepareCollection(ICollection<P, E, CollectionMetadata> collection) {    
     final var elements = collection.getEvery$()
-        .map(element -> new ElementXml<>(element.getId().serialize(), element.getPrototype()))
+        .map(element -> new ElementXml<>(element.getId().serialize(), element.getPrototype().getRawElementData()))
         .toList().blockingGet();
     return new CollectionXml<>(collection.getMetadataSnapshot(), elements);
   }
@@ -66,14 +66,18 @@ public class CollectionAdapter<P extends IElementPrototype<?>, E extends ICollec
     final String xml_content = DEFAULT_ENCODING.decode(fileContent).toString();
     // parse xml:
     @SuppressWarnings("unchecked")
-    StorageXml<P, CollectionMetadata> storageXmlRepresentation = (StorageXml<P, CollectionMetadata>) serializer.fromXML(xml_content);
+    StorageXml<R, CollectionMetadata> storageXmlRepresentation = (StorageXml<R, CollectionMetadata>) serializer.fromXML(xml_content);
 
     final CollectionMetadata collectionMetadata = storageXmlRepresentation.collection.metadata;
     
     final var collection = new RamCollection<P, E>(this.elementFactory, collectionMetadata);
 
+    
     for (var elementXmlRepresentation : storageXmlRepresentation.collection.elements) {
-      collection.insert(elementXmlRepresentation.body);
+      final var prototype = this.elementFactory.getElementPrototype();
+      prototype.setFromRawData(elementXmlRepresentation.body);
+
+      collection.insert(prototype);
     }
 
     return collection;

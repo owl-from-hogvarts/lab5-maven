@@ -6,6 +6,6 @@ import net.whitehorizont.apps.organization_collection_manager.core.collection.ke
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.IWithId;
 
 @NonNullByDefault
-public interface ICollectionElement<P> extends IWithId<BaseId> {
+public interface ICollectionElement<P extends IElementPrototype<?>> extends IWithId<BaseId> {
   P getPrototype();
 }

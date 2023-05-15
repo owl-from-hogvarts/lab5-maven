@@ -125,6 +125,15 @@ public class OrganisationElement implements ICollectionElement<OrganisationEleme
       return this.fields;
     }
 
+    @Override
+    public IElementPrototype<OrganisationElementRawData> setFromRawData(OrganisationElementRawData rawData) throws ValidationError {
+
+      this.ID.setValue(rawData.ID);
+      this.name.setValue(rawData.name);
+
+      return this;
+    }
+
     // @Override
     // public Iterable<WriteableFieldDefinition<?>> getDisplayableFields() {
     // return this.getDisplayableFields();
