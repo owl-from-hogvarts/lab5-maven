@@ -7,6 +7,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import io.reactivex.rxjava3.core.Observable;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollection;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.IElementPrototype;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.BaseId;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.ISerializableKey;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.IWithId;
@@ -18,7 +19,7 @@ import net.whitehorizont.apps.organization_collection_manager.lib.ValidationErro
  * It does absolutely nothing except just passing calls to underling collection
  */
 @NonNullByDefault
-public class CollectionCommandReceiver<P, E extends IWithId<? extends BaseId>, M extends IWithId<? extends BaseId>> implements ICollection<P, E, M> {
+public class CollectionCommandReceiver<P extends IElementPrototype<?>, E extends IWithId<? extends BaseId>, M extends IWithId<? extends BaseId>> implements ICollection<P, E, M> {
   private final ICollection<P, E, M> collection;
 
   public CollectionCommandReceiver(ICollection<P, E, M> collection) {
@@ -68,6 +69,11 @@ public class CollectionCommandReceiver<P, E extends IWithId<? extends BaseId>, M
   @Override
   public void clear() {
     this.collection.clear();
+  }
+
+  @Override
+  public P getElementPrototype() {
+    return this.collection.getElementPrototype();
   }
   
 }

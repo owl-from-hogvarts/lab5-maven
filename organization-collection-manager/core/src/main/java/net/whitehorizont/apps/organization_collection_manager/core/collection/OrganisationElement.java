@@ -16,44 +16,44 @@ import net.whitehorizont.apps.organization_collection_manager.lib.WritableFromSt
 import net.whitehorizont.apps.organization_collection_manager.lib.WriteableFieldDefinition;
 
 @NonNullByDefault
-public class OrganisationElement implements ICollectionElement<OrganisationElement.OrganisationElementRawData> {
+public class OrganisationElement implements ICollectionElement<OrganisationElement.OrganisationElementPrototype> {
   // TODO: make itertor for fields
-  private static final FieldMetadata<String, ICollection<OrganisationElement.OrganisationElementRawData, OrganisationElement, ?>> NAME_METADATA = new FieldMetadata<>(
-      new FieldMetadata.Metadata<String, ICollection<OrganisationElement.OrganisationElementRawData, OrganisationElement, ?>>()
+  private static final FieldMetadata<String, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement, ?>> NAME_METADATA = new FieldMetadata<>(
+      new FieldMetadata.Metadata<String, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement, ?>>()
           .setDisplayedName("name")
           .setNullable(false, "Company name must be specified")
           .addValidator((value, _unused) -> new ValidationResult<>(value.length() >= 1, "")));
 
-  private static final FieldMetadata<UUID_ElementId, ICollection<OrganisationElement.OrganisationElementRawData, OrganisationElement, ?>> ID_METADATA = new FieldMetadata<>(
-      new FieldMetadata.Metadata<UUID_ElementId, ICollection<OrganisationElement.OrganisationElementRawData, OrganisationElement, ?>>()
+  private static final FieldMetadata<UUID_ElementId, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement, ?>> ID_METADATA = new FieldMetadata<>(
+      new FieldMetadata.Metadata<UUID_ElementId, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement, ?>>()
           .setNullable(false,
               "ID must be provided for collection element"));
 
-  public static FieldMetadata<String, ICollection<OrganisationElement.OrganisationElementRawData, OrganisationElement, ?>> getNameMetadata() {
+  public static FieldMetadata<String, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement, ?>> getNameMetadata() {
     return NAME_METADATA;
   }
 
-  private final FieldDefinition<String, ICollection<OrganisationElement.OrganisationElementRawData, OrganisationElement, ?>> name;
-  private final FieldDefinition<UUID_ElementId, ICollection<OrganisationElement.OrganisationElementRawData, OrganisationElement, ?>> ID;
+  private final FieldDefinition<String, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement, ?>> name;
+  private final FieldDefinition<UUID_ElementId, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement, ?>> ID;
 
-  public FieldDefinition<String, ICollection<OrganisationElement.OrganisationElementRawData, OrganisationElement, ?>> getName() {
+  public FieldDefinition<String, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement, ?>> getName() {
     return name;
   }
 
-  public FieldDefinition<UUID_ElementId, ICollection<OrganisationElement.OrganisationElementRawData, OrganisationElement, ?>> getID() {
+  public FieldDefinition<UUID_ElementId, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement, ?>> getID() {
     return ID;
   }
 
-  public OrganisationElement(ICollection<OrganisationElementRawData, OrganisationElement, ?> collection,
-      OrganisationElementRawData builder)
+  public OrganisationElement(ICollection<OrganisationElementPrototype, OrganisationElement, ?> collection,
+      OrganisationElementPrototype builder)
       throws ValidationError {
-    this.name = new FieldDefinition<String, ICollection<OrganisationElement.OrganisationElementRawData, OrganisationElement, ?>>(
+    this.name = new FieldDefinition<String, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement, ?>>(
         OrganisationElement.NAME_METADATA,
-        builder.name,
+        builder.name.getValue(),
         collection);
 
-    this.ID = new FieldDefinition<UUID_ElementId, ICollection<OrganisationElement.OrganisationElementRawData, OrganisationElement, ?>>(
-        ID_METADATA, builder.ID,
+    this.ID = new FieldDefinition<UUID_ElementId, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement, ?>>(
+        ID_METADATA, builder.ID.getValue(),
         collection);
   }
 
@@ -78,8 +78,20 @@ public class OrganisationElement implements ICollectionElement<OrganisationEleme
   }
 
   @Override
-  public OrganisationElementRawData getPrototype() {
-    return new OrganisationElementRawData().ID(this.getID().getValue()).name(this.getName().getValue());
+  public OrganisationElementPrototype getPrototype() {
+    final var prototype = new OrganisationElementPrototype();
+    try {
+      prototype.ID.setValue(this.ID.getValue());
+      prototype.name.setValue(this.name.getValue());
+
+      return prototype;
+    } catch (ValidationError e) {
+      // valid element is valid prototype
+      // if validation error happens -> error in program
+      assert false;
+      throw new RuntimeException();
+    }
+
   }
 
   public static class OrganisationElementPrototype

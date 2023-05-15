@@ -13,14 +13,14 @@ import net.whitehorizont.apps.organization_collection_manager.core.collection.ke
 import net.whitehorizont.apps.organization_collection_manager.lib.ValidationError;
 
 @NonNullByDefault
-public interface ICollection<P, E extends IWithId<? extends BaseId>, M extends IWithId<? extends BaseId>> {
+public interface ICollection<P extends IElementPrototype<?>, E extends IWithId<? extends BaseId>, M extends IWithId<? extends BaseId>> {
 
   /**
    * Collection listens on returned sink to receive new elements
    * Multiple elements can be passed
    * @throws ValidationError
    */
-  void insert(P prototype) throws ValidationError;
+  void insert(P rawElementData) throws ValidationError;
   /**
    * ! Only single element should be supplied !
    * 
@@ -46,5 +46,7 @@ public interface ICollection<P, E extends IWithId<? extends BaseId>, M extends I
   M getMetadataSnapshot();
 
   void clear();
+
+  P getElementPrototype();
 
 }

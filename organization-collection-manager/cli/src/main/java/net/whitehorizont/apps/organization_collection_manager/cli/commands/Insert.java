@@ -5,28 +5,46 @@ import java.util.Stack;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.jline.reader.LineReader;
+import org.jline.reader.LineReader.Option;
 
 import net.whitehorizont.apps.organization_collection_manager.cli.CliDependencyManager;
-import net.whitehorizont.apps.organization_collection_manager.cli.InsertAdapter;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollection;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollectionManager;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.IElementPrototype;
+import net.whitehorizont.apps.organization_collection_manager.core.commands.CollectionCommandReceiver;
 import net.whitehorizont.apps.organization_collection_manager.core.commands.InsertCommand;
 import net.whitehorizont.apps.organization_collection_manager.core.storage.errors.StorageInaccessibleError;
+import net.whitehorizont.apps.organization_collection_manager.lib.ValidationError;
 
 @NonNullByDefault
-public class Insert<P> implements ICliCommand<Void, ICollectionManager<ICollection<P, ?, ?>, ?>> {
+public class Insert<P extends IElementPrototype<?>, CM extends ICollectionManager<? extends ICollection<P, ?, ?>, ?>> implements ICliCommand<Void, CM> {
   private static final String DESCRIPTION = "insert element into collection";
 
-  private final InsertAdapter<P> adapter;
-
-  public Insert(InsertAdapter<P> adapter) {
-    this.adapter = adapter;
-  }
-
   @Override
-  public InsertCommand<P> getActualCommand(CliDependencyManager<ICollectionManager<ICollection<P, ?, ?>, ?>> dependencyManager, Stack<String> arguments, LineReader lineReader) throws IOException, StorageInaccessibleError {
+  public InsertCommand<P> getActualCommand(CliDependencyManager<CM> dependencyManager, Stack<String> arguments, LineReader lineReader) throws IOException, StorageInaccessibleError {
     final var collectionManager = dependencyManager.getCollectionManager();
-    return adapter.getCommand(collectionManager, arguments, lineReader);
+    
+    
+    final ICollection<P, ?, ?> collection = collectionManager.getCollection().blockingFirst();
+    final var prototype = collection.getElementPrototype();
+    final var fields = prototype.getWriteableFromStringFields();
+
+    for (final var field : fields) {
+      final var metadata = field.getMetadata();
+      final var userInput = lineReader.readLine(metadata.getDisplayedName() + ": ").trim();
+
+      try {
+        field.setValue(userInput);
+      } catch (ValidationError e) {
+        final var output = lineReader.getTerminal().writer();
+        output.println(e.getMessage());
+      }
+    }
+
+    final var collectionReceiver = new CollectionCommandReceiver<>(collection);
+    final var insertCommand = new InsertCommand<>(prototype, collectionReceiver);
+
+    return insertCommand;
   }
 
   @Override
