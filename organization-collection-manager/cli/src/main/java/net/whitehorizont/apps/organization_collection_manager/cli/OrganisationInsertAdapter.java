@@ -9,41 +9,39 @@ import io.reactivex.rxjava3.annotations.Nullable;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollection;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollectionManager;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.OrganisationElement;
-import net.whitehorizont.apps.organization_collection_manager.core.collection.OrganisationElement.Builder;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.OrganisationElement.OrganisationElementRawData;
 import net.whitehorizont.apps.organization_collection_manager.core.commands.CollectionCommandReceiver;
 import net.whitehorizont.apps.organization_collection_manager.core.commands.InsertCommand;
 import net.whitehorizont.apps.organization_collection_manager.core.storage.errors.StorageInaccessibleError;
+import net.whitehorizont.apps.organization_collection_manager.lib.ValidationError;
 
 @NonNullByDefault
-public class OrganisationInsertAdapter implements InsertAdapter<Builder> {
+public class OrganisationInsertAdapter implements InsertAdapter<OrganisationElementRawData> {
 
   @Override
-  public InsertCommand<Builder> getCommand(ICollectionManager<ICollection<Builder, ?, ?>, ?> collectionManager, Stack<String> arguments, LineReader reader)
+  public InsertCommand<OrganisationElementRawData> getCommand(ICollectionManager<ICollection<OrganisationElementRawData, ?, ?>, ?> collectionManager, Stack<String> arguments, LineReader reader)
       throws IOException, StorageInaccessibleError {
 
-    final var organisationBuilder = new Builder();
-    final var nameMetadata = OrganisationElement.getNameMetadata();
+      final var prototype = new OrganisationElement.OrganisationElementPrototype();
+      final var fields = prototype.getWriteableFromStringFields();
 
-    @Nullable var nameInput = "";
-    do {
-      nameInput = reader.readLine(nameMetadata.getDisplayedName() + ": ").trim();
-      if (nameInput.length() < 1) {
-        if (nameMetadata.isNullable()) {
-          nameInput = null;
-          break;
+      for (final var field : fields) {
+        final var metadata = field.getMetadata();
+        final var userInput = reader.readLine(metadata.getDisplayedName() + ": ").trim();
+
+        try {
+          field.setValue(userInput);
+        } catch (ValidationError e) {
+          final var output = reader.getTerminal().writer();
+          output.println(e.getMessage());
         }
-
-        reader.getTerminal().writer().println(nameMetadata.getOnNullMessage());
-        
       }
-    } while (nameInput.length() < 1);
 
-    organisationBuilder.name(nameInput);
+      final var rawData = prototype.getRawElementData();
+      final var collection = collectionManager.getCollection().blockingFirst();
+      final var collectionReceiver = new CollectionCommandReceiver<>(collection);
+      final var insertCommand = new InsertCommand<>(rawData, collectionReceiver);
 
-    final ICollection<Builder, ?, ?> collection = collectionManager.getCollection().blockingFirst();
-    final var collectionReceiver = new CollectionCommandReceiver(collection);
-
-    return new InsertCommand<OrganisationElement.Builder>(organisationBuilder, collectionReceiver);
-  }
-
+      return insertCommand;
+    }
 }

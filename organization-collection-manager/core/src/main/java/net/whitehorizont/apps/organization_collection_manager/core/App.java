@@ -8,7 +8,7 @@ import net.whitehorizont.apps.organization_collection_manager.core.collection.Co
 import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollectionManager;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.OrganisationElement;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.OrganisationElementFactory;
-import net.whitehorizont.apps.organization_collection_manager.core.collection.OrganisationElement.Builder;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.OrganisationElement.OrganisationElementRawData;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.UUID_ElementId;
 import net.whitehorizont.apps.organization_collection_manager.core.commands.CollectionCommandReceiver;
 import net.whitehorizont.apps.organization_collection_manager.core.commands.CommandQueue;
@@ -20,31 +20,31 @@ import net.whitehorizont.apps.organization_collection_manager.core.storage.error
 @NonNullByDefault
 public class App {
   public static void main(String[] args) throws StorageInaccessibleError {
-    final OrganisationElementFactory organisationElementFactory = new OrganisationElementFactory();
-    final var xmlCollectionAdapter = new CollectionAdapter<>(organisationElementFactory);
-    final var testStorage = new FileStorage<>("./test.xml", xmlCollectionAdapter);
-    final ICollectionManager<RamCollection<Builder, OrganisationElement>, CollectionMetadata> collectionManager = new CollectionManager<>(testStorage);
-    testStorage.loadMetadata();
+    // final OrganisationElementFactory organisationElementFactory = new OrganisationElementFactory();
+    // final var xmlCollectionAdapter = new CollectionAdapter<>(organisationElementFactory);
+    // final var testStorage = new FileStorage<>("./test.xml", xmlCollectionAdapter);
+    // final ICollectionManager<RamCollection<OrganisationElementRawData, OrganisationElement>, CollectionMetadata> collectionManager = new CollectionManager<>(testStorage);
+    // testStorage.loadMetadata();
 
-    final var commandQueue = new CommandQueue();
+    // final var commandQueue = new CommandQueue();
 
-    final var defaultCollection$ = collectionManager.getCollection();
-    defaultCollection$.subscribe((collection) -> {
-      // builder = collection.getDataSink().getBuilder()
-      // for (final var field : builder.getFields())
-      // TODO: handle exception
-      final var testElement = new OrganisationElement.Builder()
-          .name("")
-          .ID(new UUID_ElementId());
+    // final var defaultCollection$ = collectionManager.getCollection();
+    // defaultCollection$.subscribe((collection) -> {
+    //   // builder = collection.getDataSink().getBuilder()
+    //   // for (final var field : builder.getFields())
+    //   // TODO: handle exception
+    //   final var testElement = new OrganisationElement.OrganisationElementRawData()
+    //       .name("")
+    //       .ID(new UUID_ElementId());
           
-      final var collectionReceiver = new CollectionCommandReceiver<>(collection);
-      // final var testCommand = new
-      // LoadCommand<OrganisationElement>(collectionReceiver);
-      final var testCommand = new InsertCommand<>(testElement, collectionReceiver);
-      commandQueue.push(testCommand).subscribe(System.out::println);
+    //   final var collectionReceiver = new CollectionCommandReceiver<>(collection);
+    //   // final var testCommand = new
+    //   // LoadCommand<OrganisationElement>(collectionReceiver);
+    //   final var testCommand = new InsertCommand<>(testElement, collectionReceiver);
+    //   commandQueue.push(testCommand).subscribe(System.out::println);
 
-      // collectionManager.save(collection.getMetadataSnapshot().getId());
-    });
+    //   // collectionManager.save(collection.getMetadataSnapshot().getId());
+    // });
     // sometimes java can't infer types for us so we should help it to kill itself
     // and write in some better language
 

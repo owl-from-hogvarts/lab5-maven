@@ -21,7 +21,7 @@ import net.whitehorizont.apps.organization_collection_manager.lib.ValidationErro
  * Holds collection in memory, without auto saving to disk
  */
 @NonNullByDefault
-public class RamCollection<P extends IElementPrototype, E extends ICollectionElement<P>>
+public class RamCollection<P, E extends ICollectionElement<P>>
     implements ICollection<P, E, CollectionMetadata> {
 
   private final Map<ISerializableKey, E> elements = new LinkedHashMap<>();

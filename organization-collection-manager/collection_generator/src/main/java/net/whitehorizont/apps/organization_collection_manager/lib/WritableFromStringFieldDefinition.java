@@ -10,6 +10,11 @@ public class WritableFromStringFieldDefinition<V> extends WriteableFieldDefiniti
     super(metadata, builder.buildFromString(initialValue));
     this.builder = builder;
   }
+  // arguments have different order to resolve ambiguity
+  public WritableFromStringFieldDefinition(FieldMetadata<V, ?> metadata, V initialValue, IFromStringBuilder<V> builder) throws ValidationError {
+    super(metadata, initialValue);
+    this.builder = builder;
+  }
 
   public void setValue(String value) throws ValidationError {
     super.setValue(builder.buildFromString(value));
