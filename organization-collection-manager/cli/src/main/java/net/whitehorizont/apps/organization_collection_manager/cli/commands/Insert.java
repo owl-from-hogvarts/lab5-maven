@@ -4,9 +4,6 @@ import java.io.IOException;
 import java.util.Stack;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.jline.reader.LineReader;
-import org.jline.reader.LineReader.Option;
-
 import net.whitehorizont.apps.organization_collection_manager.cli.CliDependencyManager;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollection;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollectionManager;
@@ -17,7 +14,7 @@ import net.whitehorizont.apps.organization_collection_manager.core.storage.error
 import net.whitehorizont.apps.organization_collection_manager.lib.ValidationError;
 
 @NonNullByDefault
-public class Insert<P extends IElementPrototype<?>, CM extends ICollectionManager<? extends ICollection<P, ?, ?>, ?>> implements ICliCommand<Void, CM> {
+public class Insert<P extends IElementPrototype<?>, CM extends ICollectionManager<? extends ICollection<P, ?, ?>, ?>> implements ICliCommand<Void, CliDependencyManager<CM>> {
   private static final String DESCRIPTION = "insert element into collection";
 
   @Override

@@ -2,19 +2,21 @@ package net.whitehorizont.apps.organization_collection_manager.cli;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import net.whitehorizont.apps.organization_collection_manager.cli.commands.ICliCommand;
 import net.whitehorizont.apps.organization_collection_manager.cli.commands.Insert;
 import net.whitehorizont.apps.organization_collection_manager.cli.errors.IncorrectNumberOfArguments;
+import net.whitehorizont.apps.organization_collection_manager.cli.errors.TerminalUnavailable;
 import net.whitehorizont.apps.organization_collection_manager.cli.errors.UnknownCommand;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.CollectionManager;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.CollectionMetadata;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollection;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollectionManager;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.OrganisationElement;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.OrganisationElementFactory;
-import net.whitehorizont.apps.organization_collection_manager.core.collection.RamCollection;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.OrganisationElement.OrganisationElementPrototype;
 import net.whitehorizont.apps.organization_collection_manager.core.commands.CommandQueue;
 import net.whitehorizont.apps.organization_collection_manager.core.storage.FileStorage;
@@ -27,17 +29,18 @@ import net.whitehorizont.apps.organization_collection_manager.core.storage.colle
 @NonNullByDefault
 public class App 
 {
-    public static void main( String[] args ) throws IOException, IncorrectNumberOfArguments, UnknownCommand
+    public static void main( String[] args ) throws IOException, IncorrectNumberOfArguments, UnknownCommand, TerminalUnavailable
     {
-        final HashMap<String, ICliCommand<?, ICollectionManager<RamCollection<OrganisationElementPrototype, OrganisationElement>, CollectionMetadata>>> commands = new HashMap<String, ICliCommand<?, ICollectionManager<RamCollection<OrganisationElementPrototype, OrganisationElement>, CollectionMetadata>>>();
-        final ICliCommand<?, ICollectionManager<RamCollection<OrganisationElementPrototype, OrganisationElement>, CollectionMetadata>> insert = new Insert<OrganisationElementPrototype, ICollectionManager<RamCollection<OrganisationElementPrototype, OrganisationElement>, CollectionMetadata>>();
-        commands.put("insert", insert);
         final OrganisationElementFactory organisationElementFactory = new OrganisationElementFactory();
         final var xmlCollectionAdapter = new CollectionAdapter<>(organisationElementFactory);
         final var testStorage = new FileStorage<>("./test.xml", xmlCollectionAdapter);
-        final var collectionManager = new CollectionManager<RamCollection<OrganisationElementPrototype, OrganisationElement>, CollectionMetadata>(testStorage);    
-        final var dependencyManager = new CliDependencyManager<ICollectionManager<RamCollection<OrganisationElementPrototype, OrganisationElement>, CollectionMetadata>>(collectionManager);
-        final var greeter = new Greeter<ICollectionManager<RamCollection<OrganisationElementPrototype, OrganisationElement>, CollectionMetadata>>(dependencyManager, commands, System.in, System.out, System.err);
+        final var collectionManager = new CollectionManager<>(testStorage);
+        final Map<String, ICliCommand<?, ? super CliDependencyManager<ICollectionManager<ICollection<OrganisationElementPrototype, OrganisationElement, CollectionMetadata>, CollectionMetadata>>>> commands = new HashMap<String, ICliCommand<?, ? super CliDependencyManager<ICollectionManager<ICollection<OrganisationElementPrototype, OrganisationElement, CollectionMetadata>, CollectionMetadata>>>>();
+        final var insert = new Insert<OrganisationElementPrototype, ICollectionManager<ICollection<OrganisationElementPrototype, OrganisationElement, CollectionMetadata>, CollectionMetadata>>();
+        commands.put("insert", insert);
+        final var streams = new Streams(System.in, System.out, System.err);
+        final var dependencyManager = new CliDependencyManager<ICollectionManager<ICollection<OrganisationElementPrototype, OrganisationElement, CollectionMetadata>, CollectionMetadata>>(collectionManager, commands, streams);
+        final var greeter = new Greeter<>(dependencyManager);
         final var commandQueue = new CommandQueue();
         new CLI(greeter, commandQueue).start();
     }

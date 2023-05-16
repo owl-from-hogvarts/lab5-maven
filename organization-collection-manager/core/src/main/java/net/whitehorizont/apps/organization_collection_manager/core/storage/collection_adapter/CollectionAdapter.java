@@ -20,9 +20,8 @@ import net.whitehorizont.apps.organization_collection_manager.core.storage.error
 import net.whitehorizont.apps.organization_collection_manager.lib.ValidationError;
 
 @NonNullByDefault
-// FIXME: P generics parameter
 public class CollectionAdapter<R, P extends IElementPrototype<R>, E extends ICollectionElement<P>, F extends IElementFactory<P, E, ICollection<P, E, ?>>>
-    implements IFileAdapter<RamCollection<P, E>, CollectionMetadata> {
+    implements IFileAdapter<ICollection<P, E, CollectionMetadata>, CollectionMetadata> {
   private final XStream serializer = new XStream();
   {
     serializer.allowTypesByWildcard(new String[]{"net.whitehorizont.apps.organization_collection_manager.core.**"});
@@ -43,7 +42,7 @@ public class CollectionAdapter<R, P extends IElementPrototype<R>, E extends ICol
   }
 
   @Override
-  public byte[] serialize(RamCollection<P, E> toSerialize) {
+  public byte[] serialize(ICollection<P, E, CollectionMetadata> toSerialize) {
     final var collectionXml = prepareCollection(toSerialize);
 
     final String collectionXmlSerialized = serializer.toXML(collectionXml);

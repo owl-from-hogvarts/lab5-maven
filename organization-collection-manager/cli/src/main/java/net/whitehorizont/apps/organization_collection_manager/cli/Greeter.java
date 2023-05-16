@@ -2,21 +2,18 @@ package net.whitehorizont.apps.organization_collection_manager.cli;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Stack;
-import java.util.Map.Entry;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.javatuples.Pair;
 import org.jline.reader.EndOfFileException;
 import org.jline.reader.LineReader;
 import org.jline.reader.UserInterruptException;
 import net.whitehorizont.apps.organization_collection_manager.cli.commands.Exit;
+import net.whitehorizont.apps.organization_collection_manager.cli.commands.Help;
 import net.whitehorizont.apps.organization_collection_manager.cli.commands.ICliCommand;
 import net.whitehorizont.apps.organization_collection_manager.cli.errors.IncorrectNumberOfArguments;
 import net.whitehorizont.apps.organization_collection_manager.cli.errors.UnknownCommand;
@@ -28,7 +25,7 @@ import net.whitehorizont.apps.organization_collection_manager.core.storage.error
 public class Greeter<CM extends ICollectionManager<?, ?>> {
   private static final String DEFAULT_PROMPT = " > ";
   private final LineReader reader;
-  private final Map<String, ICliCommand<?, CM>> commands;
+  private final Map<String, ICliCommand<?, ? super CliDependencyManager<CM>>> commands;
   private final CliDependencyManager<CM> dependencyManager;
 
   private static int convertBoolean(boolean b) {
@@ -41,7 +38,8 @@ public class Greeter<CM extends ICollectionManager<?, ?>> {
     this.reader = dependencyManager.getLineReader();
 
     this.commands = dependencyManager.getCommands();
-    commands.put(HelpCommand.HELP_COMMAND, new HelpCommand(commands));
+    final ICliCommand<Void, ? super CliDependencyManager<CM>> help = new Help();
+    commands.put(Help.HELP_COMMAND, help);
     commands.put(Exit.EXIT_COMMAND, new Exit());
   }
 
@@ -91,82 +89,5 @@ public class Greeter<CM extends ICollectionManager<?, ?>> {
 
   }
 
-  private static class HelpCommand<CM extends ICollectionManager<?, ?>> implements ICliCommand<Void, CM> {
-
-    private static final String DESCRIPTION = "prints this help message";
-    private static final int INDENT_SIZE = 2;
-    private static final String INDENT_SYMBOL = " ";
-    private static final String INDENT = INDENT_SYMBOL.repeat(INDENT_SIZE);
-    private static final String DESCRIPTION_SEPARATOR = "-";
-    private static final String WORD_SEPARATOR = " ";
-    private static final String HELP_COMMAND = "help";
-
-    private final Map<String, ICliCommand<?, ICollectionManager<?, ?>>> commands;
-
-    HelpCommand(Map<String, ICliCommand<?, ICollectionManager<?, ?>>> commands) {
-      this.commands = commands;
-    }
-
-    @Override
-    public boolean hasArgument() {
-      return false;
-    }
-
-    @Override
-    public String getCommandDescription() {
-      return DESCRIPTION;
-    }
-
-    @Override
-    public ICommand<Void> getActualCommand(CliDependencyManager<CM> dependencyManager, Stack<String> arguments) {
-      
-      final var commandDescriptions = new ArrayList<Pair<String, String>>();
-      for (final var command : commands.entrySet()) {
-        commandDescriptions.add(getCommandDescription(command));
-      }
-
-      final var lineReader = dependencyManager.getLineReader();
-      final var output = lineReader.getTerminal().writer();
-      final var maxCommandNameLength = commandDescriptions.stream().map(command -> command.getValue0().length()).max(Integer::compare).get().intValue();
-      for (final var commandDescription : commandDescriptions) {
-        final var commandNamePadded = padStart(commandDescription.getValue0(), maxCommandNameLength, WORD_SEPARATOR);
-        final var descriptionArray = new ArrayList<String>();
-        descriptionArray.add(commandNamePadded);
-        descriptionArray.add(DESCRIPTION_SEPARATOR);
-        descriptionArray.add(commandDescription.getValue1());
-        
-        final var description = String.join(WORD_SEPARATOR, descriptionArray);
-        final var descriptionIndented = INDENT + description;
-
-        output.println(descriptionIndented);
-      }
-
-      return null;
-    }
-
-    private Pair<String, String> getCommandDescription(
-        Entry<String, ICliCommand<?, ICollectionManager<?, ?>>> command) {
-      return new Pair<String, String>(command.getKey(), command.getValue().getCommandDescription());
-    }
-
-    private static final String padEnd(String string, int targetLength, String padString) {
-      final var padding = computePaddingString(string.length(), targetLength, padString);
-      return string + padding;
-    }
-
-    private static final String padStart(String string, int targetLength, String padString) {
-      final var padding = computePaddingString(string.length(), targetLength, padString);
-      return padding + string;
-    }
-
-    private static final String computePaddingString(int originalLength, int targetLength, String padString) {
-      final var difference = targetLength - originalLength;
-
-      if (difference <= 0) {
-        return "";
-      }
-
-      return padString.repeat(difference);
-    }
-  }
+  
 }
