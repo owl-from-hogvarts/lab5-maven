@@ -31,5 +31,5 @@ public interface ICliCommand<@NonNull T, CM extends ICollectionManager<?, ?>> {
    * @throws IOException
    * @throws StorageInaccessibleError
    */
-  @Nullable ICommand<T> getActualCommand(CliDependencyManager<CM> dependencyManager, Stack<String> arguments, LineReader lineReader) throws IOException, StorageInaccessibleError;
+  @Nullable ICommand<T> getActualCommand(CliDependencyManager<CM> dependencyManager, Stack<String> arguments) throws IOException, StorageInaccessibleError;
 }

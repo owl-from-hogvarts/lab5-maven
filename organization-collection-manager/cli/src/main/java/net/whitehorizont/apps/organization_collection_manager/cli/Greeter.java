@@ -1,9 +1,7 @@
 package net.whitehorizont.apps.organization_collection_manager.cli;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -18,9 +16,6 @@ import org.javatuples.Pair;
 import org.jline.reader.EndOfFileException;
 import org.jline.reader.LineReader;
 import org.jline.reader.UserInterruptException;
-import org.jline.reader.impl.LineReaderImpl;
-import org.jline.terminal.Terminal;
-import org.jline.terminal.TerminalBuilder;
 import net.whitehorizont.apps.organization_collection_manager.cli.commands.Exit;
 import net.whitehorizont.apps.organization_collection_manager.cli.commands.ICliCommand;
 import net.whitehorizont.apps.organization_collection_manager.cli.errors.IncorrectNumberOfArguments;
@@ -40,17 +35,14 @@ public class Greeter<CM extends ICollectionManager<?, ?>> {
     return b ? 1 : 0;
   }
 
-  public Greeter(CliDependencyManager<CM> dependencyManager, Map<String, ICliCommand<?, CM>> commands, InputStream in,
-      PrintStream out, PrintStream err)
+  public Greeter(CliDependencyManager<CM> dependencyManager)
       throws IOException {
     this.dependencyManager = dependencyManager;
+    this.reader = dependencyManager.getLineReader();
 
-    this.commands = commands;
+    this.commands = dependencyManager.getCommands();
     commands.put(HelpCommand.HELP_COMMAND, new HelpCommand(commands));
     commands.put(Exit.EXIT_COMMAND, new Exit());
-
-    final Terminal defaultTerminal = TerminalBuilder.builder().system(true).streams(in, out).build();
-    this.reader = new LineReaderImpl(defaultTerminal);
   }
 
   public Optional<ICommand<?>> promptCommand()
@@ -80,7 +72,7 @@ public class Greeter<CM extends ICollectionManager<?, ?>> {
       }
 
       return Optional.ofNullable(
-          commandDescriptor.getActualCommand(this.dependencyManager, wordsStack, reader));
+          commandDescriptor.getActualCommand(this.dependencyManager, wordsStack));
     } catch (UserInterruptException | EndOfFileException e) {
       return onInterop();
     }
@@ -95,7 +87,7 @@ public class Greeter<CM extends ICollectionManager<?, ?>> {
     assert exitDescriptor != null;
 
     return Optional.of(
-        exitDescriptor.getActualCommand(dependencyManager, new Stack<>(), reader));
+        exitDescriptor.getActualCommand(dependencyManager, new Stack<>()));
 
   }
 
@@ -126,13 +118,14 @@ public class Greeter<CM extends ICollectionManager<?, ?>> {
     }
 
     @Override
-    public ICommand<Void> getActualCommand(CliDependencyManager<CM> dependencyManager, Stack<String> arguments, LineReader lineReader) {
+    public ICommand<Void> getActualCommand(CliDependencyManager<CM> dependencyManager, Stack<String> arguments) {
       
       final var commandDescriptions = new ArrayList<Pair<String, String>>();
       for (final var command : commands.entrySet()) {
         commandDescriptions.add(getCommandDescription(command));
       }
 
+      final var lineReader = dependencyManager.getLineReader();
       final var output = lineReader.getTerminal().writer();
       final var maxCommandNameLength = commandDescriptions.stream().map(command -> command.getValue0().length()).max(Integer::compare).get().intValue();
       for (final var commandDescription : commandDescriptions) {

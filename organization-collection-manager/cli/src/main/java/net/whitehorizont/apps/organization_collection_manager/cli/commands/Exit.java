@@ -29,7 +29,8 @@ public class Exit<CM extends ICollectionManager<?, ?>> implements ICliCommand<Vo
   }
 
   @Override
-  public @Nullable ICommand<Void> getActualCommand(CliDependencyManager<CM> dependencyManager, Stack<String> arguments, LineReader lineReader) {
+  public @Nullable ICommand<Void> getActualCommand(CliDependencyManager<CM> dependencyManager, Stack<String> arguments) {
+    final var lineReader = dependencyManager.getLineReader();
     final var output = lineReader.getTerminal().writer();
     output.println(EXIT_MESSAGE);
     output.flush();

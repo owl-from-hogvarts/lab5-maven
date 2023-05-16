@@ -21,7 +21,7 @@ public class Insert<P extends IElementPrototype<?>, CM extends ICollectionManage
   private static final String DESCRIPTION = "insert element into collection";
 
   @Override
-  public InsertCommand<P> getActualCommand(CliDependencyManager<CM> dependencyManager, Stack<String> arguments, LineReader lineReader) throws IOException, StorageInaccessibleError {
+  public InsertCommand<P> getActualCommand(CliDependencyManager<CM> dependencyManager, Stack<String> arguments) throws IOException, StorageInaccessibleError {
     final var collectionManager = dependencyManager.getCollectionManager();
     
     
@@ -29,6 +29,7 @@ public class Insert<P extends IElementPrototype<?>, CM extends ICollectionManage
     final var prototype = collection.getElementPrototype();
     final var fields = prototype.getWriteableFromStringFields();
 
+    final var lineReader = dependencyManager.getLineReader();
     for (final var field : fields) {
       final var metadata = field.getMetadata();
       final var userInput = lineReader.readLine(metadata.getDisplayedName() + ": ").trim();
