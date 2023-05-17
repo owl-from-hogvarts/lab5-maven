@@ -31,11 +31,11 @@ public class App
 {
     public static void main( String[] args ) throws IOException, IncorrectNumberOfArguments, UnknownCommand, TerminalUnavailable
     {
-        final OrganisationElementFactory organisationElementFactory = new OrganisationElementFactory();
+        final var organisationElementFactory = new OrganisationElementFactory();
         final var xmlCollectionAdapter = new CollectionAdapter<>(organisationElementFactory);
         final var testStorage = new FileStorage<>("./test.xml", xmlCollectionAdapter);
         final var collectionManager = new CollectionManager<>(testStorage);
-        final Map<String, ICliCommand<?, ? super CliDependencyManager<ICollectionManager<ICollection<OrganisationElementPrototype, OrganisationElement, CollectionMetadata>, CollectionMetadata>>>> commands = new HashMap<String, ICliCommand<?, ? super CliDependencyManager<ICollectionManager<ICollection<OrganisationElementPrototype, OrganisationElement, CollectionMetadata>, CollectionMetadata>>>>();
+        final var commands = new HashMap<String, ICliCommand<?, ? super CliDependencyManager<ICollectionManager<ICollection<OrganisationElementPrototype, OrganisationElement, CollectionMetadata>, CollectionMetadata>>>>();
         final var insert = new Insert<OrganisationElementPrototype, ICollectionManager<ICollection<OrganisationElementPrototype, OrganisationElement, CollectionMetadata>, CollectionMetadata>>();
         commands.put("insert", insert);
         final var streams = new Streams(System.in, System.out, System.err);
