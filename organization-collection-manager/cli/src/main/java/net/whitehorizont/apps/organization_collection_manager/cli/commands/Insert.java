@@ -14,11 +14,11 @@ import net.whitehorizont.apps.organization_collection_manager.core.storage.error
 import net.whitehorizont.apps.organization_collection_manager.lib.ValidationError;
 
 @NonNullByDefault
-public class Insert<P extends IElementPrototype<?>, CM extends ICollectionManager<? extends ICollection<P, ?, ?>, ?>> implements ICliCommand<Void, CliDependencyManager<CM>> {
+public class Insert<P extends IElementPrototype<?>, CM extends ICollectionManager<? extends ICollection<P, ?, ?>, ?>> implements ICliCommand<CliDependencyManager<CM>> {
   private static final String DESCRIPTION = "insert element into collection";
 
   @Override
-  public InsertCommand<P> getActualCommand(CliDependencyManager<CM> dependencyManager, Stack<String> arguments) throws IOException, StorageInaccessibleError {
+  public void run(CliDependencyManager<CM> dependencyManager, Stack<String> arguments) throws IOException, StorageInaccessibleError {
     final var collectionManager = dependencyManager.getCollectionManager();
     
     
@@ -42,7 +42,7 @@ public class Insert<P extends IElementPrototype<?>, CM extends ICollectionManage
     final var collectionReceiver = new CollectionCommandReceiver<>(collection);
     final var insertCommand = new InsertCommand<>(prototype, collectionReceiver);
 
-    return insertCommand;
+    dependencyManager.getCommandQueue().push(insertCommand).subscribe();
   }
 
   @Override

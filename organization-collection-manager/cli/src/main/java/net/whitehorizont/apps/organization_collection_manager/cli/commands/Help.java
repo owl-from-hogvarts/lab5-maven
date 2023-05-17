@@ -12,7 +12,7 @@ import net.whitehorizont.apps.organization_collection_manager.cli.CliDependencyM
 import net.whitehorizont.apps.organization_collection_manager.core.commands.ICommand;
 
 @NonNullByDefault
-public class Help implements ICliCommand<Void, CliDependencyManager<?>> {
+public class Help implements ICliCommand<CliDependencyManager<?>> {
 
   private static final String DESCRIPTION = "prints this help message";
   private static final int INDENT_SIZE = 2;
@@ -33,12 +33,12 @@ public class Help implements ICliCommand<Void, CliDependencyManager<?>> {
   }
 
   @Override
-  public ICommand<Void> getActualCommand(CliDependencyManager<?> dependencyManager, Stack<String> arguments) {
+  public void run(CliDependencyManager<?> dependencyManager, Stack<String> arguments) {
     
     final var commandDescriptions = new ArrayList<Pair<String, String>>();
-    final Map<String, ? extends ICliCommand<?, ? extends CliDependencyManager<?>>> commands = dependencyManager.getCommands();
+    final Map<String, ? extends ICliCommand<? extends CliDependencyManager<?>>> commands = dependencyManager.getCommands();
     for (final var command : commands.entrySet()) {
-      final var commandDescription = getCommandDescription(command);
+      final var commandDescription = retrieveCommandDescription(command);
       commandDescriptions.add(commandDescription);
     }
 
@@ -57,12 +57,10 @@ public class Help implements ICliCommand<Void, CliDependencyManager<?>> {
 
       output.println(descriptionIndented);
     }
-
-    return null;
   }
 
-  private Pair<String, String> getCommandDescription(
-      Entry<String, ? extends ICliCommand<?, ? extends CliDependencyManager<?>>> command) {
+  private Pair<String, String> retrieveCommandDescription(
+      Entry<String, ? extends ICliCommand<? extends CliDependencyManager<?>>> command) {
     return new Pair<String, String>(command.getKey(), command.getValue().getCommandDescription());
   }
 

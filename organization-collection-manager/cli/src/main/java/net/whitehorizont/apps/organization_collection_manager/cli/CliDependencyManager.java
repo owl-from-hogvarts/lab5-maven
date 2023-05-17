@@ -17,7 +17,7 @@ import net.whitehorizont.apps.organization_collection_manager.core.commands.Comm
 @NonNullByDefault
 public class CliDependencyManager<CM extends ICollectionManager<?, ?>> {
   private final CM collectionManager;
-  private final Map<String, ICliCommand<?, ? super CliDependencyManager<CM>>> commands;
+  private final Map<String, ICliCommand<? super CliDependencyManager<CM>>> commands;
   private final LineReader lineReader;
   private final Streams streams;
   private final CommandQueue commandQueue = new CommandQueue();
@@ -26,7 +26,7 @@ public class CliDependencyManager<CM extends ICollectionManager<?, ?>> {
     return collectionManager;
   }
 
-  public Map<String, ICliCommand<?, ? super CliDependencyManager<CM>>> getCommands() {
+  public Map<String, ICliCommand<? super CliDependencyManager<CM>>> getCommands() {
     return this.commands;
   }
 
@@ -42,7 +42,7 @@ public class CliDependencyManager<CM extends ICollectionManager<?, ?>> {
     return this.streams;
   }
 
-  public CliDependencyManager(CM collectionManager, Map<String, ICliCommand<?, ? super CliDependencyManager<CM>>> commands, Streams streams)
+  public CliDependencyManager(CM collectionManager, Map<String, ICliCommand<? super CliDependencyManager<CM>>> commands, Streams streams)
       throws TerminalUnavailable {
     this.collectionManager = collectionManager;
     this.commands = commands;

@@ -2,8 +2,6 @@ package net.whitehorizont.apps.organization_collection_manager.cli;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.Map;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import net.whitehorizont.apps.organization_collection_manager.cli.commands.ICliCommand;
@@ -18,7 +16,6 @@ import net.whitehorizont.apps.organization_collection_manager.core.collection.IC
 import net.whitehorizont.apps.organization_collection_manager.core.collection.OrganisationElement;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.OrganisationElementFactory;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.OrganisationElement.OrganisationElementPrototype;
-import net.whitehorizont.apps.organization_collection_manager.core.commands.CommandQueue;
 import net.whitehorizont.apps.organization_collection_manager.core.storage.FileStorage;
 import net.whitehorizont.apps.organization_collection_manager.core.storage.collection_adapter.CollectionAdapter;
 
@@ -35,13 +32,13 @@ public class App
         final var xmlCollectionAdapter = new CollectionAdapter<>(organisationElementFactory);
         final var testStorage = new FileStorage<>("./test.xml", xmlCollectionAdapter);
         final var collectionManager = new CollectionManager<>(testStorage);
-        final var commands = new HashMap<String, ICliCommand<?, ? super CliDependencyManager<ICollectionManager<ICollection<OrganisationElementPrototype, OrganisationElement, CollectionMetadata>, CollectionMetadata>>>>();
+        final var commands = new HashMap<String, ICliCommand<? super CliDependencyManager<ICollectionManager<ICollection<OrganisationElementPrototype, OrganisationElement, CollectionMetadata>, CollectionMetadata>>>>();
         final var insert = new Insert<OrganisationElementPrototype, ICollectionManager<ICollection<OrganisationElementPrototype, OrganisationElement, CollectionMetadata>, CollectionMetadata>>();
         commands.put("insert", insert);
         final var streams = new Streams(System.in, System.out, System.err);
         final var dependencyManager = new CliDependencyManager<ICollectionManager<ICollection<OrganisationElementPrototype, OrganisationElement, CollectionMetadata>, CollectionMetadata>>(collectionManager, commands, streams);
-        final var greeter = new Greeter<>(dependencyManager);
-        final var commandQueue = new CommandQueue();
-        new CLI(greeter, commandQueue).start();
+        final var cli = new CLI<>(dependencyManager);
+
+        cli.start();
     }
 }

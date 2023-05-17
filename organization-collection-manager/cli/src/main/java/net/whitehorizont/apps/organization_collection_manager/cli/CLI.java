@@ -1,38 +1,105 @@
 package net.whitehorizont.apps.organization_collection_manager.cli;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.io.PrintStream;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Stack;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.jline.reader.EndOfFileException;
+import org.jline.reader.LineReader;
+import org.jline.reader.UserInterruptException;
 
-import net.whitehorizont.apps.organization_collection_manager.core.commands.CommandQueue;
+import net.whitehorizont.apps.organization_collection_manager.cli.commands.Exit;
+import net.whitehorizont.apps.organization_collection_manager.cli.commands.Help;
+import net.whitehorizont.apps.organization_collection_manager.cli.commands.ICliCommand;
+import net.whitehorizont.apps.organization_collection_manager.cli.errors.IncorrectNumberOfArguments;
+import net.whitehorizont.apps.organization_collection_manager.cli.errors.UnknownCommand;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollectionManager;
+import net.whitehorizont.apps.organization_collection_manager.core.storage.errors.StorageInaccessibleError;
 
-public class CLI {
-  private final CommandQueue commandQueue;
-  private final Greeter<?> greeter;
+@NonNullByDefault
+public class CLI<CM extends ICollectionManager<?, ?>> {
+  private static final String DEFAULT_PROMPT = " > ";
+  private final LineReader reader;
+  private final Map<String, ICliCommand<? super CliDependencyManager<CM>>> commands;
+  private final CliDependencyManager<CM> dependencyManager;
   private final PrintStream err;
 
-  public CLI(Greeter greeter, CommandQueue commandQueue) {
-    this.commandQueue = commandQueue;
-    this.greeter = greeter;
-    this.err = new PrintStream(greeter.getErrorStream());
-    // listen on greeter for new cli commands
-    // map them to actual commands
-    // send actual commands to queue
+  private static int convertBoolean(boolean b) {
+    return b ? 1 : 0;
   }
 
   public void start() {
     while (true) {
       try {
-
-        final var commandMaybe = greeter.promptCommand();
-        if (commandMaybe.isEmpty()) {
-          continue;
-        }
-
-        final var command = commandMaybe.get();
-        commandQueue.push(command).subscribe();
+        promptCommand();
       } catch (Exception e) {
         err.println(e.getMessage());
         continue;
       }
     }
   }
+  
+
+  public CLI(CliDependencyManager<CM> dependencyManager)
+      throws IOException {
+    this.dependencyManager = dependencyManager;
+    this.reader = dependencyManager.getLineReader();
+    this.err = new PrintStream(this.dependencyManager.getStreams().err);
+
+    this.commands = dependencyManager.getCommands();
+    final ICliCommand<? super CliDependencyManager<CM>> help = new Help();
+    commands.put(Help.HELP_COMMAND, help);
+    commands.put(Exit.EXIT_COMMAND, new Exit());
+  }
+
+  public void promptCommand()
+      throws IncorrectNumberOfArguments, UnknownCommand, IOException, StorageInaccessibleError {
+    try {
+      final String userInput = reader.readLine(DEFAULT_PROMPT).trim().toLowerCase();
+
+      final List<String> words = Arrays.asList(userInput.split(" "));
+      // first pop command and then first argument and then second and so on
+      Collections.reverse(words);
+      final Stack<String> wordsStack = new Stack<String>();
+      wordsStack.addAll(words);
+
+      if (wordsStack.size() < 1 || userInput.length() < 1) {
+        return;
+      }
+
+      final String command = wordsStack.pop();
+      if (!commands.containsKey(command)) {
+        throw new UnknownCommand(command);
+      }
+
+      final var commandDescriptor = commands.get(command);
+      if (convertBoolean(commandDescriptor.hasArgument()) != wordsStack.size()) {
+        // 1 because all command accept either one or zero arguments
+        throw new IncorrectNumberOfArguments(command, commandDescriptor.hasArgument() ? 1 : 0, wordsStack.size());
+      }
+
+      commandDescriptor.run(this.dependencyManager, wordsStack);
+    } catch (UserInterruptException | EndOfFileException e) {
+      onInterop();
+      return;
+    }
+  }
+
+  public OutputStream getErrorStream() {
+    return reader.getTerminal().output();
+  }
+
+  private void onInterop() throws IOException, StorageInaccessibleError {
+    final var exitDescriptor = this.commands.get(Exit.EXIT_COMMAND);
+    assert exitDescriptor != null;
+
+    exitDescriptor.run(dependencyManager, new Stack<>());
+
+  }
+
 }
