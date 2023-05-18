@@ -13,6 +13,7 @@ import org.jline.reader.EndOfFileException;
 import org.jline.reader.LineReader;
 import org.jline.reader.UserInterruptException;
 
+import io.reactivex.rxjava3.core.Observable;
 import net.whitehorizont.apps.organization_collection_manager.cli.commands.Exit;
 import net.whitehorizont.apps.organization_collection_manager.cli.commands.Help;
 import net.whitehorizont.apps.organization_collection_manager.cli.commands.ICliCommand;
@@ -36,9 +37,11 @@ public class CLI<CM extends ICollectionManager<?, ?>> {
   public void start() {
     while (true) {
       try {
-        promptCommand();
+        promptCommand().blockingSubscribe((_unused) -> {}, (Throwable e) -> {
+          err.println(e.getMessage());
+        }, () -> {});
       } catch (Exception e) {
-        err.println(e.getMessage());
+        err.println("Exception: " + e.getMessage());
         continue;
       }
     }
@@ -57,7 +60,7 @@ public class CLI<CM extends ICollectionManager<?, ?>> {
     commands.put(Exit.EXIT_COMMAND, new Exit());
   }
 
-  public void promptCommand()
+  public Observable<Void> promptCommand()
       throws IncorrectNumberOfArguments, UnknownCommand, IOException, StorageInaccessibleError {
     try {
       final String userInput = reader.readLine(DEFAULT_PROMPT).trim().toLowerCase();
@@ -69,7 +72,7 @@ public class CLI<CM extends ICollectionManager<?, ?>> {
       wordsStack.addAll(words);
 
       if (wordsStack.size() < 1 || userInput.length() < 1) {
-        return;
+        return Observable.empty();
       }
 
       final String command = wordsStack.pop();
@@ -83,10 +86,9 @@ public class CLI<CM extends ICollectionManager<?, ?>> {
         throw new IncorrectNumberOfArguments(command, commandDescriptor.hasArgument() ? 1 : 0, wordsStack.size());
       }
 
-      commandDescriptor.run(this.dependencyManager, wordsStack);
+      return commandDescriptor.run(this.dependencyManager, wordsStack);
     } catch (UserInterruptException | EndOfFileException e) {
-      onInterop();
-      return;
+      return onInterop();
     }
   }
 
@@ -94,11 +96,11 @@ public class CLI<CM extends ICollectionManager<?, ?>> {
     return reader.getTerminal().output();
   }
 
-  private void onInterop() throws IOException, StorageInaccessibleError {
+  private Observable<Void> onInterop() throws IOException, StorageInaccessibleError {
     final var exitDescriptor = this.commands.get(Exit.EXIT_COMMAND);
     assert exitDescriptor != null;
 
-    exitDescriptor.run(dependencyManager, new Stack<>());
+    return exitDescriptor.run(dependencyManager, new Stack<>());
 
   }
 

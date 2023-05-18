@@ -6,6 +6,7 @@ import java.util.Stack;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
+import io.reactivex.rxjava3.core.Observable;
 import net.whitehorizont.apps.organization_collection_manager.cli.CliDependencyManager;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollection;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollectionElement;
@@ -30,22 +31,29 @@ public class Show implements ICliCommand<CliDependencyManager<? extends ICollect
   }
 
   @Override
-  public void run(CliDependencyManager<? extends ICollectionManager<? extends ICollection<?, ? extends ICollectionElement<?>, ?>, ?>> dependencyManager, Stack<String> arguments)
+  public Observable<Void> run(CliDependencyManager<? extends ICollectionManager<? extends ICollection<?, ? extends ICollectionElement<?>, ?>, ?>> dependencyManager, Stack<String> arguments)
       throws IOException, StorageInaccessibleError {
-        final ICollection<?, ? extends ICollectionElement<?>, ?> collection = dependencyManager.getCollectionManager().getCollection().blockingFirst();
-        final CollectionCommandReceiver<?, ? extends ICollectionElement<?>, ?> receiver = new CollectionCommandReceiver<>(collection);
-        
-        final var show = new ShowCommand<>(receiver);
-        dependencyManager.getCommandQueue().push(show).subscribe(element -> {
-          final var out = new PrintStream(dependencyManager.getStreams().out);
-
-          final var fields = element.getFields();
-          for (final var field : fields) {
-            final var value = field.getValue() != null ? field.getValue().toString() : "null";
-            out.println(field.getMetadata().getDisplayedName() + ": " + value);
-          }
+        return Observable.create(subscriber -> {
+          dependencyManager.getCollectionManager().getCollection().subscribe(receivedCollection -> {
+            final ICollection<?, ? extends ICollectionElement<?>, ?> collection = receivedCollection;
+            final CollectionCommandReceiver<?, ? extends ICollectionElement<?>, ?> receiver = new CollectionCommandReceiver<>(collection);
+          
+            final var show = new ShowCommand<>(receiver);
+            dependencyManager.getCommandQueue().push(show).subscribe(element -> {
+              final var out = new PrintStream(dependencyManager.getStreams().out);
+    
+              final var fields = element.getFields();
+              for (final var field : fields) {
+                final var value = field.getValue() != null ? field.getValue().toString() : "null";
+                out.println(field.getMetadata().getDisplayedName() + ": " + value);
+              }
+            });
+  
+            subscriber.onComplete();
+          });
         });
-      }
+         
 
+      }
   
 }

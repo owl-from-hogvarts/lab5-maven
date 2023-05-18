@@ -20,6 +20,7 @@ public class InsertCommand<P extends IElementPrototype<?>> implements ICommand<V
     return Observable.create(subscriber -> {
       final var collection = this.collection;
       collection.insert(prototype);
+      subscriber.onComplete();
     });
   }
   

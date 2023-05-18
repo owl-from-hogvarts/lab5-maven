@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.Stack;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+
+import io.reactivex.rxjava3.core.Observable;
 import net.whitehorizont.apps.organization_collection_manager.cli.CliDependencyManager;
 import net.whitehorizont.apps.organization_collection_manager.core.storage.errors.StorageInaccessibleError;
 
@@ -23,5 +25,5 @@ public interface ICliCommand<DM extends CliDependencyManager<?>> {
    * @throws IOException
    * @throws StorageInaccessibleError
    */
-  void run(DM dependencyManager, Stack<String> arguments) throws IOException, StorageInaccessibleError;
+  Observable<Void> run(DM dependencyManager, Stack<String> arguments) throws IOException, StorageInaccessibleError;
 }

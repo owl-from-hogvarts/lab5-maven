@@ -3,6 +3,8 @@ package net.whitehorizont.apps.organization_collection_manager.cli.commands;
 import java.util.Stack;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+
+import io.reactivex.rxjava3.core.Observable;
 import net.whitehorizont.apps.organization_collection_manager.cli.CliDependencyManager;
 import net.whitehorizont.apps.organization_collection_manager.core.commands.ExitCommand;
 
@@ -24,16 +26,14 @@ public class Exit implements ICliCommand<CliDependencyManager<?>> {
   }
 
   @Override
-  public void run(CliDependencyManager<?> dependencyManager, Stack<String> arguments) {
+  public Observable<Void> run(CliDependencyManager<?> dependencyManager, Stack<String> arguments) {
     final var lineReader = dependencyManager.getLineReader();
     final var output = lineReader.getTerminal().writer();
     output.println(EXIT_MESSAGE);
     output.flush();
 
     final var exit = new ExitCommand();
-    dependencyManager.getCommandQueue().push(exit).subscribe();
-    
-
+    return dependencyManager.getCommandQueue().push(exit);
   }
   
 }

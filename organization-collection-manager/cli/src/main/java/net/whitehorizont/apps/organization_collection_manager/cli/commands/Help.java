@@ -8,6 +8,7 @@ import java.util.Stack;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.javatuples.Pair;
 
+import io.reactivex.rxjava3.core.Observable;
 import net.whitehorizont.apps.organization_collection_manager.cli.CliDependencyManager;
 import net.whitehorizont.apps.organization_collection_manager.core.commands.ICommand;
 
@@ -33,30 +34,34 @@ public class Help implements ICliCommand<CliDependencyManager<?>> {
   }
 
   @Override
-  public void run(CliDependencyManager<?> dependencyManager, Stack<String> arguments) {
-    
-    final var commandDescriptions = new ArrayList<Pair<String, String>>();
-    final Map<String, ? extends ICliCommand<? extends CliDependencyManager<?>>> commands = dependencyManager.getCommands();
-    for (final var command : commands.entrySet()) {
-      final var commandDescription = retrieveCommandDescription(command);
-      commandDescriptions.add(commandDescription);
-    }
+  public Observable<Void> run(CliDependencyManager<?> dependencyManager, Stack<String> arguments) {
+    return Observable.create(subscriber -> {
+      final var commandDescriptions = new ArrayList<Pair<String, String>>();
+      final Map<String, ? extends ICliCommand<? extends CliDependencyManager<?>>> commands = dependencyManager
+          .getCommands();
+      for (final var command : commands.entrySet()) {
+        final var commandDescription = retrieveCommandDescription(command);
+        commandDescriptions.add(commandDescription);
+      }
 
-    final var lineReader = dependencyManager.getLineReader();
-    final var output = lineReader.getTerminal().writer();
-    final var maxCommandNameLength = commandDescriptions.stream().map(command -> command.getValue0().length()).max(Integer::compare).get().intValue();
-    for (final var commandDescription : commandDescriptions) {
-      final var commandNamePadded = padStart(commandDescription.getValue0(), maxCommandNameLength, WORD_SEPARATOR);
-      final var descriptionArray = new ArrayList<String>();
-      descriptionArray.add(commandNamePadded);
-      descriptionArray.add(DESCRIPTION_SEPARATOR);
-      descriptionArray.add(commandDescription.getValue1());
-      
-      final var description = String.join(WORD_SEPARATOR, descriptionArray);
-      final var descriptionIndented = INDENT + description;
+      final var lineReader = dependencyManager.getLineReader();
+      final var output = lineReader.getTerminal().writer();
+      final var maxCommandNameLength = commandDescriptions.stream().map(command -> command.getValue0().length())
+          .max(Integer::compare).get().intValue();
+      for (final var commandDescription : commandDescriptions) {
+        final var commandNamePadded = padStart(commandDescription.getValue0(), maxCommandNameLength, WORD_SEPARATOR);
+        final var descriptionArray = new ArrayList<String>();
+        descriptionArray.add(commandNamePadded);
+        descriptionArray.add(DESCRIPTION_SEPARATOR);
+        descriptionArray.add(commandDescription.getValue1());
 
-      output.println(descriptionIndented);
-    }
+        final var description = String.join(WORD_SEPARATOR, descriptionArray);
+        final var descriptionIndented = INDENT + description;
+
+        output.println(descriptionIndented);
+      }
+      subscriber.onComplete();
+    });
   }
 
   private Pair<String, String> retrieveCommandDescription(
