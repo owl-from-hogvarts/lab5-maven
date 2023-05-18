@@ -11,6 +11,7 @@ import org.javatuples.Pair;
 import io.reactivex.rxjava3.core.Observable;
 import net.whitehorizont.apps.organization_collection_manager.cli.CliDependencyManager;
 import net.whitehorizont.apps.organization_collection_manager.core.commands.ICommand;
+import net.whitehorizont.libs.file_system.StringHelper;
 
 @NonNullByDefault
 public class Help implements ICliCommand<CliDependencyManager<?>> {
@@ -49,7 +50,7 @@ public class Help implements ICliCommand<CliDependencyManager<?>> {
       final var maxCommandNameLength = commandDescriptions.stream().map(command -> command.getValue0().length())
           .max(Integer::compare).get().intValue();
       for (final var commandDescription : commandDescriptions) {
-        final var commandNamePadded = padStart(commandDescription.getValue0(), maxCommandNameLength, WORD_SEPARATOR);
+        final var commandNamePadded = StringHelper.padStart(commandDescription.getValue0(), maxCommandNameLength, WORD_SEPARATOR);
         final var descriptionArray = new ArrayList<String>();
         descriptionArray.add(commandNamePadded);
         descriptionArray.add(DESCRIPTION_SEPARATOR);
@@ -69,23 +70,4 @@ public class Help implements ICliCommand<CliDependencyManager<?>> {
     return new Pair<String, String>(command.getKey(), command.getValue().getCommandDescription());
   }
 
-  private static final String padEnd(String string, int targetLength, String padString) {
-    final var padding = computePaddingString(string.length(), targetLength, padString);
-    return string + padding;
-  }
-
-  private static final String padStart(String string, int targetLength, String padString) {
-    final var padding = computePaddingString(string.length(), targetLength, padString);
-    return padding + string;
-  }
-
-  private static final String computePaddingString(int originalLength, int targetLength, String padString) {
-    final var difference = targetLength - originalLength;
-
-    if (difference <= 0) {
-      return "";
-    }
-
-    return padString.repeat(difference);
-  }
 }
