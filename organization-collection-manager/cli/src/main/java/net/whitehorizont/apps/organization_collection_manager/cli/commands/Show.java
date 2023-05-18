@@ -41,7 +41,8 @@ public class Show implements ICliCommand<CliDependencyManager<? extends ICollect
 
           final var fields = element.getFields();
           for (final var field : fields) {
-            out.println(field.getMetadata().getDisplayedName() + ": " + field.getValue().toString());
+            final var value = field.getValue() != null ? field.getValue().toString() : "null";
+            out.println(field.getMetadata().getDisplayedName() + ": " + value);
           }
         });
       }
