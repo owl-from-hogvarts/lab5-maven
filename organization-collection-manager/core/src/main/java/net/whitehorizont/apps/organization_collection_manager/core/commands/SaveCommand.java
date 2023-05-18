@@ -9,18 +9,18 @@ import net.whitehorizont.apps.organization_collection_manager.core.collection.IC
 public class SaveCommand implements ICommand<Void> {
 
   private final CollectionManagerReceiver<?, ?> collectionManagerReceiver;
-  private final ICollection<?, ?, ?> collection;
 
-  public SaveCommand(CollectionManagerReceiver<?, ?> collectionManagerReceiver, ICollection<?, ?, ?> collection) {
+  public SaveCommand(CollectionManagerReceiver<?, ?> collectionManagerReceiver) {
     this.collectionManagerReceiver = collectionManagerReceiver;
-    this.collection = collection;
   }
 
   @Override
   public Observable<Void> execute() {
     return Observable.create(subscriber -> {
-      collectionManagerReceiver.save(collection.getMetadataSnapshot().getId());
-      subscriber.onComplete();
+      collectionManagerReceiver.getCollection().subscribe(collection -> {
+        collectionManagerReceiver.save(collection.getMetadataSnapshot().getId());
+        subscriber.onComplete();
+      });
     });
     
   }
