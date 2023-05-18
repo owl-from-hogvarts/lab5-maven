@@ -2,6 +2,7 @@ package net.whitehorizont.apps.organization_collection_manager.lib;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -18,8 +19,8 @@ public class FieldMetadata<V, T> implements IValidatorsProvider<V, T> {
     private String displayedName = "";
     private String description = "";
   
-    private boolean isNullable = false;
-    private String onNullMessage = "Field should NOT be empty";
+    private Optional<String> onNullMessage = Optional.of("Field should NOT be empty");
+    private static final String OK_MESSAGE = "Everything ok!";
 
     private List<Validator<V, T>> validators = new ArrayList<>();
   
@@ -32,13 +33,12 @@ public class FieldMetadata<V, T> implements IValidatorsProvider<V, T> {
       this.description = description;
       return this;
     }
-    public Metadata<V, T> setNullable(boolean isNullable) {
-      this.isNullable = isNullable;
+    public Metadata<V, T> setRequired(String onNullMessage) {
+      this.onNullMessage = Optional.of(onNullMessage);
       return this;
     }
-    public Metadata<V, T> setNullable(boolean isNullable, @NonNull String onNullMessage) {
-      setNullable(isNullable);
-      this.onNullMessage = onNullMessage;
+    public Metadata<V, T> setNullable() {
+      this.onNullMessage = Optional.empty();
       return this;
     }
     public Metadata<V, T> addValidators(List<Validator<V, T>> validators) {
@@ -64,19 +64,26 @@ public class FieldMetadata<V, T> implements IValidatorsProvider<V, T> {
     return metadata.description;
   }
   public boolean isNullable() {
-    return metadata.isNullable;
+    return metadata.onNullMessage.isEmpty();
   }
   @Override
   public List<Validator<V, T>> getValidators() { // ok at this point I don' know what happens. Java is just mad at me I guess
     return metadata.validators;
   }
-  public String getOnNullMessage() {
+  /** Better check if field is nullable at first */
+  public Optional<String> getOnNullMessage() {
     return metadata.onNullMessage;
   }
   @Override
   public SimpleValidator<V> getNullCheckValidator() {
     return (value) -> {
-      return new ValidationResult<Boolean>(value != null, getOnNullMessage());
+      final String message = isNullable() ? Metadata.OK_MESSAGE : getOnNullMessage().get();
+      return new ValidationResult<Boolean>(isNullable() || value != null, message);
+      // required isNull
+      // f        f    ok
+      // f        t    ok
+      // t        f    ok
+      // t        t    not ok
     };
   }
 }

@@ -21,14 +21,13 @@ public class OrganisationElement implements ICollectionElement<OrganisationEleme
   private static final FieldMetadata<String, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement, ?>> NAME_METADATA = new FieldMetadata<>(
       new FieldMetadata.Metadata<String, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement, ?>>()
           .setDisplayedName("name")
-          .setNullable(false, "Company name must be specified")
+          .setRequired("Company name must be specified")
           .addValidator((value, _unused) -> new ValidationResult<>(value.length() >= 1, "")));
 
   private static final FieldMetadata<UUID_ElementId, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement, ?>> ID_METADATA = new FieldMetadata<>(
       new FieldMetadata.Metadata<UUID_ElementId, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement, ?>>()
           .setDisplayedName("ID")
-          .setNullable(false,
-              "ID must be provided for collection element"));
+          .setRequired("ID must be provided for collection element"));
 
   public static FieldMetadata<String, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement, ?>> getNameMetadata() {
     return NAME_METADATA;

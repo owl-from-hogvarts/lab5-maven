@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.Stack;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 import net.whitehorizont.apps.organization_collection_manager.cli.CliDependencyManager;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollection;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollectionManager;
@@ -29,7 +31,11 @@ public class Insert<P extends IElementPrototype<?>, CM extends ICollectionManage
     final var lineReader = dependencyManager.getLineReader();
     for (final var field : fields) {
       final var metadata = field.getMetadata();
-      final var userInput = lineReader.readLine(metadata.getDisplayedName() + ": ").trim();
+      @Nullable String userInput = lineReader.readLine(metadata.getDisplayedName() + ": ").trim();
+
+      if (userInput.length() < 1) {
+        userInput = null;
+      }
 
       try {
         field.setValueFromString(userInput);
