@@ -5,9 +5,10 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.BaseId;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.IWithId;
 import net.whitehorizont.apps.organization_collection_manager.lib.FieldDefinition;
+import net.whitehorizont.apps.organization_collection_manager.lib.IDisplayable;
 
 @NonNullByDefault
-public interface ICollectionElement<P extends IElementPrototype<?>> extends IWithId<BaseId> {
+public interface ICollectionElement<P extends IElementPrototype<?>> extends IWithId<BaseId>, IDisplayable {
   P getPrototype();
   Iterable<FieldDefinition<?, ?>> getFields();
 }

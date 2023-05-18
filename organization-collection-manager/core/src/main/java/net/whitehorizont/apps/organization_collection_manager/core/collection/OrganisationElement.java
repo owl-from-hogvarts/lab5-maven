@@ -17,7 +17,9 @@ import net.whitehorizont.apps.organization_collection_manager.lib.WriteableField
 
 @NonNullByDefault
 public class OrganisationElement implements ICollectionElement<OrganisationElement.OrganisationElementPrototype> {
-  // TODO: make itertor for fields
+  // DONE: make itertor for fields
+  private static final String ELEMENT_TITLE = "Organisation";
+  
   private static final FieldMetadata<String, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement, ?>> NAME_METADATA = new FieldMetadata<>(
       new FieldMetadata.Metadata<String, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement, ?>>()
           .setDisplayedName("name")
@@ -148,5 +150,10 @@ public class OrganisationElement implements ICollectionElement<OrganisationEleme
     fieldDefinitions.add(getID());
 
     return fieldDefinitions;
+  }
+
+  @Override
+  public String getDisplayedName() {
+    return ELEMENT_TITLE;
   }
 }

@@ -14,10 +14,13 @@ import net.whitehorizont.apps.organization_collection_manager.core.collection.IC
 import net.whitehorizont.apps.organization_collection_manager.core.commands.CollectionCommandReceiver;
 import net.whitehorizont.apps.organization_collection_manager.core.commands.ShowCommand;
 import net.whitehorizont.apps.organization_collection_manager.core.storage.errors.StorageInaccessibleError;
+import net.whitehorizont.libs.file_system.StringHelper;
 
 @NonNullByDefault
 public class Show implements ICliCommand<CliDependencyManager<? extends ICollectionManager<? extends ICollection<?, ? extends ICollectionElement<?>, ?>, ?>>> {
   private static final String DESCRIPTION = "print all collection elements";
+  private static final String DEFAULT_DECORATOR = "-";
+  private static final int DECORATED_TITLE_WIDTH = 80;
   
 
   @Override
@@ -39,9 +42,10 @@ public class Show implements ICliCommand<CliDependencyManager<? extends ICollect
             final CollectionCommandReceiver<?, ? extends ICollectionElement<?>, ?> receiver = new CollectionCommandReceiver<>(collection);
           
             final var show = new ShowCommand<>(receiver);
+            final var out = new PrintStream(dependencyManager.getStreams().out);
             dependencyManager.getCommandQueue().push(show).subscribe(element -> {
-              final var out = new PrintStream(dependencyManager.getStreams().out);
-    
+              out.println(prepareElementTitle(element.getDisplayedName(), DEFAULT_DECORATOR));
+
               final var fields = element.getFields();
               for (final var field : fields) {
                 final var value = field.getValue() != null ? field.getValue().toString() : "null";
@@ -54,6 +58,10 @@ public class Show implements ICliCommand<CliDependencyManager<? extends ICollect
         });
          
 
+      }
+
+      private static String prepareElementTitle(String title, String decorator) {
+        return StringHelper.padBoth(" " + title + " ", DECORATED_TITLE_WIDTH, decorator);
       }
   
 }
