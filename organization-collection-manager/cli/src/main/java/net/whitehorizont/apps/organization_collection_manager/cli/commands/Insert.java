@@ -32,7 +32,7 @@ public class Insert<P extends IElementPrototype<?>, CM extends ICollectionManage
       final var userInput = lineReader.readLine(metadata.getDisplayedName() + ": ").trim();
 
       try {
-        field.setValue(userInput);
+        field.setValueFromString(userInput);
       } catch (ValidationError e) {
         final var output = lineReader.getTerminal().writer();
         output.println(e.getMessage());

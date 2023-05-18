@@ -26,6 +26,7 @@ public class OrganisationElement implements ICollectionElement<OrganisationEleme
 
   private static final FieldMetadata<UUID_ElementId, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement, ?>> ID_METADATA = new FieldMetadata<>(
       new FieldMetadata.Metadata<UUID_ElementId, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement, ?>>()
+          .setDisplayedName("ID")
           .setNullable(false,
               "ID must be provided for collection element"));
 
@@ -129,7 +130,7 @@ public class OrganisationElement implements ICollectionElement<OrganisationEleme
     public IElementPrototype<OrganisationElementRawData> setFromRawData(OrganisationElementRawData rawData) throws ValidationError {
 
       this.ID.setValue(rawData.ID);
-      this.name.setValue(rawData.name);
+      this.name.setValueFromString(rawData.name);
 
       return this;
     }
@@ -139,5 +140,14 @@ public class OrganisationElement implements ICollectionElement<OrganisationEleme
     // return this.getDisplayableFields();
     // }
 
+  }
+
+  @Override
+  public Iterable<FieldDefinition<?, ?>> getFields() {
+    final List<FieldDefinition<?, ?>> fieldDefinitions = new ArrayList<>();
+    fieldDefinitions.add(getName());
+    fieldDefinitions.add(getID());
+
+    return fieldDefinitions;
   }
 }

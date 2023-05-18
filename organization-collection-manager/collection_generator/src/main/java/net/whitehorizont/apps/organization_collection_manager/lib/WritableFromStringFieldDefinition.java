@@ -16,7 +16,7 @@ public class WritableFromStringFieldDefinition<V> extends WriteableFieldDefiniti
     this.builder = builder;
   }
 
-  public void setValue(String value) throws ValidationError {
+  public void setValueFromString(String value) throws ValidationError {
     super.setValue(builder.buildFromString(value));
   }
 

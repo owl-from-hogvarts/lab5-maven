@@ -6,6 +6,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import net.whitehorizont.apps.organization_collection_manager.cli.commands.ICliCommand;
 import net.whitehorizont.apps.organization_collection_manager.cli.commands.Insert;
+import net.whitehorizont.apps.organization_collection_manager.cli.commands.Show;
 import net.whitehorizont.apps.organization_collection_manager.cli.errors.IncorrectNumberOfArguments;
 import net.whitehorizont.apps.organization_collection_manager.cli.errors.TerminalUnavailable;
 import net.whitehorizont.apps.organization_collection_manager.cli.errors.UnknownCommand;
@@ -35,6 +36,8 @@ public class App
         final var commands = new HashMap<String, ICliCommand<? super CliDependencyManager<ICollectionManager<ICollection<OrganisationElementPrototype, OrganisationElement, CollectionMetadata>, CollectionMetadata>>>>();
         final var insert = new Insert<OrganisationElementPrototype, ICollectionManager<ICollection<OrganisationElementPrototype, OrganisationElement, CollectionMetadata>, CollectionMetadata>>();
         commands.put("insert", insert);
+        final var show = new Show();
+        commands.put("show", show);
         final var streams = new Streams(System.in, System.out, System.err);
         final var dependencyManager = new CliDependencyManager<ICollectionManager<ICollection<OrganisationElementPrototype, OrganisationElement, CollectionMetadata>, CollectionMetadata>>(collectionManager, commands, streams);
         final var cli = new CLI<>(dependencyManager);

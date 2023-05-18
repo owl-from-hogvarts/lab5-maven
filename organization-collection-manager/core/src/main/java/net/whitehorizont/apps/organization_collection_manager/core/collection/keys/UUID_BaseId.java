@@ -36,4 +36,9 @@ public class UUID_BaseId extends BaseId {
     return true;
   }
   
+
+  @Override
+  public String toString() {
+    return this.serialize();
+  }
 }
