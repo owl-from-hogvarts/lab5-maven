@@ -25,6 +25,7 @@ public class CollectionAdapter<R, P extends IElementPrototype<R>, E extends ICol
   private final XStream serializer = new XStream();
   {
     serializer.allowTypesByWildcard(new String[]{"net.whitehorizont.apps.organization_collection_manager.core.**"});
+    serializer.processAnnotations(StorageXml.class);
   }
   private final F elementFactory;
   @SuppressWarnings("null")
