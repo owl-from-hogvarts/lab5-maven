@@ -4,27 +4,29 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
+import net.whitehorizont.apps.organization_collection_manager.core.collection.Coordinates.CoordinatesPrototype;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.UUID_ElementId;
 import net.whitehorizont.apps.organization_collection_manager.lib.FieldDefinition;
 import net.whitehorizont.apps.organization_collection_manager.lib.FieldMetadata;
+import net.whitehorizont.apps.organization_collection_manager.lib.IFieldDefinitionNode;
 import net.whitehorizont.apps.organization_collection_manager.lib.StringFactory;
 import net.whitehorizont.apps.organization_collection_manager.lib.ValidationError;
 import net.whitehorizont.apps.organization_collection_manager.lib.ValidationResult;
 import net.whitehorizont.apps.organization_collection_manager.lib.WritableFromStringFieldDefinition;
 import net.whitehorizont.apps.organization_collection_manager.lib.WriteableFieldDefinition;
+import net.whitehorizont.apps.organization_collection_manager.lib.WriteableFieldDefinitionNode;
 
 @NonNullByDefault
 public class OrganisationElement implements ICollectionElement<OrganisationElement.OrganisationElementPrototype> {
-  // DONE: make itertor for fields
+  // DONE: make iterator for fields
   private static final String ELEMENT_TITLE = "Organisation";
   
   private static final FieldMetadata<String, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement, ?>> NAME_METADATA = new FieldMetadata<>(
       new FieldMetadata.Metadata<String, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement, ?>>()
           .setDisplayedName("name")
           .setRequired("Company name must be specified")
-          .addValidator((value, _unused) -> new ValidationResult<>(value.length() >= 1, "")));
+          .addValidator((value, _unused) -> new ValidationResult<>(value.length() >= 1, "String should not be empty")));
 
   private static final FieldMetadata<UUID_ElementId, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement, ?>> ID_METADATA = new FieldMetadata<>(
       new FieldMetadata.Metadata<UUID_ElementId, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement, ?>>()
@@ -37,6 +39,7 @@ public class OrganisationElement implements ICollectionElement<OrganisationEleme
 
   private final FieldDefinition<String, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement, ?>> name;
   private final FieldDefinition<UUID_ElementId, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement, ?>> ID;
+  private final Coordinates coordinates;
 
   public FieldDefinition<String, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement, ?>> getName() {
     return name;
@@ -47,23 +50,25 @@ public class OrganisationElement implements ICollectionElement<OrganisationEleme
   }
 
   public OrganisationElement(ICollection<OrganisationElementPrototype, OrganisationElement, ?> collection,
-      OrganisationElementPrototype builder)
+      OrganisationElementPrototype prototype)
       throws ValidationError {
     this.name = new FieldDefinition<String, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement, ?>>(
         OrganisationElement.NAME_METADATA,
-        builder.name.getValue(),
+        prototype.name.getValue(),
         collection);
 
     this.ID = new FieldDefinition<UUID_ElementId, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement, ?>>(
-        ID_METADATA, builder.ID.getValue(),
+        ID_METADATA, prototype.ID.getValue(),
         collection);
+
+    this.coordinates = new Coordinates(prototype.coordinates);
   }
 
   public static class OrganisationElementRawData {
-    private @Nullable String name;
+    private String name = "-()0=";
     private UUID_ElementId ID = new UUID_ElementId(); // init with default value which is easily overridable
 
-    private OrganisationElementRawData name(@Nullable String name) {
+    private OrganisationElementRawData name(String name) {
       this.name = name;
       return this;
     }
@@ -100,6 +105,7 @@ public class OrganisationElement implements ICollectionElement<OrganisationEleme
       implements IElementPrototype<OrganisationElement.OrganisationElementRawData> {
     private final WriteableFieldDefinition<UUID_ElementId> ID;
     private final WritableFromStringFieldDefinition<String> name;
+    private CoordinatesPrototype coordinates = new CoordinatesPrototype();
 
     private final List<WritableFromStringFieldDefinition<?>> fields = new ArrayList<>();
 
@@ -111,7 +117,7 @@ public class OrganisationElement implements ICollectionElement<OrganisationEleme
         this.fields.add(name);
 
       } catch (ValidationError e) {
-        assert false;
+        assert false;  // default value is hardcoded. if error happens here, it is a bug
         throw new RuntimeException();
       }
 
@@ -136,11 +142,18 @@ public class OrganisationElement implements ICollectionElement<OrganisationEleme
       return this;
     }
 
-    // @Override
-    // public Iterable<WriteableFieldDefinition<?>> getDisplayableFields() {
-    // return this.getDisplayableFields();
-    // }
+    @Override
+    public Iterable<WriteableFieldDefinitionNode> getChildren() {
+      final List<WriteableFieldDefinitionNode> children = new ArrayList<>();
+      children.add(coordinates);
 
+      return children;
+    }
+
+    @Override
+    public String getDisplayedName() {
+      return ELEMENT_TITLE;
+    }
   }
 
   @Override
@@ -155,5 +168,13 @@ public class OrganisationElement implements ICollectionElement<OrganisationEleme
   @Override
   public String getDisplayedName() {
     return ELEMENT_TITLE;
+  }
+
+  @Override
+  public Iterable<IFieldDefinitionNode> getChildren() {
+    final List<IFieldDefinitionNode> children = new ArrayList<>();
+    children.add(coordinates);
+
+    return children;
   }
 }
