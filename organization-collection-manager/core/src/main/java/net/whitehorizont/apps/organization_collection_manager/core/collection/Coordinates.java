@@ -3,8 +3,10 @@ package net.whitehorizont.apps.organization_collection_manager.core.collection;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
+import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.BaseId;
 import net.whitehorizont.apps.organization_collection_manager.lib.FieldDefinition;
 import net.whitehorizont.apps.organization_collection_manager.lib.FieldMetadata;
 import net.whitehorizont.apps.organization_collection_manager.lib.IFieldDefinitionNode;
@@ -15,7 +17,7 @@ import net.whitehorizont.apps.organization_collection_manager.lib.WritableFromSt
 import net.whitehorizont.apps.organization_collection_manager.lib.WriteableFieldDefinitionNode;
 
 @NonNullByDefault
-public class Coordinates implements IFieldDefinitionNode {
+public class Coordinates implements ICollectionElement<Coordinates.CoordinatesPrototype> {
   private static final String COORDINATES_TITLE = "Coordinates";
   
   private static final FieldMetadata<Integer, Object> X_METADATA = new FieldMetadata<>(new FieldMetadata.Metadata<Integer, Object>().addValidator((value, _unused) -> {
@@ -98,5 +100,26 @@ public class Coordinates implements IFieldDefinitionNode {
   @Override
   public Iterable<IFieldDefinitionNode> getChildren() {
     return new ArrayList<>();
+  }
+
+  @Override
+  public @NonNull BaseId getId() {
+    // TODO: refactor interfaces
+    throw new UnsupportedOperationException("Unimplemented method 'getId'");
+  }
+
+  @Override
+  public CoordinatesPrototype getPrototype() {
+    final var prototype = new CoordinatesPrototype();
+    try {
+      prototype.x.setValue(this.x.getValue());
+
+      return prototype;
+    } catch (ValidationError e) {
+      // valid element is valid prototype
+      // if validation error happens -> error in program
+      assert false;
+      throw new RuntimeException();
+    }
   }
 }

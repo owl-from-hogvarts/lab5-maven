@@ -6,6 +6,7 @@ import java.util.List;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import net.whitehorizont.apps.organization_collection_manager.core.collection.Coordinates.CoordinatesPrototype;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.Coordinates.CoordinatesRawData;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.UUID_ElementId;
 import net.whitehorizont.apps.organization_collection_manager.lib.FieldDefinition;
 import net.whitehorizont.apps.organization_collection_manager.lib.FieldMetadata;
@@ -21,7 +22,7 @@ import net.whitehorizont.apps.organization_collection_manager.lib.WriteableField
 public class OrganisationElement implements ICollectionElement<OrganisationElement.OrganisationElementPrototype> {
   // DONE: make iterator for fields
   private static final String ELEMENT_TITLE = "Organisation";
-  
+
   private static final FieldMetadata<String, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement, ?>> NAME_METADATA = new FieldMetadata<>(
       new FieldMetadata.Metadata<String, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement, ?>>()
           .setDisplayedName("name")
@@ -67,6 +68,7 @@ public class OrganisationElement implements ICollectionElement<OrganisationEleme
   public static class OrganisationElementRawData {
     private String name = "-()0=";
     private UUID_ElementId ID = new UUID_ElementId(); // init with default value which is easily overridable
+    private CoordinatesRawData coordinates = new CoordinatesRawData();
 
     private OrganisationElementRawData name(String name) {
       this.name = name;
@@ -75,6 +77,11 @@ public class OrganisationElement implements ICollectionElement<OrganisationEleme
 
     public OrganisationElementRawData ID(UUID_ElementId id) {
       this.ID = id;
+      return this;
+    }
+
+    private OrganisationElementRawData coordinates(CoordinatesRawData coordinates) {
+      this.coordinates = coordinates;
       return this;
     }
   }
@@ -90,6 +97,7 @@ public class OrganisationElement implements ICollectionElement<OrganisationEleme
     try {
       prototype.ID.setValue(this.ID.getValue());
       prototype.name.setValue(this.name.getValue());
+      prototype.coordinates = this.coordinates.getPrototype();
 
       return prototype;
     } catch (ValidationError e) {
@@ -117,7 +125,7 @@ public class OrganisationElement implements ICollectionElement<OrganisationEleme
         this.fields.add(name);
 
       } catch (ValidationError e) {
-        assert false;  // default value is hardcoded. if error happens here, it is a bug
+        assert false; // default value is hardcoded. if error happens here, it is a bug
         throw new RuntimeException();
       }
 
@@ -125,7 +133,8 @@ public class OrganisationElement implements ICollectionElement<OrganisationEleme
 
     @Override
     public OrganisationElementRawData getRawElementData() {
-      return new OrganisationElementRawData().ID(this.ID.getValue()).name(this.name.getValue());
+      return new OrganisationElementRawData().ID(this.ID.getValue()).name(this.name.getValue())
+          .coordinates(coordinates.getRawElementData());
     }
 
     @Override
@@ -134,10 +143,12 @@ public class OrganisationElement implements ICollectionElement<OrganisationEleme
     }
 
     @Override
-    public IElementPrototype<OrganisationElementRawData> setFromRawData(OrganisationElementRawData rawData) throws ValidationError {
+    public IElementPrototype<OrganisationElementRawData> setFromRawData(OrganisationElementRawData rawData)
+        throws ValidationError {
 
       this.ID.setValue(rawData.ID);
       this.name.setValueFromString(rawData.name);
+      this.coordinates.setFromRawData(rawData.coordinates);
 
       return this;
     }
