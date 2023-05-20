@@ -2,6 +2,9 @@ package net.whitehorizont.apps.organization_collection_manager.core.collection.k
 
 import java.util.UUID;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
+@NonNullByDefault
 public class UUID_BaseId extends BaseId {
 
   private final UUID ID = UUID.randomUUID();
@@ -20,7 +23,7 @@ public class UUID_BaseId extends BaseId {
   }
 
   @Override
-  public boolean equals(Object obj) {
+  public boolean equals(BaseId obj) {
     if (this == obj)
       return true;
     if (obj == null)

@@ -103,7 +103,7 @@ public class Coordinates implements ICollectionElement<Coordinates.CoordinatesPr
   }
 
   @Override
-  public @NonNull BaseId getId() {
+  public BaseId getId() {
     // TODO: refactor interfaces
     throw new UnsupportedOperationException("Unimplemented method 'getId'");
   }
