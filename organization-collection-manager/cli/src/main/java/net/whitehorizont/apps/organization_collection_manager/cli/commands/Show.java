@@ -18,14 +18,9 @@ import net.whitehorizont.apps.organization_collection_manager.lib.IFieldDefiniti
 import net.whitehorizont.libs.file_system.StringHelper;
 
 @NonNullByDefault
-public class Show implements
+public class Show extends BaseElementCommand implements
     ICliCommand<CliDependencyManager<? extends ICollectionManager<? extends ICollection<?, ? extends ICollectionElement<?>, ?>, ?>>> {
   private static final String DESCRIPTION = "print all collection elements";
-  private static final String FIELD_NAME_VALUE_SEPARATOR = ": ";
-  private static final String DEFAULT_DECORATOR = "-";
-  private static final String PADDING_SYMBOL = " ";
-  private static final int PADDING_MULTIPLIER = 2;
-  private static final int DECORATED_TITLE_WIDTH = 80;
 
   @Override
   public boolean hasArgument() {
@@ -59,28 +54,20 @@ public class Show implements
     });
   }
 
-  private static String prepareNodeTitle(String title, String decorator, boolean isElement) {
-    if (isElement) {
-      return StringHelper.padBoth(" " + title + " ", DECORATED_TITLE_WIDTH, decorator);
-    }
 
-    return title + FIELD_NAME_VALUE_SEPARATOR;
-  }
 
   private static void printFields(IFieldDefinitionNode node, PrintStream out) {
     printFields(node, out, 0);
   }
 
   private static void printFields(IFieldDefinitionNode node, PrintStream out, int nestLevel) {
-    out.println(prepareNodeTitle(node.getDisplayedName(), DEFAULT_DECORATOR, nestLevel == 0));
+    out.println(prepareNodeTitle(node.getDisplayedName(), DEFAULT_DECORATOR, isElement(nestLevel)));
 
     final var fields = node.getFields();
     for (final var field : fields) {
       final var value = field.getValue() != null ? field.getValue().toString() : "null";
       final String fieldNameValue = field.getMetadata().getDisplayedName() + FIELD_NAME_VALUE_SEPARATOR + value;
-      final int paddingSize = nestLevel * PADDING_MULTIPLIER;
-      final int paddedStringLength = paddingSize + fieldNameValue.length();
-      final String paddedFieldNameValue = StringHelper.padStart(fieldNameValue, paddedStringLength, PADDING_SYMBOL);
+      final String paddedFieldNameValue = StringHelper.padStart(fieldNameValue, computeNestedPadding(nestLevel, fieldNameValue), PADDING_SYMBOL);
       out.println(paddedFieldNameValue);
     }
 
