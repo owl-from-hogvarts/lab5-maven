@@ -15,6 +15,7 @@ import net.whitehorizont.apps.organization_collection_manager.core.commands.Coll
 import net.whitehorizont.apps.organization_collection_manager.core.commands.InsertCommand;
 import net.whitehorizont.apps.organization_collection_manager.core.storage.errors.StorageInaccessibleError;
 import net.whitehorizont.apps.organization_collection_manager.lib.ValidationError;
+import net.whitehorizont.apps.organization_collection_manager.lib.WritableFromStringFieldDefinition;
 
 @NonNullByDefault
 public class Insert<P extends IElementPrototype<?>, CM extends ICollectionManager<? extends ICollection<P, ?, ?>, ?>>
@@ -28,9 +29,10 @@ public class Insert<P extends IElementPrototype<?>, CM extends ICollectionManage
 
     final ICollection<P, ?, ?> collection = collectionManager.getCollection().blockingFirst();
     final var prototype = collection.getElementPrototype();
-    final var fields = prototype.getWriteableFromStringFields();
 
+    final var fields = prototype.getWriteableFromStringFields();
     final var lineReader = dependencyManager.getLineReader();
+
     for (final var field : fields) {
       final var metadata = field.getMetadata();
       @Nullable
@@ -52,6 +54,10 @@ public class Insert<P extends IElementPrototype<?>, CM extends ICollectionManage
     final var insertCommand = new InsertCommand<>(prototype, collectionReceiver);
 
     return dependencyManager.getCommandQueue().push(insertCommand);
+  }
+
+  private void promptForFields() {
+
   }
 
   @Override

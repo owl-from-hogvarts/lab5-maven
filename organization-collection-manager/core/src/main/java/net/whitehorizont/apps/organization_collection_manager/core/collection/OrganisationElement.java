@@ -16,7 +16,7 @@ import net.whitehorizont.apps.organization_collection_manager.lib.ValidationErro
 import net.whitehorizont.apps.organization_collection_manager.lib.ValidationResult;
 import net.whitehorizont.apps.organization_collection_manager.lib.WritableFromStringFieldDefinition;
 import net.whitehorizont.apps.organization_collection_manager.lib.WriteableFieldDefinition;
-import net.whitehorizont.apps.organization_collection_manager.lib.WriteableFieldDefinitionNode;
+import net.whitehorizont.apps.organization_collection_manager.lib.IWriteableFieldDefinitionNode;
 
 @NonNullByDefault
 public class OrganisationElement implements ICollectionElement<OrganisationElement.OrganisationElementPrototype> {
@@ -154,8 +154,8 @@ public class OrganisationElement implements ICollectionElement<OrganisationEleme
     }
 
     @Override
-    public Iterable<WriteableFieldDefinitionNode> getChildren() {
-      final List<WriteableFieldDefinitionNode> children = new ArrayList<>();
+    public Iterable<IWriteableFieldDefinitionNode> getChildren() {
+      final List<IWriteableFieldDefinitionNode> children = new ArrayList<>();
       children.add(coordinates);
 
       return children;

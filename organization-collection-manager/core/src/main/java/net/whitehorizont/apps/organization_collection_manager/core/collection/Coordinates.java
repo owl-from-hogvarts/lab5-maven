@@ -14,7 +14,7 @@ import net.whitehorizont.apps.organization_collection_manager.lib.NumberFactory;
 import net.whitehorizont.apps.organization_collection_manager.lib.ValidationError;
 import net.whitehorizont.apps.organization_collection_manager.lib.ValidationResult;
 import net.whitehorizont.apps.organization_collection_manager.lib.WritableFromStringFieldDefinition;
-import net.whitehorizont.apps.organization_collection_manager.lib.WriteableFieldDefinitionNode;
+import net.whitehorizont.apps.organization_collection_manager.lib.IWriteableFieldDefinitionNode;
 
 @NonNullByDefault
 public class Coordinates implements ICollectionElement<Coordinates.CoordinatesPrototype> {
@@ -74,7 +74,7 @@ public class Coordinates implements ICollectionElement<Coordinates.CoordinatesPr
     }
 
     @Override
-    public Iterable<WriteableFieldDefinitionNode> getChildren() {
+    public Iterable<IWriteableFieldDefinitionNode> getChildren() {
       return new ArrayList<>();
     }
 
