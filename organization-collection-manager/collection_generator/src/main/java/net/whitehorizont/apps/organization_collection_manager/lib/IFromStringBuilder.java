@@ -1,5 +1,5 @@
 package net.whitehorizont.apps.organization_collection_manager.lib;
 
 public interface IFromStringBuilder<V> {
-  V buildFromString(String string);
+  V buildFromString(String string) throws ValidationError;
 }
