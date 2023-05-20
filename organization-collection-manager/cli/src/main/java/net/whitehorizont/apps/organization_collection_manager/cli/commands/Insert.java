@@ -1,10 +1,12 @@
 package net.whitehorizont.apps.organization_collection_manager.cli.commands;
 
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.Stack;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.jline.reader.LineReader;
 
 import io.reactivex.rxjava3.core.Observable;
 import net.whitehorizont.apps.organization_collection_manager.cli.CliDependencyManager;
@@ -14,12 +16,14 @@ import net.whitehorizont.apps.organization_collection_manager.core.collection.IE
 import net.whitehorizont.apps.organization_collection_manager.core.commands.CollectionCommandReceiver;
 import net.whitehorizont.apps.organization_collection_manager.core.commands.InsertCommand;
 import net.whitehorizont.apps.organization_collection_manager.core.storage.errors.StorageInaccessibleError;
+import net.whitehorizont.apps.organization_collection_manager.lib.IWriteableFieldDefinitionNode;
 import net.whitehorizont.apps.organization_collection_manager.lib.ValidationError;
 import net.whitehorizont.apps.organization_collection_manager.lib.WritableFromStringFieldDefinition;
+import net.whitehorizont.libs.file_system.StringHelper;
 
 @NonNullByDefault
 public class Insert<P extends IElementPrototype<?>, CM extends ICollectionManager<? extends ICollection<P, ?, ?>, ?>>
-    implements ICliCommand<CliDependencyManager<CM>> {
+    extends BaseElementCommand implements ICliCommand<CliDependencyManager<CM>> {
   private static final String DESCRIPTION = "insert element into collection";
 
   @Override
@@ -28,15 +32,36 @@ public class Insert<P extends IElementPrototype<?>, CM extends ICollectionManage
     final var collectionManager = dependencyManager.getCollectionManager();
 
     final ICollection<P, ?, ?> collection = collectionManager.getCollection().blockingFirst();
+
     final var prototype = collection.getElementPrototype();
-
-    final var fields = prototype.getWriteableFromStringFields();
     final var lineReader = dependencyManager.getLineReader();
+    final var out = new PrintStream(dependencyManager.getStreams().out);
 
+    promptForFields(prototype, lineReader, out);
+
+    final var collectionReceiver = new CollectionCommandReceiver<>(collection);
+    final var insertCommand = new InsertCommand<>(prototype, collectionReceiver);
+
+    return dependencyManager.getCommandQueue().push(insertCommand);
+  }
+
+  private void promptForFields(IWriteableFieldDefinitionNode node, LineReader lineReader, PrintStream out) {
+    promptForFields(node, lineReader, out, 0);
+  }
+
+  private void promptForFields(IWriteableFieldDefinitionNode node, LineReader lineReader, PrintStream out, int nestLevel) {
+    final var fields = node.getWriteableFromStringFields();
+    
+    out.println(prepareNodeTitle(node.getDisplayedName(), DEFAULT_DECORATOR, isElement(nestLevel)));
+    
     for (final var field : fields) {
       final var metadata = field.getMetadata();
+
+      final String fieldPrompt = metadata.getDisplayedName() + FIELD_NAME_VALUE_SEPARATOR;
+      final String fieldPromptPadded = StringHelper.padStart(fieldPrompt, computeNestedPadding(nestLevel, fieldPrompt), PADDING_SYMBOL);
+      
       @Nullable
-      String userInput = lineReader.readLine(metadata.getDisplayedName() + ": ").trim();
+      String userInput = lineReader.readLine(fieldPromptPadded).trim();
 
       if (userInput.length() < 1) {
         userInput = null;
@@ -50,14 +75,9 @@ public class Insert<P extends IElementPrototype<?>, CM extends ICollectionManage
       }
     }
 
-    final var collectionReceiver = new CollectionCommandReceiver<>(collection);
-    final var insertCommand = new InsertCommand<>(prototype, collectionReceiver);
-
-    return dependencyManager.getCommandQueue().push(insertCommand);
-  }
-
-  private void promptForFields() {
-
+    for (final var child : node.getChildren()) {
+      promptForFields(child, lineReader, out, nestLevel + 1);
+    }
   }
 
   @Override
