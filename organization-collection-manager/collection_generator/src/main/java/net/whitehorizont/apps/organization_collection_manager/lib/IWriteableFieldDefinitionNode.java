@@ -4,5 +4,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 @NonNullByDefault
 public interface IWriteableFieldDefinitionNode extends IDisplayable {
+  Iterable<WritableFromStringFieldDefinition<?>> getWriteableFromStringFields();
   Iterable<IWriteableFieldDefinitionNode> getChildren();
 }
