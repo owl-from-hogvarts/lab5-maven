@@ -1,5 +1,6 @@
 package net.whitehorizont.apps.organization_collection_manager.core.collection;
 
+import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,6 +9,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.Coordinates.CoordinatesPrototype;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.Coordinates.CoordinatesRawData;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.UUID_ElementId;
+import net.whitehorizont.apps.organization_collection_manager.lib.EnumFactory;
 import net.whitehorizont.apps.organization_collection_manager.lib.FieldDefinition;
 import net.whitehorizont.apps.organization_collection_manager.lib.FieldMetadata;
 import net.whitehorizont.apps.organization_collection_manager.lib.IFieldDefinitionNode;
@@ -23,6 +25,7 @@ public class OrganisationElement implements ICollectionElement<OrganisationEleme
   // DONE: make iterator for fields
   private static final String ELEMENT_TITLE = "Organisation";
 
+  // !!! METADATA !!!
   private static final FieldMetadata<String, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement, ?>> NAME_METADATA = new FieldMetadata<>(
       new FieldMetadata.Metadata<String, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement, ?>>()
           .setDisplayedName("name")
@@ -34,14 +37,22 @@ public class OrganisationElement implements ICollectionElement<OrganisationEleme
           .setDisplayedName("ID")
           .setRequired("ID must be provided for collection element"));
 
+  private static final FieldMetadata<OrganisationType, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement, ?>> TYPE_METADATA = new FieldMetadata<>(
+      new FieldMetadata.Metadata<OrganisationType, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement, ?>>()
+      .setDisplayedName("type")
+      .setRequired("Type of organisation should be specified!"));
+
   public static FieldMetadata<String, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement, ?>> getNameMetadata() {
     return NAME_METADATA;
   }
 
+  // !!! FIELDS !!!
   private final FieldDefinition<String, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement, ?>> name;
   private final FieldDefinition<UUID_ElementId, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement, ?>> ID;
   private final Coordinates coordinates;
+  private final FieldDefinition<OrganisationType, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement, ?>> type;
 
+  // !!! GETTERS !!!
   public FieldDefinition<String, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement, ?>> getName() {
     return name;
   }
@@ -50,6 +61,11 @@ public class OrganisationElement implements ICollectionElement<OrganisationEleme
     return ID;
   }
 
+  public FieldDefinition<OrganisationType, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement, ?>> getType() {
+    return type;
+  }
+
+  // !!! CONSTRUCTOR !!!
   public OrganisationElement(ICollection<OrganisationElementPrototype, OrganisationElement, ?> collection,
       OrganisationElementPrototype prototype)
       throws ValidationError {
@@ -63,12 +79,15 @@ public class OrganisationElement implements ICollectionElement<OrganisationEleme
         collection);
 
     this.coordinates = new Coordinates(prototype.coordinates);
+
+    this.type = new FieldDefinition<OrganisationType,ICollection<OrganisationElementPrototype,OrganisationElement,?>>(TYPE_METADATA, prototype.type.getValue(), collection);
   }
 
   public static class OrganisationElementRawData {
     private String name = "-()0=";
     private UUID_ElementId ID = new UUID_ElementId(); // init with default value which is easily overridable
     private CoordinatesRawData coordinates = new CoordinatesRawData();
+    private OrganisationType type;
 
     private OrganisationElementRawData name(String name) {
       this.name = name;
@@ -82,6 +101,11 @@ public class OrganisationElement implements ICollectionElement<OrganisationEleme
 
     private OrganisationElementRawData coordinates(CoordinatesRawData coordinates) {
       this.coordinates = coordinates;
+      return this;
+    }
+
+    private OrganisationElementRawData type(OrganisationType type) {
+      this.type = type;
       return this;
     }
   }
@@ -98,6 +122,7 @@ public class OrganisationElement implements ICollectionElement<OrganisationEleme
       prototype.ID.setValue(this.ID.getValue());
       prototype.name.setValue(this.name.getValue());
       prototype.coordinates = this.coordinates.getPrototype();
+      prototype.type.setValue(this.type.getValue());
 
       return prototype;
     } catch (ValidationError e) {
@@ -111,18 +136,23 @@ public class OrganisationElement implements ICollectionElement<OrganisationEleme
 
   public static class OrganisationElementPrototype
       implements IElementPrototype<OrganisationElement.OrganisationElementRawData> {
+
     private final WriteableFieldDefinition<UUID_ElementId> ID;
     private final WritableFromStringFieldDefinition<String> name;
     private CoordinatesPrototype coordinates = new CoordinatesPrototype();
+    private final WritableFromStringFieldDefinition<OrganisationType> type;
 
-    private final List<WritableFromStringFieldDefinition<?>> fields = new ArrayList<>();
+    private final List<WritableFromStringFieldDefinition<?>> inputFields = new ArrayList<>();
 
     public OrganisationElementPrototype() {
       try {
         this.ID = new WriteableFieldDefinition<>(OrganisationElement.ID_METADATA, new UUID_ElementId());
 
         this.name = new WritableFromStringFieldDefinition<String>(NAME_METADATA, new StringFactory(), "");
-        this.fields.add(name);
+        this.inputFields.add(name);
+
+        this.type = new WritableFromStringFieldDefinition<OrganisationType>(TYPE_METADATA, OrganisationType.COMMERCIAL ,new EnumFactory<>(OrganisationType.class));
+        this.inputFields.add(type);
 
       } catch (ValidationError e) {
         assert false; // default value is hardcoded. if error happens here, it is a bug
@@ -133,13 +163,16 @@ public class OrganisationElement implements ICollectionElement<OrganisationEleme
 
     @Override
     public OrganisationElementRawData getRawElementData() {
-      return new OrganisationElementRawData().ID(this.ID.getValue()).name(this.name.getValue())
-          .coordinates(coordinates.getRawElementData());
+      return new OrganisationElementRawData()
+        .ID(this.ID.getValue())
+        .name(this.name.getValue())
+        .coordinates(coordinates.getRawElementData())
+        .type(this.type.getValue());
     }
 
     @Override
     public Iterable<WritableFromStringFieldDefinition<?>> getWriteableFromStringFields() {
-      return this.fields;
+      return this.inputFields;
     }
 
     @Override
@@ -149,6 +182,7 @@ public class OrganisationElement implements ICollectionElement<OrganisationEleme
       this.ID.setValue(rawData.ID);
       this.name.setValueFromString(rawData.name);
       this.coordinates.setFromRawData(rawData.coordinates);
+      this.type.setValue(rawData.type);
 
       return this;
     }
@@ -172,6 +206,7 @@ public class OrganisationElement implements ICollectionElement<OrganisationEleme
     final List<FieldDefinition<?, ?>> fieldDefinitions = new ArrayList<>();
     fieldDefinitions.add(getName());
     fieldDefinitions.add(getID());
+    fieldDefinitions.add(getType());
 
     return fieldDefinitions;
   }
