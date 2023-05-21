@@ -60,21 +60,27 @@ public class Insert<P extends IElementPrototype<?>, CM extends ICollectionManage
     for (final var field : fields) {
       final var metadata = field.getMetadata();
 
-      printHint(metadata, nestLevel, out);
+      // repeat until succeed
+      while (true) {
+        printHint(metadata, nestLevel, out);
 
-      // prepare prompt
-      final String fieldPrompt = metadata.getDisplayedName() + FIELD_NAME_VALUE_SEPARATOR;
-      final String fieldPromptPadded = StringHelper.padStart(fieldPrompt, computeNestedPadding(nestLevel, fieldPrompt),
-          PADDING_SYMBOL);
+        // prepare prompt
+        final String fieldPrompt = metadata.getDisplayedName() + FIELD_NAME_VALUE_SEPARATOR;
+        final String fieldPromptPadded = StringHelper.padStart(fieldPrompt,
+            computeNestedPadding(nestLevel, fieldPrompt),
+            PADDING_SYMBOL);
 
-      @Nullable
-      String userInput = readUserInput(lineReader, fieldPromptPadded);
+        @Nullable
+        String userInput = readUserInput(lineReader, fieldPromptPadded);
 
-      // try assign
-      try {
-        field.setValueFromString(userInput);
-      } catch (ValidationError e) {
-        out.println(e.getMessage());
+        try {
+          field.setValueFromString(userInput);
+          // if successful, get out of here
+          // on error next statement will be skipped
+          break;
+        } catch (ValidationError e) {
+          out.println(e.getMessage());
+        }
       }
     }
 
