@@ -18,7 +18,6 @@ import net.whitehorizont.apps.organization_collection_manager.core.commands.Inse
 import net.whitehorizont.apps.organization_collection_manager.core.storage.errors.StorageInaccessibleError;
 import net.whitehorizont.apps.organization_collection_manager.lib.IWriteableFieldDefinitionNode;
 import net.whitehorizont.apps.organization_collection_manager.lib.ValidationError;
-import net.whitehorizont.apps.organization_collection_manager.lib.WritableFromStringFieldDefinition;
 import net.whitehorizont.libs.file_system.StringHelper;
 
 @NonNullByDefault
@@ -59,9 +58,6 @@ public class Insert<P extends IElementPrototype<?>, CM extends ICollectionManage
     for (final var field : fields) {
       final var metadata = field.getMetadata();
 
-      final String fieldPrompt = metadata.getDisplayedName() + FIELD_NAME_VALUE_SEPARATOR;
-      final String fieldPromptPadded = StringHelper.padStart(fieldPrompt, computeNestedPadding(nestLevel, fieldPrompt), PADDING_SYMBOL);
-      
       if (metadata.getHint().isPresent()) {
         final String hint = HINT_PREFIX + metadata.getHint().get();
         final String hintPadded = StringHelper.padStart(hint, computeNestedPadding(nestLevel, hint), PADDING_SYMBOL);
@@ -69,7 +65,8 @@ public class Insert<P extends IElementPrototype<?>, CM extends ICollectionManage
         out.println(hintPadded);
       }
 
-      
+      final String fieldPrompt = metadata.getDisplayedName() + FIELD_NAME_VALUE_SEPARATOR;
+      final String fieldPromptPadded = StringHelper.padStart(fieldPrompt, computeNestedPadding(nestLevel, fieldPrompt), PADDING_SYMBOL);
       @Nullable
       String userInput = lineReader.readLine(fieldPromptPadded).trim();
 
