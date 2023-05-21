@@ -52,7 +52,7 @@ public class Insert<P extends IElementPrototype<?>, CM extends ICollectionManage
   private void promptForFields(IWriteableFieldDefinitionNode node, LineReader lineReader, PrintStream out, int nestLevel) {
     final var fields = node.getWriteableFromStringFields();
     
-    out.println(prepareNodeTitle(node.getDisplayedName(), DEFAULT_DECORATOR, isElement(nestLevel)));
+    out.println(prepareNodeTitle(node.getDisplayedName(), DEFAULT_DECORATOR, nestLevel));
     
     for (final var field : fields) {
       final var metadata = field.getMetadata();

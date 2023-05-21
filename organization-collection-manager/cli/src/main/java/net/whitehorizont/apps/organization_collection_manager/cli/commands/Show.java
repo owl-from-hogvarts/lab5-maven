@@ -57,11 +57,11 @@ public class Show extends BaseElementCommand implements
 
 
   private static void printFields(IFieldDefinitionNode node, PrintStream out) {
-    printFields(node, out, 0);
+    printFields(node, out, INITIAL_NEST_LEVEL);
   }
 
   private static void printFields(IFieldDefinitionNode node, PrintStream out, int nestLevel) {
-    out.println(prepareNodeTitle(node.getDisplayedName(), DEFAULT_DECORATOR, isElement(nestLevel)));
+    out.println(prepareNodeTitle(node.getDisplayedName(), DEFAULT_DECORATOR, nestLevel));
 
     final var fields = node.getFields();
     for (final var field : fields) {

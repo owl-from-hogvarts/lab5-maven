@@ -11,9 +11,10 @@ public abstract class BaseElementCommand {
   protected static final String PADDING_SYMBOL = " ";
   protected static final int PADDING_MULTIPLIER = 2;
   protected static final int DECORATED_TITLE_WIDTH = 80;
+  protected static final int INITIAL_NEST_LEVEL = 0;
 
-  protected static String prepareNodeTitle(String title, String decorator, boolean isElement) {
-    if (isElement) {
+  protected static String prepareNodeTitle(String title, String decorator, int nestLevel) {
+    if (isElement(nestLevel)) {
       return StringHelper.padBoth(" " + title + " ", DECORATED_TITLE_WIDTH, decorator);
     }
 
@@ -27,7 +28,7 @@ public abstract class BaseElementCommand {
     return paddedStringLength;
   }
 
-  protected static boolean isElement(int nestLevel) {
-    return nestLevel == 0;
+  private static boolean isElement(int nestLevel) {
+    return nestLevel == INITIAL_NEST_LEVEL;
   }
 }
