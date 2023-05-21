@@ -41,7 +41,7 @@ public class CLI<CM extends ICollectionManager<?, ?>> {
           err.println(e.getMessage());
         }, () -> {});
       } catch (Exception e) {
-        err.println("Exception: " + e.getMessage());
+        err.println("Error: " + e.getMessage());
         continue;
       }
     }
