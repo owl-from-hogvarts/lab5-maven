@@ -26,6 +26,8 @@ public class Insert<P extends IElementPrototype<?>, CM extends ICollectionManage
     extends BaseElementCommand implements ICliCommand<CliDependencyManager<CM>> {
   private static final String DESCRIPTION = "insert element into collection";
 
+  private static final String HINT_PREFIX = "Hint for next field: ";
+
   @Override
   public Observable<Void> run(CliDependencyManager<CM> dependencyManager, Stack<String> arguments)
       throws IOException, StorageInaccessibleError {
@@ -60,6 +62,14 @@ public class Insert<P extends IElementPrototype<?>, CM extends ICollectionManage
       final String fieldPrompt = metadata.getDisplayedName() + FIELD_NAME_VALUE_SEPARATOR;
       final String fieldPromptPadded = StringHelper.padStart(fieldPrompt, computeNestedPadding(nestLevel, fieldPrompt), PADDING_SYMBOL);
       
+      if (metadata.getHint().isPresent()) {
+        final String hint = HINT_PREFIX + metadata.getHint().get();
+        final String hintPadded = StringHelper.padStart(hint, computeNestedPadding(nestLevel, hint), PADDING_SYMBOL);
+
+        out.println(hintPadded);
+      }
+
+      
       @Nullable
       String userInput = lineReader.readLine(fieldPromptPadded).trim();
 
@@ -72,6 +82,7 @@ public class Insert<P extends IElementPrototype<?>, CM extends ICollectionManage
       } catch (ValidationError e) {
         final var output = lineReader.getTerminal().writer();
         output.println(e.getMessage());
+        output.flush();
       }
     }
 

@@ -40,7 +40,8 @@ public class OrganisationElement implements ICollectionElement<OrganisationEleme
   private static final FieldMetadata<OrganisationType, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement, ?>> TYPE_METADATA = new FieldMetadata<>(
       new FieldMetadata.Metadata<OrganisationType, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement, ?>>()
       .setDisplayedName("type")
-      .setRequired("Type of organisation should be specified!"));
+      .setRequired("Type of organisation should be specified!")
+      .setHint(OrganisationType.getHint()));
 
   public static FieldMetadata<String, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement, ?>> getNameMetadata() {
     return NAME_METADATA;
@@ -115,6 +116,7 @@ public class OrganisationElement implements ICollectionElement<OrganisationEleme
     return this.ID.getValue();
   }
 
+  // !!! BUILD PROTOTYPE !!!
   @Override
   public OrganisationElementPrototype getPrototype() {
     final var prototype = new OrganisationElementPrototype();
@@ -161,6 +163,7 @@ public class OrganisationElement implements ICollectionElement<OrganisationEleme
 
     }
 
+    // !!! GET RAW ELEMENT DATA !!!
     @Override
     public OrganisationElementRawData getRawElementData() {
       return new OrganisationElementRawData()
@@ -175,6 +178,7 @@ public class OrganisationElement implements ICollectionElement<OrganisationEleme
       return this.inputFields;
     }
 
+    // !!! SET FROM RAW DATA !!!
     @Override
     public IElementPrototype<OrganisationElementRawData> setFromRawData(OrganisationElementRawData rawData)
         throws ValidationError {

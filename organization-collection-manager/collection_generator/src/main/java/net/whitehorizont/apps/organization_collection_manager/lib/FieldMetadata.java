@@ -18,6 +18,7 @@ public class FieldMetadata<V, T> implements IValidatorsProvider<V, T> {
   public static class Metadata<V, T> {
     private String displayedName = "";
     private String description = "";
+    private Optional<String> hint = Optional.empty();
   
     private Optional<String> onNullMessage = Optional.of("Field should NOT be empty");
     private static final String OK_MESSAGE = "Everything ok!";
@@ -51,6 +52,11 @@ public class FieldMetadata<V, T> implements IValidatorsProvider<V, T> {
       return this;
     }
 
+    public Metadata<V, T> setHint(String hint) {
+      this.hint = Optional.of(hint);
+      return this;
+    }
+
     @Override
     protected Metadata<V, T> clone() throws CloneNotSupportedException {
       return (Metadata<V, T>) super.clone();
@@ -65,6 +71,9 @@ public class FieldMetadata<V, T> implements IValidatorsProvider<V, T> {
   }
   public boolean isNullable() {
     return metadata.onNullMessage.isEmpty();
+  }
+  public Optional<String> getHint() {
+    return metadata.hint;
   }
   @Override
   public List<Validator<V, T>> getValidators() { // ok at this point I don' know what happens. Java is just mad at me I guess
