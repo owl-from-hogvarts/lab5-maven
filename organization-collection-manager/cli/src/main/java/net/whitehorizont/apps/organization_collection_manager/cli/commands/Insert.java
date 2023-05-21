@@ -16,6 +16,7 @@ import net.whitehorizont.apps.organization_collection_manager.core.collection.IE
 import net.whitehorizont.apps.organization_collection_manager.core.commands.CollectionCommandReceiver;
 import net.whitehorizont.apps.organization_collection_manager.core.commands.InsertCommand;
 import net.whitehorizont.apps.organization_collection_manager.core.storage.errors.StorageInaccessibleError;
+import net.whitehorizont.apps.organization_collection_manager.lib.FieldMetadata;
 import net.whitehorizont.apps.organization_collection_manager.lib.IWriteableFieldDefinitionNode;
 import net.whitehorizont.apps.organization_collection_manager.lib.ValidationError;
 import net.whitehorizont.libs.file_system.StringHelper;
@@ -30,8 +31,8 @@ public class Insert<P extends IElementPrototype<?>, CM extends ICollectionManage
   @Override
   public Observable<Void> run(CliDependencyManager<CM> dependencyManager, Stack<String> arguments)
       throws IOException, StorageInaccessibleError {
-    final var collectionManager = dependencyManager.getCollectionManager();
 
+    final var collectionManager = dependencyManager.getCollectionManager();
     final ICollection<P, ?, ?> collection = collectionManager.getCollection().blockingFirst();
 
     final var prototype = collection.getElementPrototype();
@@ -50,42 +51,57 @@ public class Insert<P extends IElementPrototype<?>, CM extends ICollectionManage
     promptForFields(node, lineReader, out, 0);
   }
 
-  private void promptForFields(IWriteableFieldDefinitionNode node, LineReader lineReader, PrintStream out, int nestLevel) {
+  private void promptForFields(IWriteableFieldDefinitionNode node, LineReader lineReader, PrintStream out,
+      int nestLevel) {
     final var fields = node.getWriteableFromStringFields();
-    
+
     out.println(prepareNodeTitle(node.getDisplayedName(), DEFAULT_DECORATOR, nestLevel));
-    
+
     for (final var field : fields) {
       final var metadata = field.getMetadata();
 
-      if (metadata.getHint().isPresent()) {
-        final String hint = HINT_PREFIX + metadata.getHint().get();
-        final String hintPadded = StringHelper.padStart(hint, computeNestedPadding(nestLevel, hint), PADDING_SYMBOL);
+      printHint(metadata, nestLevel, out);
 
-        out.println(hintPadded);
-      }
-
+      // prepare prompt
       final String fieldPrompt = metadata.getDisplayedName() + FIELD_NAME_VALUE_SEPARATOR;
-      final String fieldPromptPadded = StringHelper.padStart(fieldPrompt, computeNestedPadding(nestLevel, fieldPrompt), PADDING_SYMBOL);
+      final String fieldPromptPadded = StringHelper.padStart(fieldPrompt, computeNestedPadding(nestLevel, fieldPrompt),
+          PADDING_SYMBOL);
+
       @Nullable
-      String userInput = lineReader.readLine(fieldPromptPadded).trim();
+      String userInput = readUserInput(lineReader, fieldPromptPadded);
 
-      if (userInput.length() < 1) {
-        userInput = null;
-      }
-
+      // try assign
       try {
         field.setValueFromString(userInput);
       } catch (ValidationError e) {
-        final var output = lineReader.getTerminal().writer();
-        output.println(e.getMessage());
-        output.flush();
+        out.println(e.getMessage());
       }
     }
 
     for (final var child : node.getChildren()) {
       promptForFields(child, lineReader, out, nestLevel + 1);
     }
+  }
+
+  private static void printHint(FieldMetadata<?, ?> metadata, int nestLevel, PrintStream out) {
+    if (metadata.getHint().isPresent()) {
+      final String hint = HINT_PREFIX + metadata.getHint().get();
+      final String hintPadded = StringHelper.padStart(hint, computeNestedPadding(nestLevel, hint), PADDING_SYMBOL);
+
+      out.println(hintPadded);
+    }
+  }
+
+  private static @Nullable String readUserInput(LineReader lineReader, String fieldPrompt) {
+    // read user input
+    @Nullable
+    String userInput = lineReader.readLine(fieldPrompt).trim();
+    // check for null
+    if (userInput.length() < 1) {
+      userInput = null;
+    }
+
+    return userInput;
   }
 
   @Override
