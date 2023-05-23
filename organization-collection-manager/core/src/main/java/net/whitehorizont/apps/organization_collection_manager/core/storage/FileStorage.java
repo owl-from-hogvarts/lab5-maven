@@ -47,7 +47,7 @@ public class FileStorage<C extends ICollection<?, ?, M>, M extends IWithId<? ext
   public FileStorage(String path, IFileAdapter<C, M> adapter) {
     this.adapter = adapter;
     @SuppressWarnings("null")
-    final @NonNull Path preparedPath = PathHelpers.preparePath(Paths.get(path));
+    final @NonNull Path preparedPath = PathHelpers.resolve(Paths.get(path));
     this.path = preparedPath;
   }
 

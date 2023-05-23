@@ -9,7 +9,7 @@ import java.nio.file.Path;
 import net.whitehorizont.libs.file_system.errors.PathSegmentError;
 
 public final class PathHelpers {
-  static public Path preparePath(Path path) {
+  public static Path resolve(Path path) {
     return path.toAbsolutePath().normalize();
   }
 
