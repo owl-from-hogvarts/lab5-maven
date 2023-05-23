@@ -42,17 +42,35 @@ public class CliDependencyManager<CM extends ICollectionManager<?, ?>> {
     return this.streams;
   }
 
-  public CliDependencyManager(CM collectionManager, Map<String, ICliCommand<? super CliDependencyManager<CM>>> commands, Streams streams)
+  public CliDependencyManager(Builder<CM> builder)
       throws TerminalUnavailable {
-    this.collectionManager = collectionManager;
-    this.commands = commands;
-    this.streams = streams;
+    this.collectionManager = builder.collectionManager;
+    this.commands = builder.commands;
+    this.streams = builder.streams;
 
     try {
       final Terminal defaultTerminal = TerminalBuilder.builder().system(true).streams(streams.in, streams.out).build();
       this.lineReader = new LineReaderImpl(defaultTerminal);
     } catch (IOException e) {
       throw new TerminalUnavailable();
+    }
+  }
+
+  public static class Builder<CM extends ICollectionManager<?, ?>> {
+    private CM collectionManager;
+    private Map<String, ICliCommand<? super CliDependencyManager<CM>>> commands;
+    private Streams streams;
+    public Builder<CM> setCollectionManager(CM collectionManager) {
+      this.collectionManager = collectionManager;
+      return this;
+    }
+    public Builder<CM> setCommands(Map<String, ICliCommand<? super CliDependencyManager<CM>>> commands) {
+      this.commands = commands;
+      return this;
+    }
+    public Builder<CM> setStreams(Streams streams) {
+      this.streams = streams;
+      return this;
     }
   }
 }

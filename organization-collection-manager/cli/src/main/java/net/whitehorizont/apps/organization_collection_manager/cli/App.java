@@ -30,10 +30,9 @@ public class App
 {
     public static void main( String[] args ) throws IOException, IncorrectNumberOfArguments, UnknownCommand, TerminalUnavailable
     {
-        final var organisationElementFactory = new OrganisationElementFactory();
-        final var xmlCollectionAdapter = new CollectionAdapter<>(organisationElementFactory);
-        final var testStorage = new FileStorage<>("./test.xml", xmlCollectionAdapter);
+        final var testStorage = setupStorage("./test.xml");
         final var collectionManager = new CollectionManager<>(testStorage);
+        // commands
         final var commands = new HashMap<String, ICliCommand<? super CliDependencyManager<ICollectionManager<ICollection<OrganisationElementPrototype, OrganisationElement, CollectionMetadata>, CollectionMetadata>>>>();
         final var insert = new Insert<OrganisationElementPrototype, ICollectionManager<ICollection<OrganisationElementPrototype, OrganisationElement, CollectionMetadata>, CollectionMetadata>>();
         commands.put("insert", insert);
@@ -41,10 +40,23 @@ public class App
         commands.put("show", show);
         final var save = new Save();
         commands.put("save", save);
+
+        // other configuration 
         final var streams = new Streams(System.in, System.out, System.err);
-        final var dependencyManager = new CliDependencyManager<ICollectionManager<ICollection<OrganisationElementPrototype, OrganisationElement, CollectionMetadata>, CollectionMetadata>>(collectionManager, commands, streams);
+        final var dependencyManagerBuilder = new CliDependencyManager.Builder<ICollectionManager<ICollection<OrganisationElementPrototype, OrganisationElement, CollectionMetadata>, CollectionMetadata>>()
+            .setStreams(streams)
+            .setCollectionManager(collectionManager)
+            .setCommands(commands);
+        final var dependencyManager = new CliDependencyManager<>(dependencyManagerBuilder);
         final var cli = new CLI<>(dependencyManager);
 
         cli.start();
+    }
+
+    public static FileStorage<ICollection<OrganisationElementPrototype, OrganisationElement, CollectionMetadata>, CollectionMetadata> setupStorage(String fileStoragePath) {
+        final var organisationElementFactory = new OrganisationElementFactory();
+        final var xmlCollectionAdapter = new CollectionAdapter<>(organisationElementFactory);
+        final var testStorage = new FileStorage<>(fileStoragePath, xmlCollectionAdapter);
+        return testStorage;
     }
 }
