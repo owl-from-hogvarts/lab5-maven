@@ -3,3 +3,4 @@ white horizont
 PUBLIC
 777
 save
+execute-script test-recursion.script

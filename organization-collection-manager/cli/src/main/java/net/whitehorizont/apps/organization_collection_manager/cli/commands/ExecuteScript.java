@@ -5,21 +5,23 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.nio.file.Path;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.Stack;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.jline.reader.EndOfFileException;
-
 import io.reactivex.rxjava3.core.Observable;
 import net.whitehorizont.apps.organization_collection_manager.cli.CLI;
 import net.whitehorizont.apps.organization_collection_manager.cli.CliDependencyManager;
 import net.whitehorizont.apps.organization_collection_manager.cli.Streams;
+import net.whitehorizont.apps.organization_collection_manager.cli.errors.RecursionDetected;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollectionManager;
 import net.whitehorizont.libs.file_system.PathHelpers;
 
 @NonNullByDefault
 public class ExecuteScript<CM extends ICollectionManager<?, ?>> implements ICliCommand<CliDependencyManager<CM>> {
   private static final String DESCRIPTION = "executes new line separated sequence of commands from file";
+  private final Set<Path> runningScripts = new HashSet<>();
 
   @Override
   public boolean hasArgument() {
@@ -37,8 +39,15 @@ public class ExecuteScript<CM extends ICollectionManager<?, ?>> implements ICliC
     return Observable.create((subscriber) -> {
       // turn argument into resolved path
       final Path path = Path.of(arguments.pop());
-      final var pathResolved = PathHelpers.resolve(path);
-      final var file = pathResolved.toFile();
+      final var resolvedPath = PathHelpers.resolve(path);
+
+      if (runningScripts.contains(resolvedPath)) {
+        throw new RecursionDetected();
+      }
+
+      runningScripts.add(resolvedPath);
+
+      final var file = resolvedPath.toFile();
       final InputStream fileInput = new FileInputStream(file);
 
       // build streams object with out stream redirected into void
@@ -51,7 +60,7 @@ public class ExecuteScript<CM extends ICollectionManager<?, ?>> implements ICliC
           .setStreams(scriptStreams)
           .setCollectionManager(dependencyManager.getCollectionManager())
           .setCommands(dependencyManager.getCommands())
-          .setOnInterruptHandler(() -> Observable.error(new EndOfFileException()))
+          .setOnInterruptHandler(() -> Observable.empty())
           .setGlobalErrorHandler((e, _dependencyManager) -> {
             dependencyManager.getGlobalErrorHandler().handle(e, _dependencyManager);
             return true;
@@ -62,6 +71,7 @@ public class ExecuteScript<CM extends ICollectionManager<?, ?>> implements ICliC
       try {
         scriptCli.start();
       } finally {
+        runningScripts.remove(resolvedPath);
         subscriber.onComplete();
       }
     });

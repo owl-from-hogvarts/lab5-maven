@@ -2,14 +2,11 @@ package net.whitehorizont.apps.organization_collection_manager.cli;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
-import java.util.function.Function;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.jline.reader.EndOfFileException;
 import org.jline.reader.LineReader;
@@ -28,10 +25,10 @@ import net.whitehorizont.apps.organization_collection_manager.core.collection.IC
 @NonNullByDefault
 public class CLI<CM extends ICollectionManager<?, ?>> {
   private static final String DEFAULT_PROMPT = " > ";
+  private static final String COMMAND_SEPARATOR = " ";
   private final LineReader reader;
   private final Map<String, ICliCommand<? super CliDependencyManager<CM>>> commands;
   private final CliDependencyManager<CM> dependencyManager;
-  private final PrintStream err;
   private final IInterruptHandler interruptHandler;
   private final IGlobalErrorHandler globalErrorHandler;
 
@@ -41,26 +38,31 @@ public class CLI<CM extends ICollectionManager<?, ?>> {
 
   public void start() {
     while (true) {
+      // I apologize for thar shit :)
       try {
-        promptCommand().blockingSubscribe();
-      } catch (Throwable e) {
-        if (globalErrorHandler.handle(e, dependencyManager)) {
+        try {
+          promptCommand().blockingSubscribe();
+        } catch (UserInterruptException | EndOfFileException e) {
+          this.interruptHandler.handle().blockingSubscribe();
           break;
         }
+      } catch (Throwable e) {
+        if (e instanceof RuntimeException && e.getCause() != null) {
+          e = e.getCause();
+        }
+        globalErrorHandler.handle(e, dependencyManager);
       }
     }
   }
-  
 
   public CLI(CliDependencyManager<CM> dependencyManager)
       throws IOException {
     this.dependencyManager = dependencyManager;
     this.reader = dependencyManager.getLineReader();
-    this.err = new PrintStream(this.dependencyManager.getStreams().err);
 
-    this.interruptHandler = dependencyManager.getOnInterrupt().isPresent() 
-                              ? dependencyManager.getOnInterrupt().get()
-                              : this::onInterop;
+    this.interruptHandler = dependencyManager.getOnInterrupt().isPresent()
+        ? dependencyManager.getOnInterrupt().get()
+        : this::onInterop;
 
     this.globalErrorHandler = dependencyManager.getGlobalErrorHandler();
 
@@ -72,7 +74,6 @@ public class CLI<CM extends ICollectionManager<?, ?>> {
 
   public Observable<Void> promptCommand()
       throws Exception {
-    try {
       final String userInput = reader.readLine(DEFAULT_PROMPT).trim().toLowerCase();
 
       // separate string into command and the reminder
@@ -101,9 +102,6 @@ public class CLI<CM extends ICollectionManager<?, ?>> {
       }
 
       return commandDescriptor.run(this.dependencyManager, wordsStack);
-    } catch (UserInterruptException | EndOfFileException e) {
-      return this.interruptHandler.handle();
-    }
   }
 
   public static boolean defaultGlobalErrorHandler(Throwable e, CliDependencyManager<?> dependencyManager) {
