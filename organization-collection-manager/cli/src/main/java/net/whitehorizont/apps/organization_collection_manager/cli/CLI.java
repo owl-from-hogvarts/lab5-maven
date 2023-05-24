@@ -75,7 +75,11 @@ public class CLI<CM extends ICollectionManager<?, ?>> {
     try {
       final String userInput = reader.readLine(DEFAULT_PROMPT).trim().toLowerCase();
 
-      final List<String> words = Arrays.asList(userInput.split(" "));
+      // separate string into command and the reminder
+      // everything after the command is single argument
+      // !!! THIS IS NOT MAGIC NUMBER !!!
+      // IT IS EXPECTED TO BE HARDCODED
+      final List<String> words = Arrays.asList(userInput.split(COMMAND_SEPARATOR, 2));
       // first pop command and then first argument and then second and so on
       Collections.reverse(words);
       final Stack<String> wordsStack = new Stack<String>();
