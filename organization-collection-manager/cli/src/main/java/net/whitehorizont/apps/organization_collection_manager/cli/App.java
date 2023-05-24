@@ -45,6 +45,7 @@ public class App
         final var dependencyManagerBuilder = new CliDependencyManager.Builder<ICollectionManager<ICollection<OrganisationElementPrototype, OrganisationElement, CollectionMetadata>, CollectionMetadata>>()
             .setStreams(streams)
             .setCollectionManager(collectionManager)
+            .setGlobalErrorHandler(CLI::defaultGlobalErrorHandler)
             .setCommands(commands);
         final var dependencyManager = new CliDependencyManager<>(dependencyManagerBuilder);
         final var cli = new CLI<>(dependencyManager);

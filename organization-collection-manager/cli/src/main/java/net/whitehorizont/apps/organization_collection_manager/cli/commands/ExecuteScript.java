@@ -1,11 +1,9 @@
 package net.whitehorizont.apps.organization_collection_manager.cli.commands;
 
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
+import java.io.PrintStream;
 import java.nio.file.Path;
 import java.util.Stack;
 
@@ -16,9 +14,7 @@ import io.reactivex.rxjava3.core.Observable;
 import net.whitehorizont.apps.organization_collection_manager.cli.CLI;
 import net.whitehorizont.apps.organization_collection_manager.cli.CliDependencyManager;
 import net.whitehorizont.apps.organization_collection_manager.cli.Streams;
-import net.whitehorizont.apps.organization_collection_manager.cli.errors.TerminalUnavailable;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollectionManager;
-import net.whitehorizont.apps.organization_collection_manager.core.storage.errors.StorageInaccessibleError;
 import net.whitehorizont.libs.file_system.PathHelpers;
 
 @NonNullByDefault
@@ -47,7 +43,7 @@ public class ExecuteScript<CM extends ICollectionManager<?, ?>> implements ICliC
 
       // build streams object with out stream redirected into void
       // and input stream set up to read from file
-      final var voidStream = OutputStream.nullOutputStream();
+      final var voidStream = new PrintStream(OutputStream.nullOutputStream());
       final var scriptStreams = new Streams(fileInput, voidStream, dependencyManager.getStreams().err);
       // leave err untouched since we wan't to report errors into console
       // construct new cli instance with new stream configuration
@@ -56,7 +52,8 @@ public class ExecuteScript<CM extends ICollectionManager<?, ?>> implements ICliC
           .setCollectionManager(dependencyManager.getCollectionManager())
           .setCommands(dependencyManager.getCommands())
           .setOnInterruptHandler(() -> Observable.error(new EndOfFileException()))
-          .setGlobalErrorHandler(e -> {
+          .setGlobalErrorHandler((e, _dependencyManager) -> {
+            dependencyManager.getGlobalErrorHandler().handle(e, _dependencyManager);
             return true;
           })
           .setSystemTerminal(false);

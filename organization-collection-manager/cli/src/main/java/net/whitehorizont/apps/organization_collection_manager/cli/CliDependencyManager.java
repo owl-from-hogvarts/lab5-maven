@@ -13,6 +13,7 @@ import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
 
 import net.whitehorizont.apps.organization_collection_manager.cli.commands.ICliCommand;
+import net.whitehorizont.apps.organization_collection_manager.cli.errors.IGlobalErrorHandler;
 import net.whitehorizont.apps.organization_collection_manager.cli.errors.IInterruptHandler;
 import net.whitehorizont.apps.organization_collection_manager.cli.errors.TerminalUnavailable;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollectionManager;
@@ -26,9 +27,9 @@ public class CliDependencyManager<CM extends ICollectionManager<?, ?>> {
   private final Streams streams;
   private final CommandQueue commandQueue = new CommandQueue();
   private final Optional<IInterruptHandler> onInterrupt;
-  private final Optional<Function<Throwable, Boolean>> globalErrorHandler;
+  private final IGlobalErrorHandler globalErrorHandler;
 
-  public Optional<Function<Throwable, Boolean>> getGlobalErrorHandler() {
+  public IGlobalErrorHandler getGlobalErrorHandler() {
     return globalErrorHandler;
   }
 
@@ -62,7 +63,7 @@ public class CliDependencyManager<CM extends ICollectionManager<?, ?>> {
     this.commands = builder.commands;
     this.streams = builder.streams;
     this.onInterrupt = Optional.ofNullable(builder.onInterruptHandler);
-    this.globalErrorHandler = Optional.ofNullable(builder.globalErrorHandler);
+    this.globalErrorHandler = builder.globalErrorHandler;
 
     try {
       final TerminalBuilder terminalBuilder = TerminalBuilder.builder().streams(streams.in, streams.out);
@@ -88,7 +89,7 @@ public class CliDependencyManager<CM extends ICollectionManager<?, ?>> {
     private Streams streams;
     private @Nullable IInterruptHandler onInterruptHandler;
     private boolean isSystemTerminal = true;
-    private @Nullable Function<Throwable, Boolean> globalErrorHandler;
+    private @Nullable IGlobalErrorHandler globalErrorHandler;
 
     /**
      * If error handler return true, this means that fatal error happened 
@@ -97,7 +98,7 @@ public class CliDependencyManager<CM extends ICollectionManager<?, ?>> {
      * @param globalErrorHandler
      * @return
      */
-    public Builder<CM> setGlobalErrorHandler(Function<Throwable, Boolean> globalErrorHandler) {
+    public Builder<CM> setGlobalErrorHandler(IGlobalErrorHandler globalErrorHandler) {
       this.globalErrorHandler = globalErrorHandler;
       return this;
     }

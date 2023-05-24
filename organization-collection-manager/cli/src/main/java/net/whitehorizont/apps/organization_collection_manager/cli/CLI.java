@@ -19,6 +19,7 @@ import io.reactivex.rxjava3.core.Observable;
 import net.whitehorizont.apps.organization_collection_manager.cli.commands.Exit;
 import net.whitehorizont.apps.organization_collection_manager.cli.commands.Help;
 import net.whitehorizont.apps.organization_collection_manager.cli.commands.ICliCommand;
+import net.whitehorizont.apps.organization_collection_manager.cli.errors.IGlobalErrorHandler;
 import net.whitehorizont.apps.organization_collection_manager.cli.errors.IInterruptHandler;
 import net.whitehorizont.apps.organization_collection_manager.cli.errors.IncorrectNumberOfArguments;
 import net.whitehorizont.apps.organization_collection_manager.cli.errors.UnknownCommand;
@@ -32,7 +33,7 @@ public class CLI<CM extends ICollectionManager<?, ?>> {
   private final CliDependencyManager<CM> dependencyManager;
   private final PrintStream err;
   private final IInterruptHandler interruptHandler;
-  private final Function<Throwable, Boolean> globalErrorHandler;
+  private final IGlobalErrorHandler globalErrorHandler;
 
   private static int convertBoolean(boolean b) {
     return b ? 1 : 0;
@@ -43,7 +44,7 @@ public class CLI<CM extends ICollectionManager<?, ?>> {
       try {
         promptCommand().blockingSubscribe();
       } catch (Throwable e) {
-        if (globalErrorHandler.apply(e)) {
+        if (globalErrorHandler.handle(e, dependencyManager)) {
           break;
         }
       }
@@ -61,9 +62,7 @@ public class CLI<CM extends ICollectionManager<?, ?>> {
                               ? dependencyManager.getOnInterrupt().get()
                               : this::onInterop;
 
-    this.globalErrorHandler = dependencyManager.getGlobalErrorHandler().isPresent()
-                                ? dependencyManager.getGlobalErrorHandler().get()
-                                : this::defaultGlobalErrorHandler;
+    this.globalErrorHandler = dependencyManager.getGlobalErrorHandler();
 
     this.commands = dependencyManager.getCommands();
     final ICliCommand<? super CliDependencyManager<CM>> help = new Help();
@@ -103,8 +102,9 @@ public class CLI<CM extends ICollectionManager<?, ?>> {
     }
   }
 
-  private boolean defaultGlobalErrorHandler(Throwable e) {
-    err.println("Error:" + e.getMessage());
+  public static boolean defaultGlobalErrorHandler(Throwable e, CliDependencyManager<?> dependencyManager) {
+    final var err = dependencyManager.getStreams().err;
+    err.println("Error: " + e.getMessage());
     return false;
   }
 
