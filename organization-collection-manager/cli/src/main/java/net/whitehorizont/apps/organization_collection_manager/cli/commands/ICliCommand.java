@@ -22,8 +22,7 @@ public interface ICliCommand<DM extends CliDependencyManager<?>> {
    * @param out
    * @param err
    * @return
-   * @throws IOException
-   * @throws StorageInaccessibleError
+   * @throws Exception if command can't handle something, let's just fail and pass error to global error handler
    */
-  Observable<Void> run(DM dependencyManager, Stack<String> arguments) throws IOException, StorageInaccessibleError;
+  Observable<Void> run(DM dependencyManager, Stack<String> arguments) throws Exception;
 }
