@@ -36,7 +36,7 @@ public class Insert<P extends IElementPrototype<?>, CM extends ICollectionManage
     final ICollection<P, ?, ?> collection = collectionManager.getCollection().blockingFirst();
 
     final var prototype = collection.getElementPrototype();
-    final var lineReader = dependencyManager.getLineReader();
+    final var lineReader = dependencyManager.getGenericLineReader();
     final var out = new PrintStream(dependencyManager.getStreams().out);
 
     promptForFields(prototype, lineReader, out);

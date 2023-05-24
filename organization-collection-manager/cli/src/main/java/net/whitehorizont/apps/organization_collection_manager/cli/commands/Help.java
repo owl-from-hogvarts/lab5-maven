@@ -45,7 +45,7 @@ public class Help implements ICliCommand<CliDependencyManager<?>> {
         commandDescriptions.add(commandDescription);
       }
 
-      final var lineReader = dependencyManager.getLineReader();
+      final var lineReader = dependencyManager.getCommandLineReader();
       final var output = lineReader.getTerminal().writer();
       final var maxCommandNameLength = commandDescriptions.stream().map(command -> command.getValue0().length())
           .max(Integer::compare).get().intValue();

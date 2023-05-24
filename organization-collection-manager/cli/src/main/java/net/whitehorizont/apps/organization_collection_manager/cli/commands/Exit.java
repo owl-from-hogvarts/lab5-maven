@@ -27,7 +27,7 @@ public class Exit implements ICliCommand<CliDependencyManager<?>> {
 
   @Override
   public Observable<Void> run(CliDependencyManager<?> dependencyManager, Stack<String> arguments) {
-    final var lineReader = dependencyManager.getLineReader();
+    final var lineReader = dependencyManager.getCommandLineReader();
     final var output = lineReader.getTerminal().writer();
     output.println(EXIT_MESSAGE);
     output.flush();

@@ -58,7 +58,7 @@ public class CLI<CM extends ICollectionManager<?, ?>> {
   public CLI(CliDependencyManager<CM> dependencyManager)
       throws IOException {
     this.dependencyManager = dependencyManager;
-    this.reader = dependencyManager.getLineReader();
+    this.reader = dependencyManager.getCommandLineReader();
 
     this.interruptHandler = dependencyManager.getOnInterrupt().isPresent()
         ? dependencyManager.getOnInterrupt().get()

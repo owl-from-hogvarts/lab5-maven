@@ -23,7 +23,17 @@ import net.whitehorizont.apps.organization_collection_manager.core.commands.Comm
 public class CliDependencyManager<CM extends ICollectionManager<?, ?>> {
   private final CM collectionManager;
   private final Map<String, ICliCommand<? super CliDependencyManager<CM>>> commands;
-  private final LineReader lineReader;
+  private final LineReader commandLineReader;
+  private final LineReader genericLineReader;
+
+  /**
+   * Use within commands
+   * @return
+   */
+  public LineReader getGenericLineReader() {
+    return genericLineReader;
+  }
+
   private final Streams streams;
   private final CommandQueue commandQueue = new CommandQueue();
   private final Optional<IInterruptHandler> onInterrupt;
@@ -49,8 +59,12 @@ public class CliDependencyManager<CM extends ICollectionManager<?, ?>> {
     return this.commandQueue;
   }
 
-  public LineReader getLineReader() {
-    return this.lineReader;
+  /**
+   * Use to ask for commands
+   * @return
+   */
+  public LineReader getCommandLineReader() {
+    return this.commandLineReader;
   }
 
   public Streams getStreams() {
@@ -77,7 +91,8 @@ public class CliDependencyManager<CM extends ICollectionManager<?, ?>> {
       // final var attr = new Attributes();
       // attr.setInputFlag(Attributes.InputFlag.BRKINT, true);
       // defaultTerminal.setAttributes(attr);
-      this.lineReader = LineReaderBuilder.builder().terminal(defaultTerminal).build();
+      this.commandLineReader = LineReaderBuilder.builder().terminal(defaultTerminal).build();
+      this.genericLineReader = LineReaderBuilder.builder().terminal(defaultTerminal).build();
     } catch (IOException e) {
       throw new TerminalUnavailable();
     }
