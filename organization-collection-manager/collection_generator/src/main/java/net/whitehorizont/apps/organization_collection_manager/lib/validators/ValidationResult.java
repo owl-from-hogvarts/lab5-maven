@@ -1,4 +1,4 @@
-package net.whitehorizont.apps.organization_collection_manager.lib;
+package net.whitehorizont.apps.organization_collection_manager.lib.validators;
 
 public class ValidationResult<R> implements IDisplayableMessage {
   public static final String DEFAULT_MESSAGE = "Correct";

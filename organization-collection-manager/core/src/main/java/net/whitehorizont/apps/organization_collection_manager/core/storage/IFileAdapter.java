@@ -8,7 +8,7 @@ import net.whitehorizont.apps.organization_collection_manager.core.collection.ke
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.IWithId;
 import net.whitehorizont.apps.organization_collection_manager.core.storage.errors.DeserializationError;
 import net.whitehorizont.apps.organization_collection_manager.core.storage.errors.ResourceEmpty;
-import net.whitehorizont.apps.organization_collection_manager.lib.ValidationError;
+import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationError;
 
 // adapter needs not just elements but the whole collection including metadata
 // adapter is built for pair of collection type and file format

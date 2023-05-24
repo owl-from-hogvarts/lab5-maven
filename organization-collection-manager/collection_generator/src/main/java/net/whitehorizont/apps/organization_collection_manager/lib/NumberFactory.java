@@ -1,5 +1,7 @@
 package net.whitehorizont.apps.organization_collection_manager.lib;
 
+import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationError;
+
 public class NumberFactory implements IFromStringBuilder<Integer> {
 
   @Override

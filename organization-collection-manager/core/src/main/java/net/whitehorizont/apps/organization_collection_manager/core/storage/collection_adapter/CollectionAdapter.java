@@ -17,7 +17,7 @@ import net.whitehorizont.apps.organization_collection_manager.core.collection.IE
 import net.whitehorizont.apps.organization_collection_manager.core.collection.CollectionMetadata.Builder;
 import net.whitehorizont.apps.organization_collection_manager.core.storage.IFileAdapter;
 import net.whitehorizont.apps.organization_collection_manager.core.storage.errors.ResourceEmpty;
-import net.whitehorizont.apps.organization_collection_manager.lib.ValidationError;
+import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationError;
 
 @NonNullByDefault
 public class CollectionAdapter<R, P extends IElementPrototype<R>, E extends ICollectionElement<P>, F extends IElementFactory<P, E, ICollection<P, E, ?>>>

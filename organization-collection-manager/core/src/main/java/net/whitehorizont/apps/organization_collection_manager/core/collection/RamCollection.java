@@ -15,7 +15,7 @@ import net.whitehorizont.apps.organization_collection_manager.core.collection.Co
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.ISerializableKey;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.UUID_CollectionId;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.UUID_ElementId;
-import net.whitehorizont.apps.organization_collection_manager.lib.ValidationError;
+import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationError;
 
 /**
  * Holds collection in memory, without auto saving to disk

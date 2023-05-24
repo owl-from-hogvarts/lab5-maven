@@ -2,6 +2,9 @@ package net.whitehorizont.apps.organization_collection_manager.lib;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
+import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationError;
+import net.whitehorizont.apps.organization_collection_manager.lib.validators.Validator;
+
 @NonNullByDefault
 public class FieldDefinition<V, T> extends BaseFieldDefinition<V, FieldMetadata<V, T>> {
 

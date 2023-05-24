@@ -2,6 +2,8 @@ package net.whitehorizont.apps.organization_collection_manager.lib;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
+import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationError;
+
 @NonNullByDefault
 public class WritableFromStringFieldDefinition<V> extends WriteableFieldDefinition<V> {
   private IFromStringBuilder<V> builder;

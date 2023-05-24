@@ -3,6 +3,8 @@ package net.whitehorizont.apps.organization_collection_manager.lib;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationError;
+
 public class EnumFactory<E extends Enum<E>> implements IFromStringBuilder<E> {
 
   private final Class<E> enumClass;

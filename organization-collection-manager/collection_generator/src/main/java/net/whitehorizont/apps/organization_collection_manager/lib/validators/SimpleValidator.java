@@ -1,4 +1,4 @@
-package net.whitehorizont.apps.organization_collection_manager.lib;
+package net.whitehorizont.apps.organization_collection_manager.lib.validators;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 

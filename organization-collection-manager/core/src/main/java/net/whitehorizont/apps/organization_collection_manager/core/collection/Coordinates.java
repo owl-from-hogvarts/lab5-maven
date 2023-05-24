@@ -11,9 +11,9 @@ import net.whitehorizont.apps.organization_collection_manager.lib.FieldDefinitio
 import net.whitehorizont.apps.organization_collection_manager.lib.FieldMetadata;
 import net.whitehorizont.apps.organization_collection_manager.lib.IFieldDefinitionNode;
 import net.whitehorizont.apps.organization_collection_manager.lib.NumberFactory;
-import net.whitehorizont.apps.organization_collection_manager.lib.ValidationError;
-import net.whitehorizont.apps.organization_collection_manager.lib.ValidationResult;
 import net.whitehorizont.apps.organization_collection_manager.lib.WritableFromStringFieldDefinition;
+import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationError;
+import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationResult;
 import net.whitehorizont.apps.organization_collection_manager.lib.IWriteableFieldDefinitionNode;
 
 @NonNullByDefault
