@@ -41,7 +41,8 @@ public class FileStorage<C extends ICollection<?, ?, M>, M extends IWithId<? ext
   }
 
   private static final OpenOption[] DEFAULT_FILE_OPEN_OPTIONS = {
-      StandardOpenOption.CREATE /* creates file if it does not exist */, StandardOpenOption.WRITE,
+      StandardOpenOption.CREATE /* creates file if it does not exist */, 
+      StandardOpenOption.WRITE,
       StandardOpenOption.READ };
 
   public FileStorage(String path, IFileAdapter<C, M> adapter) {
@@ -61,6 +62,7 @@ public class FileStorage<C extends ICollection<?, ?, M>, M extends IWithId<? ext
     // ? and not just override
     final byte[] fileContent = this.getAdapter().serialize(collection);
     try (final var fileChannel = getFileChannel()) {
+      fileChannel.truncate(fileContent.length);
       fileChannel.write(ByteBuffer.wrap(fileContent));
     } catch (IOException e) {
       throw new StorageInaccessibleError();
