@@ -3,6 +3,7 @@ package net.whitehorizont.apps.organization_collection_manager.cli;
 import java.util.HashMap;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
+import net.whitehorizont.apps.organization_collection_manager.cli.commands.ExecuteScript;
 import net.whitehorizont.apps.organization_collection_manager.cli.commands.ICliCommand;
 import net.whitehorizont.apps.organization_collection_manager.cli.commands.Insert;
 import net.whitehorizont.apps.organization_collection_manager.cli.commands.Save;
@@ -36,6 +37,8 @@ public class App
         commands.put("show", show);
         final var save = new Save();
         commands.put("save", save);
+        final var executeScript = new ExecuteScript<ICollectionManager<ICollection<OrganisationElementPrototype, OrganisationElement, CollectionMetadata>, CollectionMetadata>>();
+        commands.put("execute-script", executeScript);
 
         // other configuration 
         final var streams = new Streams(System.in, System.out, System.err);

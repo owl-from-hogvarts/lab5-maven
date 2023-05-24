@@ -8,6 +8,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
+import java.util.function.Function;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.jline.reader.EndOfFileException;
 import org.jline.reader.LineReader;
@@ -17,10 +19,10 @@ import io.reactivex.rxjava3.core.Observable;
 import net.whitehorizont.apps.organization_collection_manager.cli.commands.Exit;
 import net.whitehorizont.apps.organization_collection_manager.cli.commands.Help;
 import net.whitehorizont.apps.organization_collection_manager.cli.commands.ICliCommand;
+import net.whitehorizont.apps.organization_collection_manager.cli.errors.IInterruptHandler;
 import net.whitehorizont.apps.organization_collection_manager.cli.errors.IncorrectNumberOfArguments;
 import net.whitehorizont.apps.organization_collection_manager.cli.errors.UnknownCommand;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollectionManager;
-import net.whitehorizont.apps.organization_collection_manager.core.storage.errors.StorageInaccessibleError;
 
 @NonNullByDefault
 public class CLI<CM extends ICollectionManager<?, ?>> {
@@ -29,6 +31,8 @@ public class CLI<CM extends ICollectionManager<?, ?>> {
   private final Map<String, ICliCommand<? super CliDependencyManager<CM>>> commands;
   private final CliDependencyManager<CM> dependencyManager;
   private final PrintStream err;
+  private final IInterruptHandler interruptHandler;
+  private final Function<Throwable, Boolean> globalErrorHandler;
 
   private static int convertBoolean(boolean b) {
     return b ? 1 : 0;
@@ -37,12 +41,11 @@ public class CLI<CM extends ICollectionManager<?, ?>> {
   public void start() {
     while (true) {
       try {
-        promptCommand().blockingSubscribe((_unused) -> {}, (Throwable e) -> {
-          err.println(e.getMessage());
-        }, () -> {});
-      } catch (Exception e) {
-        err.println("Error: " + e.getMessage());
-        continue;
+        promptCommand().blockingSubscribe();
+      } catch (Throwable e) {
+        if (globalErrorHandler.apply(e)) {
+          break;
+        }
       }
     }
   }
@@ -54,6 +57,14 @@ public class CLI<CM extends ICollectionManager<?, ?>> {
     this.reader = dependencyManager.getLineReader();
     this.err = new PrintStream(this.dependencyManager.getStreams().err);
 
+    this.interruptHandler = dependencyManager.getOnInterrupt().isPresent() 
+                              ? dependencyManager.getOnInterrupt().get()
+                              : this::onInterop;
+
+    this.globalErrorHandler = dependencyManager.getGlobalErrorHandler().isPresent()
+                                ? dependencyManager.getGlobalErrorHandler().get()
+                                : this::defaultGlobalErrorHandler;
+
     this.commands = dependencyManager.getCommands();
     final ICliCommand<? super CliDependencyManager<CM>> help = new Help();
     commands.put(Help.HELP_COMMAND, help);
@@ -61,7 +72,7 @@ public class CLI<CM extends ICollectionManager<?, ?>> {
   }
 
   public Observable<Void> promptCommand()
-      throws IncorrectNumberOfArguments, UnknownCommand, IOException, StorageInaccessibleError {
+      throws Exception {
     try {
       final String userInput = reader.readLine(DEFAULT_PROMPT).trim().toLowerCase();
 
@@ -88,15 +99,20 @@ public class CLI<CM extends ICollectionManager<?, ?>> {
 
       return commandDescriptor.run(this.dependencyManager, wordsStack);
     } catch (UserInterruptException | EndOfFileException e) {
-      return onInterop();
+      return this.interruptHandler.handle();
     }
+  }
+
+  private boolean defaultGlobalErrorHandler(Throwable e) {
+    err.println("Error:" + e.getMessage());
+    return false;
   }
 
   public OutputStream getErrorStream() {
     return reader.getTerminal().output();
   }
 
-  private Observable<Void> onInterop() throws IOException, StorageInaccessibleError {
+  private Observable<Void> onInterop() throws Exception {
     final var exitDescriptor = this.commands.get(Exit.EXIT_COMMAND);
     assert exitDescriptor != null;
 
