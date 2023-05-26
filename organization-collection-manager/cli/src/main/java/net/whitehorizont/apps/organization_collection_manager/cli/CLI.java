@@ -105,6 +105,11 @@ public class CLI<CM extends ICollectionManager<?, ?>> {
 
   public static boolean defaultGlobalErrorHandler(Throwable e, CliDependencyManager<?> dependencyManager) {
     final var err = dependencyManager.getStreams().err;
+    if (e instanceof RuntimeException) {
+      err.println("Error: Unknown error ocurred! Please, file new issue on github.com/owl-from-hogvarts/lab5-maven");
+      // ? if something unknown happened, may be better crash?
+      return false;
+    }
     err.println("Error: " + e.getMessage());
     return false;
   }
