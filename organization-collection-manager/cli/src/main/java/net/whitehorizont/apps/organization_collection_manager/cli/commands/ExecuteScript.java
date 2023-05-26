@@ -57,10 +57,7 @@ public class ExecuteScript<CM extends ICollectionManager<?, ?>> implements ICliC
       final var file = resolvedPath.toFile();
       final InputStream fileInput = new FileInputStream(file);
 
-      // build streams object with out stream redirected into void
-      // and input stream set up to read from file
-      final var voidStream = new PrintStream(OutputStream.nullOutputStream());
-      final var scriptStreams = new Streams(fileInput, voidStream, dependencyManager.getStreams().err);
+      final var scriptStreams = new Streams(fileInput, dependencyManager.getStreams().out, dependencyManager.getStreams().err);
       // leave err untouched since we wan't to report errors into console
       // construct new cli instance with new stream configuration      
       final var executeScriptDependenciesConfig = new CliDependencyManager.Builder<CM>()
@@ -72,6 +69,7 @@ public class ExecuteScript<CM extends ICollectionManager<?, ?>> implements ICliC
             dependencyManager.getGlobalErrorHandler().handle(e, _dependencyManager);
             return true;
           })
+          .setDisplayPrompts(false)
           .setSystemTerminal(false);
       final var executeScriptDependencies = new CliDependencyManager<>(executeScriptDependenciesConfig);
       final var scriptCli = new CLI<>(executeScriptDependencies);

@@ -1,10 +1,10 @@
 package net.whitehorizont.apps.organization_collection_manager.cli;
 
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Function;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.jline.reader.LineReader;
@@ -25,6 +25,11 @@ public class CliDependencyManager<CM extends ICollectionManager<?, ?>> {
   private final Map<String, ICliCommand<? super CliDependencyManager<CM>>> commands;
   private final LineReader commandLineReader;
   private final LineReader genericLineReader;
+  private final boolean displayPrompts;
+
+  public boolean getDisplayPrompts() {
+    return displayPrompts;
+  }
 
   /**
    * Use within commands
@@ -78,9 +83,11 @@ public class CliDependencyManager<CM extends ICollectionManager<?, ?>> {
     this.streams = builder.streams;
     this.onInterrupt = Optional.ofNullable(builder.onInterruptHandler);
     this.globalErrorHandler = builder.globalErrorHandler;
+    this.displayPrompts = builder.displayPrompts;
 
     try {
-      final TerminalBuilder terminalBuilder = TerminalBuilder.builder().streams(streams.in, streams.out);
+      final PrintStream voidStream = new PrintStream(OutputStream.nullOutputStream());
+      final TerminalBuilder terminalBuilder = TerminalBuilder.builder().streams(streams.in, builder.displayPrompts ? streams.out : voidStream);
       if (builder.isSystemTerminal) {
         terminalBuilder.system(true);
       } else {
@@ -105,7 +112,13 @@ public class CliDependencyManager<CM extends ICollectionManager<?, ?>> {
     private @Nullable IInterruptHandler onInterruptHandler;
     private boolean isSystemTerminal = true;
     private @Nullable IGlobalErrorHandler globalErrorHandler;
+    private boolean displayPrompts = true;
 
+
+    public Builder<CM> setDisplayPrompts(boolean displayPrompts) {
+      this.displayPrompts = displayPrompts;
+      return this;
+    }
     /**
      * If error handler return true, this means that fatal error happened 
      * (or we just need to stop current instance of CLI without exiting program).

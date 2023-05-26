@@ -1,6 +1,7 @@
 package net.whitehorizont.apps.organization_collection_manager.cli.commands;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.Stack;
 
@@ -62,7 +63,10 @@ public class Insert<P extends IElementPrototype<?>, CM extends ICollectionManage
     final var lineReader = dependencyManager.getGenericLineReader();
 
     try {
-      promptForFields(prototype, lineReader, dependencyManager.getStreams());
+      final PrintStream voidOutput = new PrintStream(OutputStream.nullOutputStream());
+      final var out = dependencyManager.getDisplayPrompts() ? dependencyManager.getStreams().out : voidOutput;
+      final Streams streams = new Streams(dependencyManager.getStreams().in, out, dependencyManager.getStreams().err);
+      promptForFields(prototype, lineReader, streams);
     } catch (ValidationError e) {
       return Observable.error(e);
     }
