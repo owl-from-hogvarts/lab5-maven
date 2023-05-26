@@ -35,7 +35,16 @@ public class OrganisationElement implements ICollectionElement<OrganisationEleme
   private static final FieldMetadata<UUID_ElementId, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement, ?>> ID_METADATA = new FieldMetadata<>(
       new FieldMetadata.Metadata<UUID_ElementId, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement, ?>>()
           .setDisplayedName("ID")
-          .setRequired("ID must be provided for collection element"));
+          .setRequired("ID must be provided for collection element")
+          .addValidator((value, collection) -> {
+            // pray once more 🙏
+            final var hasDuplicateIds = collection.getEvery$().filter((element) -> {
+              return element.getID().getValue().equals(value);
+            }).count().map(count -> count > 0).blockingGet();
+
+            return new ValidationResult<Boolean>(!hasDuplicateIds, "Duplicate ID's found! ID should be unique!");
+            
+          }));
 
   private static final FieldMetadata<OrganisationType, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement, ?>> TYPE_METADATA = new FieldMetadata<>(
       new FieldMetadata.Metadata<OrganisationType, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement, ?>>()
