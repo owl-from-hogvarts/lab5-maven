@@ -97,7 +97,7 @@ public class CLI<CM extends ICollectionManager<?, ?>> {
       final var commandDescriptor = commands.get(command);
       if (convertBoolean(commandDescriptor.hasArgument()) != wordsStack.size()) {
         // 1 because all command accept either one or zero arguments
-        throw new IncorrectNumberOfArguments(command, commandDescriptor.hasArgument() ? 1 : 0, wordsStack.size());
+        throw new IncorrectNumberOfArguments(command, convertBoolean(commandDescriptor.hasArgument()), wordsStack.size());
       }
 
       return commandDescriptor.run(this.dependencyManager, wordsStack);
