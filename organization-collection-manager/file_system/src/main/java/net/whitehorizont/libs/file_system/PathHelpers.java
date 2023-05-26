@@ -6,8 +6,11 @@ import java.nio.file.Files;
 import java.nio.file.NotDirectoryException;
 import java.nio.file.Path;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 import net.whitehorizont.libs.file_system.errors.PathSegmentError;
 
+@NonNullByDefault
 public final class PathHelpers {
   public static Path resolve(Path path) {
     return path.toAbsolutePath().normalize();

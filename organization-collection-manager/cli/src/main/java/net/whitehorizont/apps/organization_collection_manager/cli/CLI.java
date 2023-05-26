@@ -50,7 +50,9 @@ public class CLI<CM extends ICollectionManager<?, ?>> {
         if (e instanceof RuntimeException && e.getCause() != null) {
           e = e.getCause();
         }
-        globalErrorHandler.handle(e, dependencyManager);
+        if (globalErrorHandler.handle(e, dependencyManager)) {
+          break;
+        }
       }
     }
   }
@@ -67,9 +69,6 @@ public class CLI<CM extends ICollectionManager<?, ?>> {
     this.globalErrorHandler = dependencyManager.getGlobalErrorHandler();
 
     this.commands = dependencyManager.getCommands();
-    final ICliCommand<? super CliDependencyManager<CM>> help = new Help();
-    commands.put(Help.HELP_COMMAND, help);
-    commands.put(Exit.EXIT_COMMAND, new Exit());
   }
 
   public Observable<Void> promptCommand()

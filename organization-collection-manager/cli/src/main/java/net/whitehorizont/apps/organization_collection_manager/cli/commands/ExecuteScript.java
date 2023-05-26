@@ -6,6 +6,7 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.nio.file.Path;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
@@ -20,8 +21,14 @@ import net.whitehorizont.libs.file_system.PathHelpers;
 
 @NonNullByDefault
 public class ExecuteScript<CM extends ICollectionManager<?, ?>> implements ICliCommand<CliDependencyManager<CM>> {
+  public static final String EXECUTE_SCRIPT_COMMAND = "execute-script";
   private static final String DESCRIPTION = "executes new line separated sequence of commands from file";
   private final Set<Path> runningScripts = new HashSet<>();
+  private final Map<String, ICliCommand<? super CliDependencyManager<CM>>> executeScriptCommandSet;
+
+  public ExecuteScript(Map<String, ICliCommand<? super CliDependencyManager<CM>>> executeScriptCommandSet) {
+    this.executeScriptCommandSet = executeScriptCommandSet;
+  }
 
   @Override
   public boolean hasArgument() {
@@ -55,11 +62,11 @@ public class ExecuteScript<CM extends ICollectionManager<?, ?>> implements ICliC
       final var voidStream = new PrintStream(OutputStream.nullOutputStream());
       final var scriptStreams = new Streams(fileInput, voidStream, dependencyManager.getStreams().err);
       // leave err untouched since we wan't to report errors into console
-      // construct new cli instance with new stream configuration
+      // construct new cli instance with new stream configuration      
       final var executeScriptDependenciesConfig = new CliDependencyManager.Builder<CM>()
           .setStreams(scriptStreams)
           .setCollectionManager(dependencyManager.getCollectionManager())
-          .setCommands(dependencyManager.getCommands())
+          .setCommands(executeScriptCommandSet)
           .setOnInterruptHandler(() -> Observable.empty())
           .setGlobalErrorHandler((e, _dependencyManager) -> {
             dependencyManager.getGlobalErrorHandler().handle(e, _dependencyManager);
@@ -71,6 +78,7 @@ public class ExecuteScript<CM extends ICollectionManager<?, ?>> implements ICliC
       try {
         scriptCli.start();
       } finally {
+        fileInput.close();
         runningScripts.remove(resolvedPath);
         subscriber.onComplete();
       }

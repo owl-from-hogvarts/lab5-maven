@@ -10,6 +10,7 @@ import org.jline.reader.LineReader;
 
 import io.reactivex.rxjava3.core.Observable;
 import net.whitehorizont.apps.organization_collection_manager.cli.CliDependencyManager;
+import net.whitehorizont.apps.organization_collection_manager.cli.Streams;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollection;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollectionManager;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.IElementPrototype;
@@ -28,6 +29,28 @@ public class Insert<P extends IElementPrototype<?>, CM extends ICollectionManage
 
   private static final String HINT_PREFIX = "Hint for next field: ";
 
+  private final Retries retries;
+  public static class Retries {
+    private final int retries;
+    private final boolean isInfinite;
+
+    /** Infinitely ask for field with failed validation */
+    public Retries() {
+      this.retries = -1;
+      this.isInfinite = true;
+    }
+
+    public Retries(int retries) {
+      assert retries > 0;
+      this.retries = retries;
+      this.isInfinite = false;
+    }
+  }
+
+  public Insert(Retries retries) {
+    this.retries = retries;
+  }
+
   @Override
   public Observable<Void> run(CliDependencyManager<CM> dependencyManager, Stack<String> arguments)
       throws IOException, StorageInaccessibleError {
@@ -37,9 +60,12 @@ public class Insert<P extends IElementPrototype<?>, CM extends ICollectionManage
 
     final var prototype = collection.getElementPrototype();
     final var lineReader = dependencyManager.getGenericLineReader();
-    final var out = new PrintStream(dependencyManager.getStreams().out);
 
-    promptForFields(prototype, lineReader, out);
+    try {
+      promptForFields(prototype, lineReader, dependencyManager.getStreams());
+    } catch (ValidationError e) {
+      return Observable.error(e);
+    }
 
     final var collectionReceiver = new CollectionCommandReceiver<>(collection);
     final var insertCommand = new InsertCommand<>(prototype, collectionReceiver);
@@ -47,18 +73,21 @@ public class Insert<P extends IElementPrototype<?>, CM extends ICollectionManage
     return dependencyManager.getCommandQueue().push(insertCommand);
   }
 
-  private void promptForFields(IWriteableFieldDefinitionNode node, LineReader lineReader, PrintStream out) {
-    promptForFields(node, lineReader, out, 0);
+  private void promptForFields(IWriteableFieldDefinitionNode node, LineReader lineReader, Streams streams) throws ValidationError {
+    promptForFields(node, lineReader, streams, 0);
   }
 
-  private void promptForFields(IWriteableFieldDefinitionNode node, LineReader lineReader, PrintStream out,
-      int nestLevel) {
+  private void promptForFields(IWriteableFieldDefinitionNode node, LineReader lineReader, Streams streams,
+      int nestLevel) throws ValidationError {
     final var fields = node.getWriteableFromStringFields();
+    final var out = streams.out;
+    final var err = streams.err;
 
     out.println(prepareNodeTitle(node.getDisplayedName(), DEFAULT_DECORATOR, nestLevel));
 
     for (final var field : fields) {
       final var metadata = field.getMetadata();
+      int retriesLeft = this.retries.retries;
 
       // repeat until succeed
       while (true) {
@@ -79,13 +108,23 @@ public class Insert<P extends IElementPrototype<?>, CM extends ICollectionManage
           // on error next statement will be skipped
           break;
         } catch (ValidationError e) {
-          out.println(e.getMessage());
+          if (retries.isInfinite) {
+            err.println(e.getMessage());
+            continue;
+          }
+
+          retriesLeft -= 1;
+
+          if (retriesLeft <= 0) {
+            throw e;
+          }
+
         }
       }
     }
 
     for (final var child : node.getChildren()) {
-      promptForFields(child, lineReader, out, nestLevel + 1);
+      promptForFields(child, lineReader, streams, nestLevel + 1);
     }
   }
 
