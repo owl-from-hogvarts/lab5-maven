@@ -17,7 +17,7 @@ import net.whitehorizont.apps.organization_collection_manager.core.storage.error
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationError;
 
 @NonNullByDefault
-public class Insert<P extends IElementPrototype<?>, CM extends ICollectionManager<? extends ICollection<P, ?, ?>, ?>>
+public class Insert<P extends IElementPrototype<?>, CM extends ICollectionManager<? extends ICollection<P, ?, ?>>>
     extends InputElementCommand implements ICliCommand<CliDependencyManager<CM>> {
   
   public Insert(Retries retries) {

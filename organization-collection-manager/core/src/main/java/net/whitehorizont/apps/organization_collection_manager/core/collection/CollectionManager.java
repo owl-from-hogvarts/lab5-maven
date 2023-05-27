@@ -17,7 +17,7 @@ import net.whitehorizont.apps.organization_collection_manager.core.storage.error
  */
 @NonNullByDefault
 public class CollectionManager<C extends ICollection<?, ?, M>, M extends IWithId<? extends BaseId>>
-    implements ICollectionManager<C, M> {
+    implements ICollectionManager<C> {
   private final IBaseStorage<C, M> storage;
   private final C collection;
 

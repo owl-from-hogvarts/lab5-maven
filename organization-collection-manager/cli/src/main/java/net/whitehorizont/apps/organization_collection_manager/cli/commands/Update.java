@@ -13,7 +13,7 @@ import net.whitehorizont.apps.organization_collection_manager.core.commands.Coll
 import net.whitehorizont.apps.organization_collection_manager.core.commands.UpdateCommand;
 
 @NonNullByDefault
-public class Update<P extends IElementPrototype<?>, CM extends ICollectionManager<? extends ICollection<P, ?, ?>, ?>>
+public class Update<P extends IElementPrototype<?>, CM extends ICollectionManager<? extends ICollection<P, ?, ?>>>
  extends InputElementCommand implements ICliCommand<CliDependencyManager<CM>> {
   public Update(Retries retries) {
     super(retries);

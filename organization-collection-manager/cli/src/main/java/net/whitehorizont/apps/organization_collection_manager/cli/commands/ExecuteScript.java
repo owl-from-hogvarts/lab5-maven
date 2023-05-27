@@ -20,7 +20,7 @@ import net.whitehorizont.apps.organization_collection_manager.core.collection.IC
 import net.whitehorizont.libs.file_system.PathHelpers;
 
 @NonNullByDefault
-public class ExecuteScript<CM extends ICollectionManager<?, ?>> implements ICliCommand<CliDependencyManager<CM>> {
+public class ExecuteScript<CM extends ICollectionManager<?>> implements ICliCommand<CliDependencyManager<CM>> {
   public static final String EXECUTE_SCRIPT_COMMAND = "execute-script";
   private static final String DESCRIPTION = "executes new line separated sequence of commands from file";
   private final Set<Path> runningScripts = new HashSet<>();

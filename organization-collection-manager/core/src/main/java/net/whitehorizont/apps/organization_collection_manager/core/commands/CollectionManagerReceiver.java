@@ -11,11 +11,11 @@ import net.whitehorizont.apps.organization_collection_manager.core.storage.error
 import net.whitehorizont.apps.organization_collection_manager.core.storage.errors.StorageInaccessibleError;
 
 @NonNullByDefault
-public class CollectionManagerReceiver<C extends ICollection<?, ?, M>, M extends IWithId<? extends BaseId>> implements ICollectionManager<C, M> {
+public class CollectionManagerReceiver<C extends ICollection<?, ?, ?>> implements ICollectionManager<C> {
 
-  private final ICollectionManager<C, M> collectionManager;
+  private final ICollectionManager<C> collectionManager;
 
-  public CollectionManagerReceiver(ICollectionManager<C, M> collectionManager) {
+  public CollectionManagerReceiver(ICollectionManager<C> collectionManager) {
     this.collectionManager = collectionManager;
   }
 

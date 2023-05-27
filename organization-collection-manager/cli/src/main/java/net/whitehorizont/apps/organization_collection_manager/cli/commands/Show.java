@@ -19,7 +19,7 @@ import net.whitehorizont.libs.file_system.StringHelper;
 
 @NonNullByDefault
 public class Show extends BaseElementCommand implements
-    ICliCommand<CliDependencyManager<? extends ICollectionManager<? extends ICollection<?, ? extends ICollectionElement<?>, ?>, ?>>> {
+    ICliCommand<CliDependencyManager<? extends ICollectionManager<? extends ICollection<?, ? extends ICollectionElement<?>, ?>>>> {
   private static final String DESCRIPTION = "print all collection elements";
 
   @Override
@@ -34,7 +34,7 @@ public class Show extends BaseElementCommand implements
 
   @Override
   public Observable<Void> run(
-      CliDependencyManager<? extends ICollectionManager<? extends ICollection<?, ? extends ICollectionElement<?>, ?>, ?>> dependencyManager,
+      CliDependencyManager<? extends ICollectionManager<? extends ICollection<?, ? extends ICollectionElement<?>, ?>>> dependencyManager,
       Stack<String> arguments)
       throws IOException, StorageInaccessibleError {
     return Observable.create(subscriber -> {

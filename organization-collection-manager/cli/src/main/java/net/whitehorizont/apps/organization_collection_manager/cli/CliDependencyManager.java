@@ -20,7 +20,7 @@ import net.whitehorizont.apps.organization_collection_manager.core.collection.IC
 import net.whitehorizont.apps.organization_collection_manager.core.commands.CommandQueue;
 
 @NonNullByDefault
-public class CliDependencyManager<CM extends ICollectionManager<?, ?>> {
+public class CliDependencyManager<CM extends ICollectionManager<?>> {
   private final CM collectionManager;
   private final Map<String, ICliCommand<? super CliDependencyManager<CM>>> commands;
   private final LineReader commandLineReader;
@@ -105,7 +105,7 @@ public class CliDependencyManager<CM extends ICollectionManager<?, ?>> {
     }
   }
 
-  public static class Builder<CM extends ICollectionManager<?, ?>> {
+  public static class Builder<CM extends ICollectionManager<?>> {
     private CM collectionManager;
     private Map<String, ICliCommand<? super CliDependencyManager<CM>>> commands;
     private Streams streams;

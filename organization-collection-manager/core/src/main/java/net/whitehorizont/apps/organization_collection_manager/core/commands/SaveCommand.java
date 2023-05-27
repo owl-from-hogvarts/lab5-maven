@@ -8,9 +8,9 @@ import net.whitehorizont.apps.organization_collection_manager.core.collection.IC
 @NonNullByDefault
 public class SaveCommand implements ICommand<Void> {
 
-  private final CollectionManagerReceiver<?, ?> collectionManagerReceiver;
+  private final CollectionManagerReceiver<?> collectionManagerReceiver;
 
-  public SaveCommand(CollectionManagerReceiver<?, ?> collectionManagerReceiver) {
+  public SaveCommand(CollectionManagerReceiver<?> collectionManagerReceiver) {
     this.collectionManagerReceiver = collectionManagerReceiver;
   }
 
