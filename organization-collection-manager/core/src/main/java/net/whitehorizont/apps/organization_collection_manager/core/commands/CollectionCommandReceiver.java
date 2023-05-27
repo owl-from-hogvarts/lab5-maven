@@ -2,7 +2,6 @@ package net.whitehorizont.apps.organization_collection_manager.core.commands;
 
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.function.Function;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -39,9 +38,14 @@ public class CollectionCommandReceiver<P extends IElementPrototype<?>, E extends
   }
 
   public Observable<Void> replace(BaseId id, IPrototypeCallback<P> callback) {
-    return this.collection.getEveryWithKey$()
-    .filter(keyElement -> keyElement.getValue().getId().equals(id))
-    .flatMap(keyElement -> {
+    final var entries = this.collection.getEveryWithKey$()
+    .filter(keyElement -> keyElement.getValue().getId().equals(id));
+    final var amount = entries.count().blockingGet();
+    if (amount < 1) {
+      return Observable.error(new NoSuchElement(id));
+    }
+
+    return entries.flatMap(keyElement -> {
       final var prototype = keyElement.getValue().getPrototype();
       try {
         final var updatedPrototype = callback.apply(prototype);
