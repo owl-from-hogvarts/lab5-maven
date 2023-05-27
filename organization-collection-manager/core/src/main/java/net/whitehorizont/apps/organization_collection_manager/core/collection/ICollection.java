@@ -38,8 +38,6 @@ public interface ICollection<P extends IElementPrototype<?>, E extends IWithId<?
 
   Observable<Entry<ISerializableKey, E>> getEveryWithKey$();
 
-  Observable<E> getById$(UUID_ElementId id);
-
   Observable<List<E>> getAll$();
 
   // stores creation time
@@ -48,5 +46,7 @@ public interface ICollection<P extends IElementPrototype<?>, E extends IWithId<?
   void clear();
 
   P getElementPrototype();
+
+  BaseId getElementIdFromString(String idString) throws ValidationError;
 
 }

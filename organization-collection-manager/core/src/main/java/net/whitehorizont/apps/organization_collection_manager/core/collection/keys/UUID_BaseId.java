@@ -4,10 +4,24 @@ import java.util.UUID;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
+import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationError;
+
 @NonNullByDefault
 public class UUID_BaseId extends BaseId {
 
-  private final UUID ID = UUID.randomUUID();
+  private final UUID ID;
+
+  protected UUID_BaseId() {
+    ID = UUID.randomUUID();
+  }
+
+  protected UUID_BaseId(String idString) throws ValidationError {
+    try {
+      ID = UUID.fromString(idString);
+    } catch (IllegalArgumentException e) {
+      throw new ValidationError(idString + " can not be parse into UUID!");
+    }
+  }
 
   @Override
   public String serialize() {

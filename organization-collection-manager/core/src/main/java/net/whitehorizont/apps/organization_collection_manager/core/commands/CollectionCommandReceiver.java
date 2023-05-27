@@ -52,11 +52,6 @@ public class CollectionCommandReceiver<P extends IElementPrototype<?>, E extends
   }
 
   @Override
-  public Observable<E> getById$(UUID_ElementId id) {
-    return this.collection.getById$(id);
-  }
-
-  @Override
   public Observable<List<E>> getAll$() {
     return this.collection.getAll$();
   }
@@ -74,6 +69,11 @@ public class CollectionCommandReceiver<P extends IElementPrototype<?>, E extends
   @Override
   public P getElementPrototype() {
     return this.collection.getElementPrototype();
+  }
+
+  @Override
+  public BaseId getElementIdFromString(String idString) throws ValidationError {
+    return this.collection.getElementIdFromString(idString);
   }
   
 }

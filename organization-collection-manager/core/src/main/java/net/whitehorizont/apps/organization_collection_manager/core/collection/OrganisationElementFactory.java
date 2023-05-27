@@ -3,11 +3,11 @@ package net.whitehorizont.apps.organization_collection_manager.core.collection;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import net.whitehorizont.apps.organization_collection_manager.core.collection.OrganisationElement.OrganisationElementPrototype;
-import net.whitehorizont.apps.organization_collection_manager.core.collection.OrganisationElement.OrganisationElementRawData;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.UUID_ElementId;
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationError;
 
 @NonNullByDefault
-public class OrganisationElementFactory implements IElementFactory<OrganisationElementPrototype, OrganisationElement, ICollection<OrganisationElementPrototype, OrganisationElement, ?>> {
+public class OrganisationElementFactory implements IElementFactory<OrganisationElementPrototype, OrganisationElement, ICollection<OrganisationElementPrototype, OrganisationElement, ?>, UUID_ElementId> {
 
   // return new OrganisationElement(validationObject, prototype);
 
@@ -21,6 +21,11 @@ public class OrganisationElementFactory implements IElementFactory<OrganisationE
       ICollection<OrganisationElementPrototype, OrganisationElement, ?> validationObject) throws ValidationError {
         return new OrganisationElement(validationObject, prototype);
       }
+
+  @Override
+  public UUID_ElementId getElementId(String idString) throws ValidationError {
+    return new UUID_ElementId(idString);
+  }
 
       
 }

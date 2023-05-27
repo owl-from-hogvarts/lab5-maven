@@ -12,9 +12,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.Observable;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.CollectionMetadata.Builder;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.BaseId;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.ISerializableKey;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.UUID_CollectionId;
-import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.UUID_ElementId;
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationError;
 
 /**
@@ -26,16 +26,16 @@ public class RamCollection<P extends IElementPrototype<?>, E extends ICollection
 
   private final Map<ISerializableKey, E> elements = new LinkedHashMap<>();
   private final CollectionMetadata metadata;
-  private final IElementFactory<P, E, ICollection<P, E, ?>> elementFactory;
+  private final IElementFactory<P, E, ICollection<P, E, ?>, ?> elementFactory;
 
   // takes such dataSink factory which accepts any parent class of collection
   // we undertake to provide class not higher than collection
-  public RamCollection(IElementFactory<P, E, ICollection<P, E, ?>> elementFactory, CollectionMetadata metadata) {
+  public RamCollection(IElementFactory<P, E, ICollection<P, E, ?>, ?> elementFactory, CollectionMetadata metadata) {
     this.metadata = metadata;
     this.elementFactory = elementFactory;
   }
 
-  public RamCollection(IElementFactory<P, E, ICollection<P, E, ?>> elementFactory) {
+  public RamCollection(IElementFactory<P, E, ICollection<P, E, ?>, ?> elementFactory) {
     this(elementFactory, new CollectionMetadata(new Builder(new UUID_CollectionId())));
   }
 
@@ -78,11 +78,6 @@ public class RamCollection<P extends IElementPrototype<?>, E extends ICollection
   }
 
   @Override
-  public Observable<E> getById$(UUID_ElementId id) {
-    return Observable.just(this.elements.get(id));
-  }
-
-  @Override
   public Observable<List<E>> getAll$() {
     return Observable.just(new ArrayList<>(elements.values()));
   }
@@ -116,5 +111,10 @@ public class RamCollection<P extends IElementPrototype<?>, E extends ICollection
   @Override
   public P getElementPrototype() {
     return this.elementFactory.getElementPrototype();
+  }
+
+  @Override
+  public BaseId getElementIdFromString(String idString) throws ValidationError {
+    return this.elementFactory.getElementId(idString);
   }
 }
