@@ -20,7 +20,7 @@ import net.whitehorizont.apps.organization_collection_manager.lib.validators.Val
 public class Insert<P extends IElementPrototype<?>, CM extends ICollectionManager<? extends ICollection<P, ?, ?>, ?>>
     extends InputElementCommand implements ICliCommand<CliDependencyManager<CM>> {
   
-      public Insert(Retries retries) {
+  public Insert(Retries retries) {
     super(retries);
   }
 
