@@ -1,10 +1,12 @@
 package net.whitehorizont.apps.organization_collection_manager.cli.commands;
 
+import java.io.OutputStream;
 import java.io.PrintStream;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.jline.reader.LineReader;
 
+import net.whitehorizont.apps.organization_collection_manager.cli.CliDependencyManager;
 import net.whitehorizont.apps.organization_collection_manager.cli.Streams;
 import net.whitehorizont.apps.organization_collection_manager.lib.FieldMetadata;
 import net.whitehorizont.apps.organization_collection_manager.lib.IWriteableFieldDefinitionNode;
@@ -90,6 +92,14 @@ public class InputElementCommand extends BaseElementCommand {
     }
 
     return node;
+  }
+
+  protected Streams prepareStreams(CliDependencyManager<?> dependencyManager) {
+    final PrintStream voidOutput = new PrintStream(OutputStream.nullOutputStream());
+    final var out = dependencyManager.getDisplayPrompts() ? dependencyManager.getStreams().out : voidOutput;
+    final Streams streams = new Streams(dependencyManager.getStreams().in, out, dependencyManager.getStreams().err);
+
+    return streams;
   }
 
   private static String preparePrompt(FieldMetadata<?, ?> metadata, int nestLevel) {

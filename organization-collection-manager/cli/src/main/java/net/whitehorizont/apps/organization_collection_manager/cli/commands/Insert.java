@@ -36,10 +36,8 @@ public class Insert<P extends IElementPrototype<?>, CM extends ICollectionManage
     final var prototype = collection.getElementPrototype();
     final var lineReader = dependencyManager.getGenericLineReader();
 
-    try {
-      final PrintStream voidOutput = new PrintStream(OutputStream.nullOutputStream());
-      final var out = dependencyManager.getDisplayPrompts() ? dependencyManager.getStreams().out : voidOutput;
-      final Streams streams = new Streams(dependencyManager.getStreams().in, out, dependencyManager.getStreams().err);
+  try {
+      final Streams streams = prepareStreams(dependencyManager);
 
       promptForFields(prototype, lineReader, streams);
     } catch (ValidationError e) {
