@@ -8,6 +8,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import io.reactivex.rxjava3.core.Observable;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollection;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.IElementPrototype;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.NoSuchElement;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.BaseId;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.ISerializableKey;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.IWithId;
@@ -32,12 +33,22 @@ public class CollectionCommandReceiver<P extends IElementPrototype<?>, E extends
   }
 
   @Override
-  public void replace(ISerializableKey key, P prototype) throws ValidationError {
+  public void replace(ISerializableKey key, P prototype) throws ValidationError, NoSuchElement {
     this.collection.replace(key, prototype);
   }
 
+  public void replace(BaseId id, P prototype) {
+    this.collection.getEveryWithKey$()
+    .filter(keyElement -> keyElement.getValue().getId().equals(id))
+    .map(keyElement -> keyElement.getKey())
+    .blockingSubscribe(key -> {
+      // TODO: persitent id
+      this.collection.replace(key, prototype);
+    });
+  }
+
   @Override
-  public void delete(ISerializableKey key) {
+  public void delete(ISerializableKey key) throws NoSuchElement {
     this.collection.delete(key);
   }
 

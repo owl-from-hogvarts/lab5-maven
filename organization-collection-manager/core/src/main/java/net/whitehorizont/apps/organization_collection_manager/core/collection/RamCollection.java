@@ -98,13 +98,16 @@ public class RamCollection<P extends IElementPrototype<?>, E extends ICollection
   }
 
   @Override
-  public void replace(ISerializableKey key, P prototype) throws ValidationError {
+  public void replace(ISerializableKey key, P prototype) throws ValidationError, NoSuchElement {
     this.delete(key);
     this.insert(key, prototype);
   }
 
   @Override
-  public void delete(ISerializableKey key) {
+  public void delete(ISerializableKey key) throws NoSuchElement {
+    if (!this.elements.containsKey(key)) {
+      throw new NoSuchElement(key);
+    }
     this.elements.remove(key);
   }
 
