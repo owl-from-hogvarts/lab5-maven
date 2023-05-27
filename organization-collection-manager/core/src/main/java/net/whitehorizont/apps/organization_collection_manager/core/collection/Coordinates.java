@@ -17,7 +17,7 @@ import net.whitehorizont.apps.organization_collection_manager.lib.validators.Val
 import net.whitehorizont.apps.organization_collection_manager.lib.IWriteableFieldDefinitionNode;
 
 @NonNullByDefault
-public class Coordinates implements ICollectionElement<Coordinates.CoordinatesPrototype> {
+public class Coordinates implements IElement<Coordinates.CoordinatesPrototype> {
   private static final String COORDINATES_TITLE = "Coordinates";
   
   private static final FieldMetadata<Integer, Object> X_METADATA = new FieldMetadata<>(new FieldMetadata.Metadata<Integer, Object>().addValidator((value, _unused) -> {
@@ -100,12 +100,6 @@ public class Coordinates implements ICollectionElement<Coordinates.CoordinatesPr
   @Override
   public Iterable<IFieldDefinitionNode> getChildren() {
     return new ArrayList<>();
-  }
-
-  @Override
-  public BaseId getId() {
-    // TODO: refactor interfaces
-    throw new UnsupportedOperationException("Unimplemented method 'getId'");
   }
 
   @Override

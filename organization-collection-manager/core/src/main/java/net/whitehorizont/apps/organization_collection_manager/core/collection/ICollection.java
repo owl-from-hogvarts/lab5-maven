@@ -29,10 +29,11 @@ public interface ICollection<P extends IElementPrototype<?>, E extends IWithId<?
    * @param key
    * @return
    * @throws ValidationError
+   * @throws NoSuchElement
    */
-  void replace(ISerializableKey key, P prototype) throws ValidationError;
+  void replace(ISerializableKey key, P prototype) throws ValidationError, NoSuchElement;
 
-  void delete(ISerializableKey key);
+  void delete(ISerializableKey key) throws NoSuchElement;
 
   Observable<E> getEvery$();
 
