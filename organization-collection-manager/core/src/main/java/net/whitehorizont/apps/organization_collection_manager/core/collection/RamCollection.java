@@ -100,7 +100,14 @@ public class RamCollection<P extends IElementPrototype<?>, E extends ICollection
   @Override
   public void replace(ISerializableKey key, P prototype) throws ValidationError, NoSuchElement {
     checkIfExists(key);
-    this.insert(key, prototype);
+    final var removed = this.delete(key);
+    try {
+      this.insert(key, prototype);
+    } catch (ValidationError e) {
+      // add back in case of failure
+      this.insert(key, removed);
+      throw e;
+    }
   }
 
   private void checkIfExists(ISerializableKey key) throws NoSuchElement {
@@ -110,9 +117,9 @@ public class RamCollection<P extends IElementPrototype<?>, E extends ICollection
   }
 
   @Override
-  public void delete(ISerializableKey key) throws NoSuchElement {
+  public E delete(ISerializableKey key) throws NoSuchElement {
     checkIfExists(key);
-    this.elements.remove(key);
+    return this.elements.remove(key);
   }
 
   @Override

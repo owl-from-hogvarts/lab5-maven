@@ -63,8 +63,8 @@ public class CollectionCommandReceiver<P extends IElementPrototype<?>, E extends
   }
 
   @Override
-  public void delete(ISerializableKey key) throws NoSuchElement {
-    this.collection.delete(key);
+  public E delete(ISerializableKey key) throws NoSuchElement {
+    return this.collection.delete(key);
   }
 
   @Override

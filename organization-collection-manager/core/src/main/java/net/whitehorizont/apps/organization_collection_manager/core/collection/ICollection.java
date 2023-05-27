@@ -32,7 +32,7 @@ public interface ICollection<P extends IElementPrototype<?>, E extends ICollecti
    */
   void replace(ISerializableKey key, P prototype) throws ValidationError, NoSuchElement;
 
-  void delete(ISerializableKey key) throws NoSuchElement;
+  E delete(ISerializableKey key) throws NoSuchElement;
 
   Observable<E> getEvery$();
 
