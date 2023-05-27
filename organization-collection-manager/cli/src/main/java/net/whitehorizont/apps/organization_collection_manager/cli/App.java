@@ -13,6 +13,7 @@ import net.whitehorizont.apps.organization_collection_manager.cli.commands.ICliC
 import net.whitehorizont.apps.organization_collection_manager.cli.commands.Insert;
 import net.whitehorizont.apps.organization_collection_manager.cli.commands.Save;
 import net.whitehorizont.apps.organization_collection_manager.cli.commands.Show;
+import net.whitehorizont.apps.organization_collection_manager.cli.commands.Update;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.CollectionManager;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.CollectionMetadata;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollection;
@@ -63,7 +64,9 @@ public class App
         final Insert.Retries retries = new Insert.Retries();
         final var insert = new Insert<OrganisationElementPrototype, ICollectionManager<ICollection<OrganisationElementPrototype, OrganisationElement, CollectionMetadata>, CollectionMetadata>>(retries);
         baseCommands.put("insert", insert);
-        
+        final var update = new Update<OrganisationElementPrototype, ICollectionManager<ICollection<OrganisationElementPrototype, OrganisationElement, CollectionMetadata>, CollectionMetadata>>(retries);
+        baseCommands.put("update", update);
+
         final var executeScriptCommandSet = buildExecuteScriptCommandSet();
         final var executeScript = new ExecuteScript<ICollectionManager<ICollection<OrganisationElementPrototype, OrganisationElement, CollectionMetadata>, CollectionMetadata>>(executeScriptCommandSet);
         baseCommands.put(ExecuteScript.EXECUTE_SCRIPT_COMMAND, executeScript);
@@ -89,6 +92,8 @@ public class App
         final Insert.Retries retries = new Insert.Retries(1); // does not make sense to infinitely ask for right data from script
         final var insert = new Insert<OrganisationElementPrototype, ICollectionManager<ICollection<OrganisationElementPrototype, OrganisationElement, CollectionMetadata>, CollectionMetadata>>(retries);
         commands.put("insert", insert);
+        final var update = new Update<OrganisationElementPrototype, ICollectionManager<ICollection<OrganisationElementPrototype, OrganisationElement, CollectionMetadata>, CollectionMetadata>>(retries);
+        commands.put("update", update);
 
         return commands;
     }

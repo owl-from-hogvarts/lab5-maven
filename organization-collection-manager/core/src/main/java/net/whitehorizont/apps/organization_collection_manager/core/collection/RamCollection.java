@@ -15,6 +15,7 @@ import net.whitehorizont.apps.organization_collection_manager.core.collection.Co
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.BaseId;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.ISerializableKey;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.UUID_CollectionId;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.UUID_ElementId;
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationError;
 
 /**
@@ -99,15 +100,19 @@ public class RamCollection<P extends IElementPrototype<?>, E extends ICollection
 
   @Override
   public void replace(ISerializableKey key, P prototype) throws ValidationError, NoSuchElement {
-    this.delete(key);
+    checkIfExists(key);
     this.insert(key, prototype);
+  }
+
+  private void checkIfExists(ISerializableKey key) throws NoSuchElement {
+    if (!this.elements.containsKey(key)) {
+      throw new NoSuchElement(key);
+    }
   }
 
   @Override
   public void delete(ISerializableKey key) throws NoSuchElement {
-    if (!this.elements.containsKey(key)) {
-      throw new NoSuchElement(key);
-    }
+    checkIfExists(key);
     this.elements.remove(key);
   }
 

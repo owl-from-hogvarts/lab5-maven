@@ -2,17 +2,18 @@ package net.whitehorizont.apps.organization_collection_manager.core.commands;
 
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.function.Function;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import io.reactivex.rxjava3.core.Observable;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollection;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollectionElement;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.IElementPrototype;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.NoSuchElement;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.BaseId;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.ISerializableKey;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.IWithId;
-import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.UUID_ElementId;
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationError;
 
 /**
@@ -20,7 +21,7 @@ import net.whitehorizont.apps.organization_collection_manager.lib.validators.Val
  * It does absolutely nothing except just passing calls to underling collection
  */
 @NonNullByDefault
-public class CollectionCommandReceiver<P extends IElementPrototype<?>, E extends IWithId<? extends BaseId>, M extends IWithId<? extends BaseId>> implements ICollection<P, E, M> {
+public class CollectionCommandReceiver<P extends IElementPrototype<?>, E extends ICollectionElement<P>, M extends IWithId<? extends BaseId>> implements ICollection<P, E, M> {
   private final ICollection<P, E, M> collection;
 
   public CollectionCommandReceiver(ICollection<P, E, M> collection) {
@@ -37,14 +38,24 @@ public class CollectionCommandReceiver<P extends IElementPrototype<?>, E extends
     this.collection.replace(key, prototype);
   }
 
-  public void replace(BaseId id, P prototype) {
-    this.collection.getEveryWithKey$()
+  public Observable<Void> replace(BaseId id, IPrototypeCallback<P> callback) {
+    return this.collection.getEveryWithKey$()
     .filter(keyElement -> keyElement.getValue().getId().equals(id))
-    .map(keyElement -> keyElement.getKey())
-    .blockingSubscribe(key -> {
-      // TODO: persitent id
-      this.collection.replace(key, prototype);
+    .flatMap(keyElement -> {
+      final var prototype = keyElement.getValue().getPrototype();
+      try {
+        final var updatedPrototype = callback.apply(prototype);
+        final var key = keyElement.getKey();
+        this.collection.replace(key, updatedPrototype);
+        return Observable.empty();
+      } catch (ValidationError | NoSuchElement e) {
+        return Observable.error(e);
+      }
     });
+  }
+
+  public static interface IPrototypeCallback<P extends IElementPrototype<?>> {
+    P apply(P prototype) throws ValidationError;
   }
 
   @Override
