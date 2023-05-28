@@ -4,5 +4,4 @@ PUBLIC
 777
 save
 show
-help
 execute-script test-recursion.script
