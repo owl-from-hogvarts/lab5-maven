@@ -10,7 +10,7 @@ import net.whitehorizont.apps.organization_collection_manager.cli.CliDependencyM
 import net.whitehorizont.apps.organization_collection_manager.core.storage.errors.StorageInaccessibleError;
 
 @NonNullByDefault
-public interface ICliCommand<DM extends CliDependencyManager<?>> {
+public interface ICliCommand {
   boolean hasArgument();
   String getCommandDescription();
 
@@ -24,5 +24,5 @@ public interface ICliCommand<DM extends CliDependencyManager<?>> {
    * @return
    * @throws Exception if command can't handle something, let's just fail and pass error to global error handler
    */
-  Observable<Void> run(DM dependencyManager, Stack<String> arguments) throws Exception;
+  <DM extends CliDependencyManager<?>> Observable<Void> run(DM dependencyManager, Stack<String> arguments) throws Exception;
 }

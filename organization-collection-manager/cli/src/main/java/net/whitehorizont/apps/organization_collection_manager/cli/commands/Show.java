@@ -10,7 +10,6 @@ import io.reactivex.rxjava3.core.Observable;
 import net.whitehorizont.apps.organization_collection_manager.cli.CliDependencyManager;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollection;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollectionElement;
-import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollectionManager;
 import net.whitehorizont.apps.organization_collection_manager.core.commands.CollectionCommandReceiver;
 import net.whitehorizont.apps.organization_collection_manager.core.commands.ShowCommand;
 import net.whitehorizont.apps.organization_collection_manager.core.storage.errors.StorageInaccessibleError;
@@ -18,8 +17,8 @@ import net.whitehorizont.apps.organization_collection_manager.lib.IFieldDefiniti
 import net.whitehorizont.libs.file_system.StringHelper;
 
 @NonNullByDefault
-public class Show extends BaseElementCommand implements
-    ICliCommand<CliDependencyManager<? extends ICollectionManager<? extends ICollection<?, ? extends ICollectionElement<?>, ?>>>> {
+public class Show extends BaseElementCommand 
+    implements ICliCommand {
   private static final String DESCRIPTION = "print all collection elements";
 
   @Override
@@ -33,8 +32,8 @@ public class Show extends BaseElementCommand implements
   }
 
   @Override
-  public Observable<Void> run(
-      CliDependencyManager<? extends ICollectionManager<? extends ICollection<?, ? extends ICollectionElement<?>, ?>>> dependencyManager,
+  public <DM extends CliDependencyManager<?>> Observable<Void> run(
+      DM dependencyManager,
       Stack<String> arguments)
       throws IOException, StorageInaccessibleError {
     return Observable.create(subscriber -> {

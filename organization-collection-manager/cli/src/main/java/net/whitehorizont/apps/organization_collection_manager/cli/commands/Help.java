@@ -14,7 +14,7 @@ import net.whitehorizont.apps.organization_collection_manager.core.commands.ICom
 import net.whitehorizont.libs.file_system.StringHelper;
 
 @NonNullByDefault
-public class Help implements ICliCommand<CliDependencyManager<?>> {
+public class Help implements ICliCommand {
 
   private static final String DESCRIPTION = "prints this help message";
   private static final int INDENT_SIZE = 2;
@@ -35,10 +35,10 @@ public class Help implements ICliCommand<CliDependencyManager<?>> {
   }
 
   @Override
-  public Observable<Void> run(CliDependencyManager<?> dependencyManager, Stack<String> arguments) {
+  public <DM extends CliDependencyManager<?>> Observable<Void> run(DM dependencyManager, Stack<String> arguments) {
     return Observable.create(subscriber -> {
       final var commandDescriptions = new ArrayList<Pair<String, String>>();
-      final Map<String, ? extends ICliCommand<? extends CliDependencyManager<?>>> commands = dependencyManager
+      final Map<String, ? extends ICliCommand> commands = dependencyManager
           .getCommands();
       for (final var command : commands.entrySet()) {
         final var commandDescription = retrieveCommandDescription(command);
@@ -66,7 +66,7 @@ public class Help implements ICliCommand<CliDependencyManager<?>> {
   }
 
   private Pair<String, String> retrieveCommandDescription(
-      Entry<String, ? extends ICliCommand<? extends CliDependencyManager<?>>> command) {
+      Entry<String, ? extends ICliCommand> command) {
     return new Pair<String, String>(command.getKey(), command.getValue().getCommandDescription());
   }
 

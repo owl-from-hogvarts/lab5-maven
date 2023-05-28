@@ -9,7 +9,7 @@ import net.whitehorizont.apps.organization_collection_manager.cli.CliDependencyM
 import net.whitehorizont.apps.organization_collection_manager.core.commands.ExitCommand;
 
 @NonNullByDefault
-public class Exit implements ICliCommand<CliDependencyManager<?>> {
+public class Exit implements ICliCommand {
   public static final String EXIT_COMMAND = "exit";
   private static final String DESCRIPTION = "exit without saving";
   private static final String EXIT_MESSAGE = "Exiting without saving!";
@@ -26,7 +26,7 @@ public class Exit implements ICliCommand<CliDependencyManager<?>> {
   }
 
   @Override
-  public Observable<Void> run(CliDependencyManager<?> dependencyManager, Stack<String> arguments) {
+  public <T extends CliDependencyManager<?>> Observable<Void> run(T dependencyManager, Stack<String> arguments) {
     final var lineReader = dependencyManager.getCommandLineReader();
     final var output = lineReader.getTerminal().writer();
     output.println(EXIT_MESSAGE);

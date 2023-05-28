@@ -59,16 +59,16 @@ public class App
         return testStorage;
     }
 
-    public static Map<String, ICliCommand<? super CliDependencyManager<ICollectionManager<ICollection<OrganisationElementPrototype, OrganisationElement, CollectionMetadata>>>>> buildMainCommandSet() {
+    public static Map<String, ICliCommand> buildMainCommandSet() {
         final var baseCommands = buildBaseCommandSet();
         final Insert.Retries retries = new Insert.Retries();
-        final var insert = new Insert<OrganisationElementPrototype, ICollectionManager<ICollection<OrganisationElementPrototype, OrganisationElement, CollectionMetadata>>>(retries);
+        final var insert = new Insert(retries);
         baseCommands.put("insert", insert);
-        final var update = new Update<OrganisationElementPrototype, ICollectionManager<ICollection<OrganisationElementPrototype, OrganisationElement, CollectionMetadata>>>(retries);
+        final var update = new Update(retries);
         baseCommands.put("update", update);
 
         final var executeScriptCommandSet = buildExecuteScriptCommandSet();
-        final var executeScript = new ExecuteScript<ICollectionManager<ICollection<OrganisationElementPrototype, OrganisationElement, CollectionMetadata>>>(executeScriptCommandSet);
+        final var executeScript = new ExecuteScript(executeScriptCommandSet);
         baseCommands.put(ExecuteScript.EXECUTE_SCRIPT_COMMAND, executeScript);
         executeScriptCommandSet.put(ExecuteScript.EXECUTE_SCRIPT_COMMAND, executeScript);
 
@@ -76,8 +76,8 @@ public class App
         return baseCommands;
     }
 
-    public static Map<String, ICliCommand<? super CliDependencyManager<ICollectionManager<ICollection<OrganisationElementPrototype, OrganisationElement, CollectionMetadata>>>>> buildBaseCommandSet() {
-        final var commands = new HashMap<String, ICliCommand<? super CliDependencyManager<ICollectionManager<ICollection<OrganisationElementPrototype, OrganisationElement, CollectionMetadata>>>>>();
+    public static Map<String, ICliCommand> buildBaseCommandSet() {
+        final var commands = new HashMap<String, ICliCommand>();
         final var show = new Show();
         commands.put("show", show);
         final var save = new Save();
@@ -87,18 +87,18 @@ public class App
 
         return commands;
     }
-    public static Map<String, ICliCommand<? super CliDependencyManager<ICollectionManager<ICollection<OrganisationElementPrototype, OrganisationElement, CollectionMetadata>>>>> buildExecuteScriptCommandSet() {
+    public static Map<String, ICliCommand> buildExecuteScriptCommandSet() {
         final var commands = buildBaseCommandSet();
         final Insert.Retries retries = new Insert.Retries(1); // does not make sense to infinitely ask for right data from script
-        final var insert = new Insert<OrganisationElementPrototype, ICollectionManager<ICollection<OrganisationElementPrototype, OrganisationElement, CollectionMetadata>>>(retries);
+        final var insert = new Insert(retries);
         commands.put("insert", insert);
-        final var update = new Update<OrganisationElementPrototype, ICollectionManager<ICollection<OrganisationElementPrototype, OrganisationElement, CollectionMetadata>>>(retries);
+        final var update = new Update(retries);
         commands.put("update", update);
 
         return commands;
     }
 
-    public static void addSystemCommands(Map<String, ICliCommand<? super CliDependencyManager<ICollectionManager<ICollection<OrganisationElementPrototype, OrganisationElement, CollectionMetadata>>>>> commands) {
+    public static void addSystemCommands(Map<String, ICliCommand> commands) {
         commands.put(Exit.EXIT_COMMAND, new Exit());
         commands.put(Help.HELP_COMMAND, new Help());
     }

@@ -1,7 +1,5 @@
 package net.whitehorizont.apps.organization_collection_manager.cli.commands;
 
-import java.io.OutputStream;
-import java.io.PrintStream;
 import java.util.Stack;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -9,7 +7,6 @@ import io.reactivex.rxjava3.core.Observable;
 import net.whitehorizont.apps.organization_collection_manager.cli.CliDependencyManager;
 import net.whitehorizont.apps.organization_collection_manager.cli.Streams;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollection;
-import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollectionManager;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.IElementPrototype;
 import net.whitehorizont.apps.organization_collection_manager.core.commands.CollectionCommandReceiver;
 import net.whitehorizont.apps.organization_collection_manager.core.commands.InsertCommand;
@@ -17,8 +14,8 @@ import net.whitehorizont.apps.organization_collection_manager.core.storage.error
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationError;
 
 @NonNullByDefault
-public class Insert<P extends IElementPrototype<?>, CM extends ICollectionManager<? extends ICollection<P, ?, ?>>>
-    extends InputElementCommand implements ICliCommand<CliDependencyManager<CM>> {
+public class Insert
+    extends InputElementCommand implements ICliCommand {
   
   public Insert(Retries retries) {
     super(retries);
@@ -27,27 +24,31 @@ public class Insert<P extends IElementPrototype<?>, CM extends ICollectionManage
   private static final String DESCRIPTION = "insert element into collection";
 
   @Override
-  public Observable<Void> run(CliDependencyManager<CM> dependencyManager, Stack<String> arguments)
+  public <DM extends CliDependencyManager<?>> Observable<Void> run(DM dependencyManager, Stack<String> arguments)
       throws StorageInaccessibleError {
 
-    final var collectionManager = dependencyManager.getCollectionManager();
-    final ICollection<P, ?, ?> collection = collectionManager.getCollection().blockingFirst();
+    final var collectionManager = getCollectionManager(dependencyManager);
+    final var collection = getCollection(collectionManager);
 
-    final var prototype = collection.getElementPrototype();
-    final var lineReader = dependencyManager.getGenericLineReader();
+    try {
+      final var insertCommand = getInsertCommand(collection, dependencyManager);
 
-  try {
-      final Streams streams = prepareStreams(dependencyManager);
-
-      promptForFields(prototype, lineReader, streams);
+      return dependencyManager.getCommandQueue().push(insertCommand);
     } catch (ValidationError e) {
+
       return Observable.error(e);
     }
+  }
 
-    final var collectionReceiver = new CollectionCommandReceiver<>(collection);
-    final var insertCommand = new InsertCommand<>(prototype, collectionReceiver);
-
-    return dependencyManager.getCommandQueue().push(insertCommand);
+  private <P extends IElementPrototype<?>> InsertCommand<P> getInsertCommand(ICollection<P, ?, ?> collection, CliDependencyManager<?> dependencyManager) throws ValidationError {
+    final var prototype = collection.getElementPrototype();
+    final var lineReader = dependencyManager.getGenericLineReader();
+    final Streams streams = prepareStreams(dependencyManager);
+  
+    promptForFields(prototype, lineReader, streams);
+    
+    final var receiver = new CollectionCommandReceiver<>(collection);
+    return new InsertCommand<P>(prototype, receiver);
   }
 
   @Override

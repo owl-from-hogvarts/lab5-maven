@@ -2,8 +2,6 @@ package net.whitehorizont.apps.organization_collection_manager.cli.commands;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.PrintStream;
 import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.Map;
@@ -16,17 +14,16 @@ import net.whitehorizont.apps.organization_collection_manager.cli.CLI;
 import net.whitehorizont.apps.organization_collection_manager.cli.CliDependencyManager;
 import net.whitehorizont.apps.organization_collection_manager.cli.Streams;
 import net.whitehorizont.apps.organization_collection_manager.cli.errors.RecursionDetected;
-import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollectionManager;
 import net.whitehorizont.libs.file_system.PathHelpers;
 
 @NonNullByDefault
-public class ExecuteScript<CM extends ICollectionManager<?>> implements ICliCommand<CliDependencyManager<CM>> {
+public class ExecuteScript implements ICliCommand {
   public static final String EXECUTE_SCRIPT_COMMAND = "execute-script";
   private static final String DESCRIPTION = "executes new line separated sequence of commands from file";
   private final Set<Path> runningScripts = new HashSet<>();
-  private final Map<String, ICliCommand<? super CliDependencyManager<CM>>> executeScriptCommandSet;
+  private final Map<String, ICliCommand> executeScriptCommandSet;
 
-  public ExecuteScript(Map<String, ICliCommand<? super CliDependencyManager<CM>>> executeScriptCommandSet) {
+  public ExecuteScript(Map<String, ICliCommand> executeScriptCommandSet) {
     this.executeScriptCommandSet = executeScriptCommandSet;
   }
 
@@ -41,7 +38,7 @@ public class ExecuteScript<CM extends ICollectionManager<?>> implements ICliComm
   }
 
   @Override
-  public Observable<Void> run(CliDependencyManager<CM> dependencyManager, Stack<String> arguments)
+  public <DM extends CliDependencyManager<?>> Observable<Void> run(DM dependencyManager, Stack<String> arguments)
       throws Exception {
     return Observable.create((subscriber) -> {
       // turn argument into resolved path
@@ -60,7 +57,7 @@ public class ExecuteScript<CM extends ICollectionManager<?>> implements ICliComm
       final var scriptStreams = new Streams(fileInput, dependencyManager.getStreams().out, dependencyManager.getStreams().err);
       // leave err untouched since we wan't to report errors into console
       // construct new cli instance with new stream configuration      
-      final var executeScriptDependenciesConfig = new CliDependencyManager.Builder<CM>()
+      final var executeScriptDependenciesConfig = new CliDependencyManager.Builder<>()
           .setStreams(scriptStreams)
           .setCollectionManager(dependencyManager.getCollectionManager())
           .setCommands(executeScriptCommandSet)

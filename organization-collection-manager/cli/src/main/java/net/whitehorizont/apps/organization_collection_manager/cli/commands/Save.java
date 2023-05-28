@@ -7,16 +7,12 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import io.reactivex.rxjava3.core.Observable;
 import net.whitehorizont.apps.organization_collection_manager.cli.CliDependencyManager;
-import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollection;
-import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollectionManager;
-import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.BaseId;
-import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.IWithId;
 import net.whitehorizont.apps.organization_collection_manager.core.commands.CollectionManagerReceiver;
 import net.whitehorizont.apps.organization_collection_manager.core.commands.SaveCommand;
 import net.whitehorizont.apps.organization_collection_manager.core.storage.errors.StorageInaccessibleError;
 
 @NonNullByDefault
-public class Save implements ICliCommand<CliDependencyManager<?>> {
+public class Save implements ICliCommand {
 
   private static final String DESCRIPTION = "saves collection to disk";
 
@@ -31,7 +27,7 @@ public class Save implements ICliCommand<CliDependencyManager<?>> {
   }
 
   @Override
-  public Observable<Void> run(CliDependencyManager<?> dependencyManager, Stack<String> arguments)
+  public <DM extends CliDependencyManager<?>> Observable<Void> run(DM dependencyManager, Stack<String> arguments)
       throws IOException, StorageInaccessibleError {
     final var collectionManager = dependencyManager.getCollectionManager();
     final var collectionManagerReceiver = new CollectionManagerReceiver<>(collectionManager);

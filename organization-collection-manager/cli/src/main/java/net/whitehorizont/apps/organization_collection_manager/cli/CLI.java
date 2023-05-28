@@ -27,7 +27,7 @@ public class CLI<CM extends ICollectionManager<?>> {
   private static final String DEFAULT_PROMPT = " > ";
   private static final String COMMAND_SEPARATOR = " ";
   private final LineReader reader;
-  private final Map<String, ICliCommand<? super CliDependencyManager<CM>>> commands;
+  private final Map<String, ICliCommand> commands;
   private final CliDependencyManager<CM> dependencyManager;
   private final IInterruptHandler interruptHandler;
   private final IGlobalErrorHandler globalErrorHandler;

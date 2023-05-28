@@ -22,7 +22,7 @@ import net.whitehorizont.apps.organization_collection_manager.core.commands.Comm
 @NonNullByDefault
 public class CliDependencyManager<CM extends ICollectionManager<?>> {
   private final CM collectionManager;
-  private final Map<String, ICliCommand<? super CliDependencyManager<CM>>> commands;
+  private final Map<String, ICliCommand> commands;
   private final LineReader commandLineReader;
   private final LineReader genericLineReader;
   private final boolean displayPrompts;
@@ -56,7 +56,7 @@ public class CliDependencyManager<CM extends ICollectionManager<?>> {
     return collectionManager;
   }
 
-  public Map<String, ICliCommand<? super CliDependencyManager<CM>>> getCommands() {
+  public Map<String, ICliCommand> getCommands() {
     return this.commands;
   }
 
@@ -107,7 +107,7 @@ public class CliDependencyManager<CM extends ICollectionManager<?>> {
 
   public static class Builder<CM extends ICollectionManager<?>> {
     private CM collectionManager;
-    private Map<String, ICliCommand<? super CliDependencyManager<CM>>> commands;
+    private Map<String, ICliCommand> commands;
     private Streams streams;
     private @Nullable IInterruptHandler onInterruptHandler;
     private boolean isSystemTerminal = true;
@@ -142,7 +142,7 @@ public class CliDependencyManager<CM extends ICollectionManager<?>> {
       this.collectionManager = collectionManager;
       return this;
     }
-    public Builder<CM> setCommands(Map<String, ICliCommand<? super CliDependencyManager<CM>>> commands) {
+    public Builder<CM> setCommands(Map<String, ICliCommand> commands) {
       this.commands = commands;
       return this;
     }
