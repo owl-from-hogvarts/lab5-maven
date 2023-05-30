@@ -3,6 +3,9 @@ package net.whitehorizont.apps.organization_collection_manager.cli;
 import java.io.InputStream;
 import java.io.PrintStream;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
+@NonNullByDefault
 public class Streams {
   public final InputStream in;
   public final PrintStream out;

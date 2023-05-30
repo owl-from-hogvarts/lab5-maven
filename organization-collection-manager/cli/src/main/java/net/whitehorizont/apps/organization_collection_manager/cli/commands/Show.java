@@ -8,8 +8,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import io.reactivex.rxjava3.core.Observable;
 import net.whitehorizont.apps.organization_collection_manager.cli.CliDependencyManager;
-import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollection;
-import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollectionElement;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.ISerializableKey;
 import net.whitehorizont.apps.organization_collection_manager.core.commands.CollectionCommandReceiver;
 import net.whitehorizont.apps.organization_collection_manager.core.commands.ShowCommand;
 import net.whitehorizont.apps.organization_collection_manager.core.storage.errors.StorageInaccessibleError;
@@ -38,14 +37,15 @@ public class Show extends BaseElementCommand
       throws IOException, StorageInaccessibleError {
     return Observable.create(subscriber -> {
       dependencyManager.getCollectionManager().getCollection().subscribe(receivedCollection -> {
-        final ICollection<?, ? extends ICollectionElement<?>, ?> collection = receivedCollection;
-        final CollectionCommandReceiver<?, ? extends ICollectionElement<?>, ?> receiver = new CollectionCommandReceiver<>(
+        final var collection = receivedCollection;
+        final var receiver = new CollectionCommandReceiver<>(
             collection);
 
         final var show = new ShowCommand<>(receiver);
-        final var out = new PrintStream(dependencyManager.getStreams().out);
-        dependencyManager.getCommandQueue().push(show).subscribe(element -> {
-          printFields(element, out);
+        final var out = dependencyManager.getStreams().out;
+        dependencyManager.getCommandQueue().push(show).subscribe(keyElement -> {
+          final var element = keyElement.getValue();
+          printFields(element, keyElement.getKey(), out);
         });
 
         subscriber.onComplete();
@@ -55,12 +55,12 @@ public class Show extends BaseElementCommand
 
 
 
-  private static void printFields(IFieldDefinitionNode node, PrintStream out) {
-    printFields(node, out, INITIAL_NEST_LEVEL);
+  private static void printFields(IFieldDefinitionNode node, ISerializableKey key, PrintStream out) {
+    printFields(node, key, out, INITIAL_NEST_LEVEL);
   }
 
-  private static void printFields(IFieldDefinitionNode node, PrintStream out, int nestLevel) {
-    out.println(prepareNodeTitle(node.getDisplayedName(), DEFAULT_DECORATOR, nestLevel));
+  private static void printFields(IFieldDefinitionNode node, ISerializableKey key, PrintStream out, int nestLevel) {
+    out.println(prepareNodeTitle(key, node.getDisplayedName(), DEFAULT_DECORATOR, nestLevel));
 
     final var fields = node.getFields();
     for (final var field : fields) {
@@ -71,8 +71,7 @@ public class Show extends BaseElementCommand
     }
 
     for (final var child : node.getChildren()) {
-      printFields(child, out, nestLevel + 1);
+      printFields(child, key, out, nestLevel + 1);
     }
   }
-
 }
