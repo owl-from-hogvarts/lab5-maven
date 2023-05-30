@@ -11,7 +11,6 @@ import net.whitehorizont.apps.organization_collection_manager.core.collection.IC
 import net.whitehorizont.apps.organization_collection_manager.core.collection.IElementPrototype;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.NoSuchElement;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.BaseId;
-import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.ISerializableKey;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.IWithId;
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationError;
 
@@ -33,7 +32,7 @@ public class CollectionCommandReceiver<P extends IElementPrototype<?>, E extends
   }
 
   @Override
-  public void replace(ISerializableKey key, P prototype) throws ValidationError, NoSuchElement {
+  public void replace(BaseId key, P prototype) throws ValidationError, NoSuchElement {
     this.collection.replace(key, prototype);
   }
 
@@ -63,7 +62,7 @@ public class CollectionCommandReceiver<P extends IElementPrototype<?>, E extends
   }
 
   @Override
-  public E delete(ISerializableKey key) throws NoSuchElement {
+  public E delete(BaseId key) throws NoSuchElement {
     return this.collection.delete(key);
   }
 
@@ -73,7 +72,7 @@ public class CollectionCommandReceiver<P extends IElementPrototype<?>, E extends
   }
 
   @Override
-  public Observable<Entry<ISerializableKey, E>> getEveryWithKey$() {
+  public Observable<Entry<BaseId, E>> getEveryWithKey$() {
     return this.collection.getEveryWithKey$();
   }
 

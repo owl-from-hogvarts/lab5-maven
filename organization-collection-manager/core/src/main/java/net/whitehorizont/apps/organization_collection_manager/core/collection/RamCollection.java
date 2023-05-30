@@ -25,7 +25,7 @@ import net.whitehorizont.apps.organization_collection_manager.lib.validators.Val
 public class RamCollection<P extends IElementPrototype<?>, E extends ICollectionElement<P>>
     implements ICollection<P, E, CollectionMetadata> {
 
-  private final Map<ISerializableKey, E> elements = new LinkedHashMap<>();
+  private final Map<BaseId, E> elements = new LinkedHashMap<>();
   private final CollectionMetadata metadata;
   private final IElementFactory<P, E, ICollection<P, E, ?>, ?> elementFactory;
 
@@ -50,11 +50,11 @@ public class RamCollection<P extends IElementPrototype<?>, E extends ICollection
     insert(generateElementKey(), prototype);
   }
 
-  private void insert(ISerializableKey key, P prototype) throws ValidationError {
+  private void insert(BaseId key, P prototype) throws ValidationError {
     insert(key, this.elementFactory.buildElementFrom(prototype, this));
   }
   
-  private void insert(ISerializableKey key, E element) throws ValidationError {
+  private void insert(BaseId key, E element) throws ValidationError {
     this.elements.put(key, element);
   }
 
@@ -69,10 +69,10 @@ public class RamCollection<P extends IElementPrototype<?>, E extends ICollection
   }
 
   @Override
-  public Observable<Entry<ISerializableKey, E>> getEveryWithKey$() {
+  public Observable<Entry<BaseId, E>> getEveryWithKey$() {
     return Observable.just(elements).flatMap((elements) -> {
       @SuppressWarnings("null")
-      final @NonNull Set<Entry<ISerializableKey, E>> keyValuePairs = elements.entrySet();
+      final @NonNull Set<Entry<BaseId, E>> keyValuePairs = elements.entrySet();
 
       return Observable.fromIterable(keyValuePairs);
     });
@@ -99,7 +99,7 @@ public class RamCollection<P extends IElementPrototype<?>, E extends ICollection
   }
 
   @Override
-  public void replace(ISerializableKey key, P prototype) throws ValidationError, NoSuchElement {
+  public void replace(BaseId key, P prototype) throws ValidationError, NoSuchElement {
     checkIfExists(key);
     final var removed = this.delete(key);
     try {
@@ -118,7 +118,7 @@ public class RamCollection<P extends IElementPrototype<?>, E extends ICollection
   }
 
   @Override
-  public E delete(ISerializableKey key) throws NoSuchElement {
+  public E delete(BaseId key) throws NoSuchElement {
     checkIfExists(key);
     return this.elements.remove(key);
   }

@@ -3,7 +3,7 @@ package net.whitehorizont.apps.organization_collection_manager.core.collection.k
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 @NonNullByDefault
-public class ElementKey implements ISerializableKey, Comparable<ElementKey> {
+public class ElementKey extends BaseId implements Comparable<ElementKey> {
   private static int current = 0;
   
   private final int key;
@@ -27,6 +27,28 @@ public class ElementKey implements ISerializableKey, Comparable<ElementKey> {
   @Override
   public int compareTo(ElementKey other) {
     return other.key - this.key;
+  }
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + key;
+    return result;
+  }
+
+  @Override
+  public boolean equals(BaseId obj) {
+    if (this == obj)
+      return true;
+    if (obj == null)
+      return false;
+    if (getClass() != obj.getClass())
+      return false;
+    ElementKey other = (ElementKey) obj;
+    if (key != other.key)
+      return false;
+    return true;
   }
   
 }

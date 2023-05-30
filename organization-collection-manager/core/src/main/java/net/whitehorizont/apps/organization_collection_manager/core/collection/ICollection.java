@@ -7,7 +7,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import io.reactivex.rxjava3.core.Observable;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.BaseId;
-import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.ISerializableKey;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.IWithId;
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationError;
 
@@ -30,13 +29,13 @@ public interface ICollection<P extends IElementPrototype<?>, E extends ICollecti
    * @throws ValidationError
    * @throws NoSuchElement
    */
-  void replace(ISerializableKey key, P prototype) throws ValidationError, NoSuchElement;
+  void replace(BaseId key, P prototype) throws ValidationError, NoSuchElement;
 
-  E delete(ISerializableKey key) throws NoSuchElement;
+  E delete(BaseId key) throws NoSuchElement;
 
   Observable<E> getEvery$();
 
-  Observable<Entry<ISerializableKey, E>> getEveryWithKey$();
+  Observable<Entry<BaseId, E>> getEveryWithKey$();
 
   Observable<List<E>> getAll$();
 
