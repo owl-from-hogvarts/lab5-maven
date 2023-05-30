@@ -73,7 +73,7 @@ public class CLI<CM extends ICollectionManager<?>> {
 
   public Observable<Void> promptCommand()
       throws Exception {
-      final String userInput = reader.readLine(DEFAULT_PROMPT).trim().toLowerCase();
+      final String userInput = reader.readLine(DEFAULT_PROMPT).trim().strip().toLowerCase();
 
       // separate string into command and the reminder
       // everything after the command is single argument

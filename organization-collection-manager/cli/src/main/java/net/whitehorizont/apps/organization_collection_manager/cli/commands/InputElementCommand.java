@@ -129,7 +129,7 @@ public class InputElementCommand extends BaseElementCommand {
   private static @Nullable String readUserInput(LineReader lineReader, String fieldPrompt) {
     // read user input
     @Nullable
-    String userInput = lineReader.readLine(fieldPrompt).trim();
+    String userInput = lineReader.readLine(fieldPrompt).trim().strip();
     // check for null
     if (userInput.length() < 1) {
       userInput = null;

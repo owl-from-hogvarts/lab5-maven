@@ -38,7 +38,7 @@ public class Update
     final var collectionManager = getCollectionManager(dependencyManager);
     final var collection = getCollection(collectionManager);
     
-    final String idString = arguments.pop().trim();
+    final String idString = arguments.pop().trim().strip();
     final var id = collection.getElementIdFromString(idString);
 
     final var lineReader = dependencyManager.getGenericLineReader();
