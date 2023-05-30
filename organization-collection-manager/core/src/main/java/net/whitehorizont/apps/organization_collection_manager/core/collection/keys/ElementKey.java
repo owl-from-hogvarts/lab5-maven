@@ -1,8 +1,6 @@
-package net.whitehorizont.apps.organization_collection_manager.core.collection;
+package net.whitehorizont.apps.organization_collection_manager.core.collection.keys;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-
-import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.ISerializableKey;
 
 @NonNullByDefault
 public class ElementKey implements ISerializableKey, Comparable<ElementKey> {
