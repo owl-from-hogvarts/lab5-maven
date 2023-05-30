@@ -30,8 +30,10 @@ public abstract class BaseElementCommand {
 
   protected static String prepareNodeTitle(ISerializableKey key, String title, String decorator, int nestLevel) {
     final var titleDecorated = prepareNodeTitle(title, decorator, nestLevel);
-    final var titleWithKey = StringHelper.maskWithDecorations(titleDecorated, 0, key.serialize(), LEFT_DECORATOR, RIGHT_DECORATOR);
-    return titleWithKey;
+    if (isElement(nestLevel)) {
+      return StringHelper.maskWithDecorations(titleDecorated, 0, key.serialize(), LEFT_DECORATOR, RIGHT_DECORATOR);
+    }
+    return titleDecorated;
   }
 
   protected static int computeNestedPadding(int nestLevel, String string) {
