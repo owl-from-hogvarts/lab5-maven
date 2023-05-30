@@ -18,8 +18,12 @@ public class WritableFromStringFieldDefinition<V> extends WriteableFieldDefiniti
     this.builder = builder;
   }
 
-  public void setValueFromString(String value) throws ValidationError {
-    super.setValue(builder.buildFromString(value));
+  public void setValueFromString(String valueString) throws ValidationError {
+    try {
+      super.setValue(builder.buildFromString(valueString));
+    } catch (NullPointerException e) {
+      super.setValue(null);
+    }
   }
 
 }
