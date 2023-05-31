@@ -37,7 +37,7 @@ public class UUID_BaseId extends BaseId {
   }
 
   @Override
-  public boolean equals(BaseId obj) {
+  public boolean equals(Object obj) {
     if (this == obj)
       return true;
     if (obj == null)

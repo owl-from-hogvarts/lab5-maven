@@ -2,11 +2,21 @@ package net.whitehorizont.apps.organization_collection_manager.core.collection.k
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
+import net.whitehorizont.apps.organization_collection_manager.lib.IFromStringBuilder;
+import net.whitehorizont.apps.organization_collection_manager.lib.NumberFactory;
+import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationError;
+
 @NonNullByDefault
 public class ElementKey extends BaseId implements Comparable<ElementKey> {
   private static int current = 0;
+  private static IFromStringBuilder<Integer> intParser = new NumberFactory();
   
   private final int key;
+
+  public static ElementKey buildFromString(String string) throws ValidationError {
+    final var keyInt = intParser.buildFromString(string);
+    return new ElementKey(keyInt);
+  }
 
   public static ElementKey next() {
     final var newKey = new ElementKey(current);
@@ -38,7 +48,7 @@ public class ElementKey extends BaseId implements Comparable<ElementKey> {
   }
 
   @Override
-  public boolean equals(BaseId obj) {
+  public boolean equals(Object obj) {
     if (this == obj)
       return true;
     if (obj == null)

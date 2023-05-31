@@ -31,7 +31,7 @@ public class Insert
     final var collection = getCollection(collectionManager);
 
     try {
-      final var insertCommand = getInsertCommand(collection, dependencyManager);
+      final var insertCommand = getInsertCommand(arguments.pop(), collection, dependencyManager);
 
       return dependencyManager.getCommandQueue().push(insertCommand);
     } catch (ValidationError e) {
@@ -40,7 +40,7 @@ public class Insert
     }
   }
 
-  private <P extends IElementPrototype<?>> InsertCommand<P> getInsertCommand(ICollection<P, ?, ?> collection, CliDependencyManager<?> dependencyManager) throws ValidationError {
+  private <P extends IElementPrototype<?>> InsertCommand<P> getInsertCommand(String key, ICollection<P, ?, ?> collection, CliDependencyManager<?> dependencyManager) throws ValidationError {
     final var prototype = collection.getElementPrototype();
     final var lineReader = dependencyManager.getGenericLineReader();
     final Streams streams = prepareStreams(dependencyManager);
@@ -48,7 +48,7 @@ public class Insert
     promptForFields(prototype, lineReader, streams);
     
     final var receiver = new CollectionCommandReceiver<>(collection);
-    return new InsertCommand<P>(prototype, receiver);
+    return new InsertCommand<P>(key, prototype, receiver);
   }
 
   @Override

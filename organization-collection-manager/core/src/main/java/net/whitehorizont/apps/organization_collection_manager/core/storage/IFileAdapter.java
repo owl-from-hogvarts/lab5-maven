@@ -4,6 +4,7 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollection;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.NoSuchElement;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.BaseId;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.IWithId;
 import net.whitehorizont.apps.organization_collection_manager.core.storage.errors.DeserializationError;
@@ -16,7 +17,7 @@ import net.whitehorizont.apps.organization_collection_manager.lib.validators.Val
 @NonNullByDefault
 public interface IFileAdapter<C extends ICollection<?, ?, M>, @NonNull M extends IWithId<? extends BaseId>> {
   byte[] serialize(C toSerialize);
-  C deserialize(byte[] fileContent) throws DeserializationError, ValidationError, ResourceEmpty;
+  C deserialize(byte[] fileContent) throws DeserializationError, ValidationError, ResourceEmpty, NoSuchElement;
   /** 
    * If storage is empty or does not contain desired collection, 
    * this should return new empty collection with provided or default metadata

@@ -16,14 +16,20 @@ public interface ICollection<P extends IElementPrototype<?>, E extends ICollecti
   /**
    * Collection listens on returned sink to receive new elements
    * Multiple elements can be passed
+   * 
    * @throws ValidationError
+   * @throws DuplicateElements
+   * @throws NoSuchElement
    */
-  void insert(P rawElementData) throws ValidationError;
+  void insert(P rawElementData) throws ValidationError, DuplicateElements;
+  void insert(BaseId key, P prototype) throws ValidationError, DuplicateElements;
+
   /**
    * ! Only single element should be supplied !
    * 
    * In dev build passing more elements should result in assertion error
    * at runtime other elements should be ignored
+   * 
    * @param key
    * @return
    * @throws ValidationError
@@ -47,5 +53,12 @@ public interface ICollection<P extends IElementPrototype<?>, E extends ICollecti
   P getElementPrototype();
 
   BaseId getElementIdFromString(String idString) throws ValidationError;
+
+  /**
+   * Try to not mess up with element ids! Ids are the part of element. Keys are a
+   * part of collection and more of implementation detail
+   */
+  // TODO: ideally keys should be separated from ids by type hierarchy
+  BaseId getElementKeyFromString(String keyString) throws ValidationError;
 
 }

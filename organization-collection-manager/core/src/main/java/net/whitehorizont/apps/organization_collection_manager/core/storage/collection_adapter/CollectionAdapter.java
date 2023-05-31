@@ -14,6 +14,7 @@ import net.whitehorizont.apps.organization_collection_manager.core.collection.IC
 import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollectionElement;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.IElementFactory;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.IElementPrototype;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.NoSuchElement;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.CollectionMetadata.Builder;
 import net.whitehorizont.apps.organization_collection_manager.core.storage.IFileAdapter;
 import net.whitehorizont.apps.organization_collection_manager.core.storage.errors.ResourceEmpty;

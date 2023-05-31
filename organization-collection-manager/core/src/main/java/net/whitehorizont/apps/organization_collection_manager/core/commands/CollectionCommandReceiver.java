@@ -6,6 +6,7 @@ import java.util.Map.Entry;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import io.reactivex.rxjava3.core.Observable;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.DuplicateElements;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollection;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollectionElement;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.IElementPrototype;
@@ -27,7 +28,7 @@ public class CollectionCommandReceiver<P extends IElementPrototype<?>, E extends
   }
 
   @Override
-  public void insert(P prototype) throws ValidationError {
+  public void insert(P prototype) throws ValidationError, DuplicateElements {
     this.collection.insert(prototype);
   }
 
@@ -99,6 +100,21 @@ public class CollectionCommandReceiver<P extends IElementPrototype<?>, E extends
   @Override
   public BaseId getElementIdFromString(String idString) throws ValidationError {
     return this.collection.getElementIdFromString(idString);
+  }
+
+  @Override
+  public BaseId getElementKeyFromString(String keyString) throws ValidationError {
+    return this.collection.getElementKeyFromString(keyString);
+  }
+
+  public void insert(String keyString, P prototype) throws ValidationError, DuplicateElements {
+    final var key = this.collection.getElementKeyFromString(keyString);
+    this.collection.insert(key, prototype);
+  }
+
+  @Override
+  public void insert(BaseId key, P prototype) throws ValidationError, DuplicateElements {
+    this.collection.insert(key, prototype);
   }
   
 }
