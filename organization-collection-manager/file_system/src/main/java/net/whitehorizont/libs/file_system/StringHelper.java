@@ -17,15 +17,12 @@ public class StringHelper {
     }
 
     final var decoratedString = leftDecoration + overlay + rightDecoration;
-    final var underlyingBuilder = new StringBuilder(underlying);
-    underlyingBuilder.replace(totalOffset, totalOffset + decoratedString.length(), decoratedString);
-
-    return underlyingBuilder.toString();
+    return mask(underlying, totalOffset, decoratedString);
   }
   
   public static final String mask(String underlying, int offset, String overlay) {
     final var underlyingBuilder = new StringBuilder(underlying);
-    underlyingBuilder.replace(offset, overlay.length(), overlay);
+    underlyingBuilder.replace(offset, offset + overlay.length(), overlay);
     return underlyingBuilder.toString();
   }
   
