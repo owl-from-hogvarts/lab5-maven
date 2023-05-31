@@ -7,8 +7,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("collection")
 public class CollectionXml<E, M> {
   final M metadata;
-  final List<ElementXml<E>> elements;
-  CollectionXml(M metadata, List<ElementXml<E>> elements) {
+  final List<E> elements;
+  CollectionXml(M metadata, List<E> elements) {
     this.metadata = metadata;
     this.elements = elements;
   }

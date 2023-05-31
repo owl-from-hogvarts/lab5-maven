@@ -3,7 +3,6 @@ package net.whitehorizont.apps.organization_collection_manager.core.storage.coll
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import com.thoughtworks.xstream.XStream;
@@ -14,7 +13,6 @@ import net.whitehorizont.apps.organization_collection_manager.core.collection.IC
 import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollectionElement;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.IElementFactory;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.IElementPrototype;
-import net.whitehorizont.apps.organization_collection_manager.core.collection.NoSuchElement;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.CollectionMetadata.Builder;
 import net.whitehorizont.apps.organization_collection_manager.core.storage.IFileAdapter;
 import net.whitehorizont.apps.organization_collection_manager.core.storage.errors.ResourceEmpty;
@@ -38,7 +36,7 @@ public class CollectionAdapter<R, P extends IElementPrototype<R>, E extends ICol
 
   private CollectionXml<R, CollectionMetadata> prepareCollection(ICollection<P, E, CollectionMetadata> collection) {    
     final var elements = collection.getEvery$()
-        .map(element -> new ElementXml<>(element.getId().serialize(), element.getPrototype().getRawElementData()))
+        .map(element -> element.getPrototype().getRawElementData())
         .toList().blockingGet();
     return new CollectionXml<>(collection.getMetadataSnapshot(), elements);
   }
@@ -76,7 +74,7 @@ public class CollectionAdapter<R, P extends IElementPrototype<R>, E extends ICol
     
     for (var elementXmlRepresentation : storageXmlRepresentation.collection.elements) {
       final var prototype = this.elementFactory.getElementPrototype();
-      prototype.setFromRawData(elementXmlRepresentation.body);
+      prototype.setFromRawData(elementXmlRepresentation);
 
       collection.insert(prototype);
     }
