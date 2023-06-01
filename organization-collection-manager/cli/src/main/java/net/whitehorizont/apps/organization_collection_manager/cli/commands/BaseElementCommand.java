@@ -3,7 +3,7 @@ package net.whitehorizont.apps.organization_collection_manager.cli.commands;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.ISerializableKey;
-import net.whitehorizont.libs.file_system.StringHelper;
+import net.whitehorizont.libs.file_system.DecoratedString;
 
 @NonNullByDefault
 public abstract class BaseElementCommand {
@@ -16,12 +16,11 @@ public abstract class BaseElementCommand {
   protected static final String KEY_DECORATION = " >";
   protected static final int PADDING_MULTIPLIER = 2;
   protected static final int INITIAL_NEST_LEVEL = 0;
+  protected static final DecoratedString titleDecorator = new DecoratedString(DEFAULT_DECORATOR, DECORATED_TITLE_WIDTH, new DecoratedString.Decorations().leftDecorator(LEFT_DECORATOR).rightDecorator(RIGHT_DECORATOR));
 
   protected static String prepareNodeTitle(String title, String decorator, int nestLevel) {
     if (isElement(nestLevel)) {
-      final var underlyingDecoration = decorator.repeat(DECORATED_TITLE_WIDTH);
-      final var middleOffset = StringHelper.computeMiddleStringOffset(underlyingDecoration.length(), title);
-      return StringHelper.maskWithDecorations(underlyingDecoration, middleOffset, title, LEFT_DECORATOR, RIGHT_DECORATOR);
+      return titleDecorator.maskWithDecorations(DecoratedString.EPosition.MIDDLE, title);
 
     }
 
@@ -31,7 +30,7 @@ public abstract class BaseElementCommand {
   protected static String prepareNodeTitle(ISerializableKey key, String title, String decorator, int nestLevel) {
     final var titleDecorated = prepareNodeTitle(title, decorator, nestLevel);
     if (isElement(nestLevel)) {
-      return StringHelper.maskWithDecorations(titleDecorated, 0, key.serialize(), LEFT_DECORATOR, RIGHT_DECORATOR);
+      return titleDecorator.maskWithDecorations(DecoratedString.EPosition.LEFT, key.serialize());
     }
     return titleDecorated;
   }

@@ -1,31 +1,6 @@
 package net.whitehorizont.libs.file_system;
 
 public class StringHelper {
-  public static final String maskWithDecorations(String underlying, int offset, String overlay, String leftDecoration, String rightDecoration) {
-    assert offset >= 0;
-    var totalOffset = offset - leftDecoration.length();
-    // omit decoration
-    if (totalOffset < 0) {
-      leftDecoration = leftDecoration.substring(Math.abs(totalOffset), leftDecoration.length());
-      totalOffset = 0;
-    }
-
-    var totalLength = offset + overlay.length() + rightDecoration.length();
-
-    if (totalLength > underlying.length()) {
-      rightDecoration = rightDecoration.substring(0, totalLength - underlying.length());
-    }
-
-    final var decoratedString = leftDecoration + overlay + rightDecoration;
-    return mask(underlying, totalOffset, decoratedString);
-  }
-  
-  public static final String mask(String underlying, int offset, String overlay) {
-    final var underlyingBuilder = new StringBuilder(underlying);
-    underlyingBuilder.replace(offset, offset + overlay.length(), overlay);
-    return underlyingBuilder.toString();
-  }
-  
   public static final String padBoth(String string, int targetLength, String padString) {
     // compute amount of remaining symbols
     final var stringLength = string.length();
