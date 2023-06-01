@@ -140,7 +140,7 @@ public class InputElementCommand extends BaseElementCommand {
   }
 
 
-  protected <CM extends ICollectionManager<?>> CM getCollectionManager(CliDependencyManager<CM> dependencyManager) {
+  protected <CM extends ICollectionManager<?>> CM getCollectionManager(CliDependencyManager<? extends CM> dependencyManager) {
     return dependencyManager.getCollectionManager();
   }
 
