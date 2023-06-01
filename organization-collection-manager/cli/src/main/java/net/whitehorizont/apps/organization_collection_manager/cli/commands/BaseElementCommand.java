@@ -17,28 +17,12 @@ public abstract class BaseElementCommand {
   protected static final int PADDING_MULTIPLIER = 2;
   protected static final int INITIAL_NEST_LEVEL = 0;
 
-  protected static String prepareNodeTitle(String title, int nestLevel) {
-    if (isElement(nestLevel)) {
-      return prepareNodeTitle(title).build();
-    }
-
-    return buildChildNodeTitle(title);
-  }
-
-  private static DecoratedString prepareNodeTitle(String title) {
+  protected static DecoratedString prepareNodeTitle(String title) {
       final var titleDecorator = getDecorator();
       return titleDecorator.setMiddle(title);
   }
 
-  protected static String prepareNodeTitle(ISerializableKey key, String title, int nestLevel) {
-    if (isElement(nestLevel)) {
-      final var titleDecorated = prepareNodeTitle(title);
-      return titleDecorated.setLeft(key.serialize()).build();
-    }
-    return buildChildNodeTitle(title);
-  }
-
-  private static String buildChildNodeTitle(String title) {
+  protected static String buildChildNodeTitle(String title) {
     return title + FIELD_NAME_VALUE_SEPARATOR;
   }
 
@@ -49,7 +33,7 @@ public abstract class BaseElementCommand {
     return paddedStringLength;
   }
 
-  private static boolean isElement(int nestLevel) {
+  protected static boolean isElement(int nestLevel) {
     return nestLevel == INITIAL_NEST_LEVEL;
   }
 

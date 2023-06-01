@@ -60,7 +60,10 @@ public class Show extends BaseElementCommand
   }
 
   private static void printFields(IFieldDefinitionNode node, ISerializableKey key, PrintStream out, int nestLevel) {
-    out.println(prepareNodeTitle(key, node.getDisplayedName(), nestLevel));
+    final String nodeTitle = node.getDisplayedName();
+    final var titleDecorated = prepareNodeTitle(nodeTitle);
+    titleDecorated.setLeft(key.serialize());
+    out.println(isElement(nestLevel) ? titleDecorated.build() : buildChildNodeTitle(nodeTitle));
 
     final var fields = node.getFields();
     for (final var field : fields) {

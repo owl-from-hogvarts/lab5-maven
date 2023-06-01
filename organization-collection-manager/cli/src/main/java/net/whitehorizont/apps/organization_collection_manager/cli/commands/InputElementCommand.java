@@ -57,7 +57,9 @@ public class InputElementCommand extends BaseElementCommand {
     final var out = streams.out;
     final var err = streams.err;
 
-    out.println(prepareNodeTitle(node.getDisplayedName(), nestLevel));
+    final String nodeTitle = node.getDisplayedName();
+    final String title = isElement(nestLevel) ? prepareNodeTitle(nodeTitle).build() : buildChildNodeTitle(nodeTitle);
+    out.println(title);
 
     for (final var field : fields) {
       final var metadata = field.getMetadata();
