@@ -3,6 +3,7 @@ package net.whitehorizont.apps.organization_collection_manager.cli.commands;
 import java.io.OutputStream;
 import java.io.PrintStream;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.jline.reader.LineReader;
 
@@ -10,15 +11,13 @@ import net.whitehorizont.apps.organization_collection_manager.cli.CliDependencyM
 import net.whitehorizont.apps.organization_collection_manager.cli.Streams;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollection;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollectionManager;
-import net.whitehorizont.apps.organization_collection_manager.core.collection.IElementPrototype;
-import net.whitehorizont.apps.organization_collection_manager.core.commands.CollectionCommandReceiver;
-import net.whitehorizont.apps.organization_collection_manager.core.commands.InsertCommand;
 import net.whitehorizont.apps.organization_collection_manager.core.storage.errors.StorageInaccessibleError;
 import net.whitehorizont.apps.organization_collection_manager.lib.FieldMetadata;
 import net.whitehorizont.apps.organization_collection_manager.lib.IWriteableFieldDefinitionNode;
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationError;
 import net.whitehorizont.libs.file_system.StringHelper;
 
+@NonNullByDefault
 public class InputElementCommand extends BaseElementCommand {
   private static final String HINT_PREFIX = "Hint for next field: ";
 

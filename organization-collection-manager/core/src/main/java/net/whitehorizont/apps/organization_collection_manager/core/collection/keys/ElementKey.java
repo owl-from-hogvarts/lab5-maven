@@ -1,5 +1,7 @@
 package net.whitehorizont.apps.organization_collection_manager.core.collection.keys;
 
+import java.util.stream.Stream;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import net.whitehorizont.apps.organization_collection_manager.lib.IFromStringBuilder;
@@ -18,11 +20,20 @@ public class ElementKey extends BaseId implements Comparable<ElementKey> {
     return new ElementKey(keyInt);
   }
 
-  public static ElementKey next() {
+  public static ElementKey next() throws KeyGenerationError {
     final var newKey = new ElementKey(current);
-    current += 1;
+    try {
+      current += 1;
+    } catch (ArithmeticException e) {
+      throw new KeyGenerationError(e.getMessage());
+    }
 
     return newKey;
+  }
+
+  public static ElementKey next(Stream<ElementKey> keysKnown) throws KeyGenerationError {
+    current = keysKnown.max((keyA, keyB) -> keyA.key - keyB.key).get().key;
+    return next();
   }
 
   private ElementKey(int key) {

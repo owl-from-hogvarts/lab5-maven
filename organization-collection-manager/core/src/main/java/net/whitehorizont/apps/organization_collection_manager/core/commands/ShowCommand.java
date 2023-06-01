@@ -6,10 +6,10 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import io.reactivex.rxjava3.core.Observable;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollectionElement;
-import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.BaseId;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.ElementKey;
 
 @NonNullByDefault
-public class ShowCommand<E extends ICollectionElement<?>> implements ICommand<Entry<BaseId, E>> {
+public class ShowCommand<E extends ICollectionElement<?>> implements ICommand<Entry<ElementKey, E>> {
 
   private final CollectionCommandReceiver<?, E, ?> collection;
   
@@ -20,7 +20,7 @@ public class ShowCommand<E extends ICollectionElement<?>> implements ICommand<En
 
 
   @Override
-  public Observable<Entry<BaseId, E>> execute() {
+  public Observable<Entry<ElementKey, E>> execute() {
     return collection.getEveryWithKey$(); // who the fuck designed java generics
   }
   

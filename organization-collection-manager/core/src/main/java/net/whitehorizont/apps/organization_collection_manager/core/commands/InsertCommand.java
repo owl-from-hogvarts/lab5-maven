@@ -4,15 +4,15 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import io.reactivex.rxjava3.core.Observable;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.IElementPrototype;
-import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.BaseId;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.ElementKey;
 
 @NonNullByDefault
 public class InsertCommand<P extends IElementPrototype<?>> implements ICommand<Void> {
   private final P prototype;
   private final CollectionCommandReceiver<P, ?, ?> collection;
-  private final BaseId key;
+  private final ElementKey key;
 
-  public InsertCommand(BaseId key, P prototype, CollectionCommandReceiver<P, ?, ?> collectionReceiver) {
+  public InsertCommand(ElementKey key, P prototype, CollectionCommandReceiver<P, ?, ?> collectionReceiver) {
     this.prototype = prototype;
     this.collection = collectionReceiver;
     this.key = key;

@@ -7,7 +7,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import io.reactivex.rxjava3.core.Observable;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.BaseId;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.ElementKey;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.IWithId;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.KeyGenerationError;
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationError;
 
 @NonNullByDefault
@@ -19,10 +21,11 @@ public interface ICollection<P extends IElementPrototype<?>, E extends ICollecti
    * 
    * @throws ValidationError
    * @throws DuplicateElements
+   * @throws KeyGenerationError
    * @throws NoSuchElement
    */
-  void insert(P rawElementData) throws ValidationError, DuplicateElements;
-  void insert(BaseId key, P prototype) throws ValidationError, DuplicateElements;
+  void insert(P rawElementData) throws ValidationError, DuplicateElements, KeyGenerationError;
+  void insert(ElementKey key, P prototype) throws ValidationError, DuplicateElements;
 
   /**
    * ! Only single element should be supplied !
@@ -35,13 +38,13 @@ public interface ICollection<P extends IElementPrototype<?>, E extends ICollecti
    * @throws ValidationError
    * @throws NoSuchElement
    */
-  void replace(BaseId key, P prototype) throws ValidationError, NoSuchElement;
+  void replace(ElementKey key, P prototype) throws ValidationError, NoSuchElement;
 
-  E delete(BaseId key) throws NoSuchElement;
+  E delete(ElementKey key) throws NoSuchElement;
 
   Observable<E> getEvery$();
 
-  Observable<Entry<BaseId, E>> getEveryWithKey$();
+  Observable<Entry<ElementKey, E>> getEveryWithKey$();
 
   Observable<List<E>> getAll$();
 
@@ -59,6 +62,6 @@ public interface ICollection<P extends IElementPrototype<?>, E extends ICollecti
    * part of collection and more of implementation detail
    */
   // TODO: ideally keys should be separated from ids by type hierarchy
-  BaseId getElementKeyFromString(String keyString) throws ValidationError;
+  ElementKey getElementKeyFromString(String keyString) throws ValidationError;
 
 }

@@ -12,7 +12,9 @@ import net.whitehorizont.apps.organization_collection_manager.core.collection.IC
 import net.whitehorizont.apps.organization_collection_manager.core.collection.IElementPrototype;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.NoSuchElement;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.BaseId;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.ElementKey;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.IWithId;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.KeyGenerationError;
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationError;
 
 /**
@@ -28,12 +30,12 @@ public class CollectionCommandReceiver<P extends IElementPrototype<?>, E extends
   }
 
   @Override
-  public void insert(P prototype) throws ValidationError, DuplicateElements {
+  public void insert(P prototype) throws ValidationError, DuplicateElements, KeyGenerationError {
     this.collection.insert(prototype);
   }
 
   @Override
-  public void replace(BaseId key, P prototype) throws ValidationError, NoSuchElement {
+  public void replace(ElementKey key, P prototype) throws ValidationError, NoSuchElement {
     this.collection.replace(key, prototype);
   }
 
@@ -63,7 +65,7 @@ public class CollectionCommandReceiver<P extends IElementPrototype<?>, E extends
   }
 
   @Override
-  public E delete(BaseId key) throws NoSuchElement {
+  public E delete(ElementKey key) throws NoSuchElement {
     return this.collection.delete(key);
   }
 
@@ -73,7 +75,7 @@ public class CollectionCommandReceiver<P extends IElementPrototype<?>, E extends
   }
 
   @Override
-  public Observable<Entry<BaseId, E>> getEveryWithKey$() {
+  public Observable<Entry<ElementKey, E>> getEveryWithKey$() {
     return this.collection.getEveryWithKey$();
   }
 
@@ -103,12 +105,12 @@ public class CollectionCommandReceiver<P extends IElementPrototype<?>, E extends
   }
 
   @Override
-  public BaseId getElementKeyFromString(String keyString) throws ValidationError {
+  public ElementKey getElementKeyFromString(String keyString) throws ValidationError {
     return this.collection.getElementKeyFromString(keyString);
   }
 
   @Override
-  public void insert(BaseId key, P prototype) throws ValidationError, DuplicateElements {
+  public void insert(ElementKey key, P prototype) throws ValidationError, DuplicateElements {
     this.collection.insert(key, prototype);
   }
   

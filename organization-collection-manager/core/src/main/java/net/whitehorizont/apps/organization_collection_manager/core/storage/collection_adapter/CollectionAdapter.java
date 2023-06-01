@@ -9,11 +9,13 @@ import com.thoughtworks.xstream.XStream;
 import io.reactivex.rxjava3.annotations.NonNull;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.RamCollection;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.CollectionMetadata;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.DuplicateElements;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollection;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollectionElement;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.IElementFactory;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.IElementPrototype;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.CollectionMetadata.Builder;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.KeyGenerationError;
 import net.whitehorizont.apps.organization_collection_manager.core.storage.IFileAdapter;
 import net.whitehorizont.apps.organization_collection_manager.core.storage.errors.ResourceEmpty;
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationError;
@@ -59,7 +61,7 @@ public class CollectionAdapter<R, P extends IElementPrototype<R>, E extends ICol
     return serializedContent;
   }
 
-  public RamCollection<P, E> parse(ByteBuffer fileContent) throws ValidationError {
+  public RamCollection<P, E> parse(ByteBuffer fileContent) throws ValidationError, KeyGenerationError, DuplicateElements {
     // receive buffer
     // cast to string
     final String xml_content = DEFAULT_ENCODING.decode(fileContent).toString();
@@ -84,7 +86,7 @@ public class CollectionAdapter<R, P extends IElementPrototype<R>, E extends ICol
   }
 
   @Override
-  public RamCollection<P, E> deserialize(byte[] fileContent) throws ValidationError, ResourceEmpty {
+  public RamCollection<P, E> deserialize(byte[] fileContent) throws ValidationError, ResourceEmpty, KeyGenerationError, DuplicateElements {
     if (fileContent.length == 0) {
       // if something wrong with file, error any way
       // this is responsibility of client code what to with errors

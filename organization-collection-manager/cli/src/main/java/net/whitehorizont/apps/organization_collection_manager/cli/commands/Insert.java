@@ -8,7 +8,7 @@ import net.whitehorizont.apps.organization_collection_manager.cli.CliDependencyM
 import net.whitehorizont.apps.organization_collection_manager.cli.Streams;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollection;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.IElementPrototype;
-import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.BaseId;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.ElementKey;
 import net.whitehorizont.apps.organization_collection_manager.core.commands.CollectionCommandReceiver;
 import net.whitehorizont.apps.organization_collection_manager.core.commands.InsertCommand;
 import net.whitehorizont.apps.organization_collection_manager.core.storage.errors.StorageInaccessibleError;
@@ -42,7 +42,7 @@ public class Insert
     }
   }
 
-  private <P extends IElementPrototype<?>> InsertCommand<P> getInsertCommand(BaseId key, ICollection<P, ?, ?> collection, CliDependencyManager<?> dependencyManager) throws ValidationError {
+  private <P extends IElementPrototype<?>> InsertCommand<P> getInsertCommand(ElementKey key, ICollection<P, ?, ?> collection, CliDependencyManager<?> dependencyManager) throws ValidationError {
     final var prototype = collection.getElementPrototype();
     final var lineReader = dependencyManager.getGenericLineReader();
     final Streams streams = prepareStreams(dependencyManager);
