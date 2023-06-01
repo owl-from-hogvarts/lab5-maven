@@ -29,6 +29,8 @@ public class Insert
       throws StorageInaccessibleError, ValidationError {
 
     final var collectionManager = getCollectionManager(dependencyManager);
+    // from time to time this may fix the issue
+    // collectionManager.getCollection();
     final var collection = getCollection(collectionManager);
     final var key = collection.getElementKeyFromString(arguments.pop());
 
