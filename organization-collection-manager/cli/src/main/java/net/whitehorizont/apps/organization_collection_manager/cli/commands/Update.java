@@ -34,7 +34,7 @@ public class Update
   }
 
   @Override
-  public <DM extends CliDependencyManager<?>> Observable<Void> run(DM dependencyManager, Stack<String> arguments) throws Exception {
+  public Observable<Void> run(CliDependencyManager<?> dependencyManager, Stack<String> arguments) throws Exception {
     final var collectionManager = getCollectionManager(dependencyManager);
     final var collection = getCollection(collectionManager);
     

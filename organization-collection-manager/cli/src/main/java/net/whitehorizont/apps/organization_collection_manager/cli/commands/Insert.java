@@ -25,7 +25,7 @@ public class Insert
   private static final String DESCRIPTION = "insert element into collection";
 
   @Override
-  public <DM extends CliDependencyManager<?>> Observable<Void> run(DM dependencyManager, Stack<String> arguments)
+  public Observable<Void> run(CliDependencyManager<?> dependencyManager, Stack<String> arguments)
       throws StorageInaccessibleError, ValidationError {
 
     final var collectionManager = getCollectionManager(dependencyManager);

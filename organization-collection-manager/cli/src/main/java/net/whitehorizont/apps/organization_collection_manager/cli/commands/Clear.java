@@ -24,7 +24,7 @@ public class Clear implements ICliCommand {
   }
 
   @Override
-  public <DM extends CliDependencyManager<?>> Observable<Void> run(DM dependencyManager, Stack<String> arguments) throws Exception {
+  public Observable<Void> run(CliDependencyManager<?> dependencyManager, Stack<String> arguments) throws Exception {
     final var collection = dependencyManager.getCollectionManager().getCollection().blockingFirst();
     final var collectionReceiver = new CollectionCommandReceiver<>(collection);
     final var clear = new ClearCommand(collectionReceiver);

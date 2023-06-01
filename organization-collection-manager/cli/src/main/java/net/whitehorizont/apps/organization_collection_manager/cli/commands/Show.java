@@ -31,8 +31,8 @@ public class Show extends BaseElementCommand
   }
 
   @Override
-  public <DM extends CliDependencyManager<?>> Observable<Void> run(
-      DM dependencyManager,
+  public Observable<Void> run(
+      CliDependencyManager<?> dependencyManager,
       Stack<String> arguments)
       throws IOException, StorageInaccessibleError {
     return Observable.create(subscriber -> {

@@ -35,7 +35,7 @@ public class Help implements ICliCommand {
   }
 
   @Override
-  public <DM extends CliDependencyManager<?>> Observable<Void> run(DM dependencyManager, Stack<String> arguments) {
+  public Observable<Void> run(CliDependencyManager<?> dependencyManager, Stack<String> arguments) {
     return Observable.create(subscriber -> {
       final var commandDescriptions = new ArrayList<Pair<String, String>>();
       final Map<String, ? extends ICliCommand> commands = dependencyManager

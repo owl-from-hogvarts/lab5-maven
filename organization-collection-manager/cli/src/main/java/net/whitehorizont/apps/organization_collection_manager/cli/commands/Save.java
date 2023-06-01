@@ -27,7 +27,7 @@ public class Save implements ICliCommand {
   }
 
   @Override
-  public <DM extends CliDependencyManager<?>> Observable<Void> run(DM dependencyManager, Stack<String> arguments)
+  public Observable<Void> run(CliDependencyManager<?> dependencyManager, Stack<String> arguments)
       throws IOException, StorageInaccessibleError {
     final var collectionManager = dependencyManager.getCollectionManager();
     final var collectionManagerReceiver = new CollectionManagerReceiver<>(collectionManager);
