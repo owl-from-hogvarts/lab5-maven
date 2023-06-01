@@ -16,23 +16,30 @@ public abstract class BaseElementCommand {
   protected static final String KEY_DECORATION = " >";
   protected static final int PADDING_MULTIPLIER = 2;
   protected static final int INITIAL_NEST_LEVEL = 0;
-  protected static final DecoratedString titleDecorator = new DecoratedString(DEFAULT_DECORATOR, DECORATED_TITLE_WIDTH, new DecoratedString.Decorations().leftDecorator(LEFT_DECORATOR).rightDecorator(RIGHT_DECORATOR));
 
-  protected static String prepareNodeTitle(String title, String decorator, int nestLevel) {
+  protected static String prepareNodeTitle(String title, int nestLevel) {
     if (isElement(nestLevel)) {
-      return titleDecorator.maskWithDecorations(DecoratedString.EPosition.MIDDLE, title);
-
+      return prepareNodeTitle(title).build();
     }
 
-    return title + FIELD_NAME_VALUE_SEPARATOR;
+    return buildChildNodeTitle(title);
   }
 
-  protected static String prepareNodeTitle(ISerializableKey key, String title, String decorator, int nestLevel) {
-    final var titleDecorated = prepareNodeTitle(title, decorator, nestLevel);
+  private static DecoratedString prepareNodeTitle(String title) {
+      final var titleDecorator = getDecorator();
+      return titleDecorator.setMiddle(title);
+  }
+
+  protected static String prepareNodeTitle(ISerializableKey key, String title, int nestLevel) {
     if (isElement(nestLevel)) {
-      return titleDecorator.maskWithDecorations(DecoratedString.EPosition.LEFT, key.serialize());
+      final var titleDecorated = prepareNodeTitle(title);
+      return titleDecorated.setLeft(key.serialize()).build();
     }
-    return titleDecorated;
+    return buildChildNodeTitle(title);
+  }
+
+  private static String buildChildNodeTitle(String title) {
+    return title + FIELD_NAME_VALUE_SEPARATOR;
   }
 
   protected static int computeNestedPadding(int nestLevel, String string) {
@@ -44,5 +51,14 @@ public abstract class BaseElementCommand {
 
   private static boolean isElement(int nestLevel) {
     return nestLevel == INITIAL_NEST_LEVEL;
+  }
+
+  private static DecoratedString getDecorator() {
+    final var decorations = new DecoratedString.Decorations()
+                                  .leftDecorator(LEFT_DECORATOR)
+                                  .rightDecorator(RIGHT_DECORATOR);
+    final var decorator = new DecoratedString(DEFAULT_DECORATOR, DECORATED_TITLE_WIDTH,decorations);
+
+    return decorator;
   }
 }

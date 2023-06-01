@@ -13,6 +13,24 @@ public class DecoratedString {
   private final String leftDecoration;
   private final String rightDecoration;
   private final String underlying;
+  private Optional<String> left = Optional.empty();
+  private Optional<String> middle = Optional.empty();
+  private Optional<String> right = Optional.empty();
+
+  public DecoratedString setLeft(String left) {
+    this.left = Optional.of(left);
+    return this;
+  }
+
+  public DecoratedString setMiddle(String middle) {
+    this.middle = Optional.of(middle);
+    return this;
+  }
+
+  public DecoratedString setRight(String right) {
+    this.right = Optional.of(right);
+    return this;
+  }
 
   public DecoratedString(String backgroundSymbol, int length, Decorations decorations) {
     assert length > 1;
@@ -21,24 +39,26 @@ public class DecoratedString {
     this.rightDecoration = decorations.rightDecoration.orElse(DEFAULT_RIGHT_DECORATOR);
   }
 
-  public String maskWithDecorations(EPosition position, String overlay) {
-    
-    return switch (position) {
-      case LEFT -> maskWithDecorations(MIN_ALLOWED_OFFSET, overlay);
-      case MIDDLE -> maskWithDecorations(StringHelper.computeMiddleStringOffset(underlying.length(), overlay), overlay);
-      case RIGHT -> maskWithDecorations(underlying.length() - overlay.length(), overlay);
-    };
+  public String build() {
+    String result = this.underlying;
+    if (left.isPresent()) {
+      result = maskWithDecorations(result, MIN_ALLOWED_OFFSET, left.get());
+    }
+
+    if (middle.isPresent()) {
+      result = maskWithDecorations(result, StringHelper.computeMiddleStringOffset(result.length(), middle.get()), middle.get());
+    }
+
+    if (right.isPresent()) {
+      result = maskWithDecorations(result, result.length() - right.get().length(), right.get());
+    }
+
+    return result;
   }
 
-  public static enum EPosition {
-    RIGHT,
-    MIDDLE,
-    LEFT
-  }
-
-  public String maskWithDecorations(int offset, String overlay) {
+  private String maskWithDecorations(String underlying, int offset, String overlay) {
     assert offset >= MIN_ALLOWED_OFFSET;
-    var totalOffset = offset - leftDecoration.length();
+    var totalOffset = offset - this.leftDecoration.length();
     var leftDecoration = this.leftDecoration;
     // omit decoration
     if (totalOffset < MIN_ALLOWED_OFFSET) {
