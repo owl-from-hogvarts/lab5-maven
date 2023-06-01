@@ -107,11 +107,6 @@ public class CollectionCommandReceiver<P extends IElementPrototype<?>, E extends
     return this.collection.getElementKeyFromString(keyString);
   }
 
-  public void insert(String keyString, P prototype) throws ValidationError, DuplicateElements {
-    final var key = this.collection.getElementKeyFromString(keyString);
-    this.collection.insert(key, prototype);
-  }
-
   @Override
   public void insert(BaseId key, P prototype) throws ValidationError, DuplicateElements {
     this.collection.insert(key, prototype);
