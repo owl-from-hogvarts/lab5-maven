@@ -7,7 +7,7 @@ import net.whitehorizont.apps.organization_collection_manager.core.collection.ke
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationError;
 
 @NonNullByDefault
-public class OrganisationElementFactory implements IElementFactory<OrganisationElementPrototype, OrganisationElement, ICollection<OrganisationElementPrototype, OrganisationElement, ?>, UUID_ElementId> {
+public class OrganisationElementFactory implements IElementFactory<OrganisationElementPrototype, OrganisationElement, ICollection<OrganisationElementPrototype, OrganisationElement>, UUID_ElementId> {
 
   // return new OrganisationElement(validationObject, prototype);
 
@@ -18,7 +18,7 @@ public class OrganisationElementFactory implements IElementFactory<OrganisationE
 
   @Override
   public OrganisationElement buildElementFrom(OrganisationElementPrototype prototype,
-      ICollection<OrganisationElementPrototype, OrganisationElement, ?> validationObject) throws ValidationError {
+      ICollection<OrganisationElementPrototype, OrganisationElement> validationObject) throws ValidationError {
         return new OrganisationElement(validationObject, prototype);
       }
 

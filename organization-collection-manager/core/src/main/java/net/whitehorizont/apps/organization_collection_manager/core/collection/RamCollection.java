@@ -25,23 +25,23 @@ import net.whitehorizont.apps.organization_collection_manager.lib.validators.Val
  */
 @NonNullByDefault
 public class RamCollection<P extends IElementPrototype<?>, E extends ICollectionElement<P>>
-    implements ICollection<P, E, CollectionMetadata> {
+    implements ICollection<P, E> {
 
   private static final int MAX_BRUT_FORCE_RETRIES = 10;
 
 
   private final Map<ElementKey, E> elements = new LinkedHashMap<>();
   private final CollectionMetadata metadata;
-  private final IElementFactory<P, E, ICollection<P, E, ?>, ?> elementFactory;
+  private final IElementFactory<P, E, ICollection<P, E>, ?> elementFactory;
 
   // takes such dataSink factory which accepts any parent class of collection
   // we undertake to provide class not higher than collection
-  public RamCollection(IElementFactory<P, E, ICollection<P, E, ?>, ?> elementFactory, CollectionMetadata metadata) {
+  public RamCollection(IElementFactory<P, E, ICollection<P, E>, ?> elementFactory, CollectionMetadata metadata) {
     this.metadata = metadata;
     this.elementFactory = elementFactory;
   }
 
-  public RamCollection(IElementFactory<P, E, ICollection<P, E, ?>, ?> elementFactory) {
+  public RamCollection(IElementFactory<P, E, ICollection<P, E>, ?> elementFactory) {
     this(elementFactory, new CollectionMetadata(new Builder(new UUID_CollectionId())));
   }
 

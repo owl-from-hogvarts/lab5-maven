@@ -58,7 +58,7 @@ public class Update
     // propose new element to collection
   } 
 
-  private <P extends IElementPrototype<?>> UpdateCommand<P> getUpdateCommand(ICollection<P, ?, ?> collection, CliDependencyManager<?> dependencyManager, BaseId id, IPrototypeCallback<P> callback) {
+  private <P extends IElementPrototype<?>> UpdateCommand<P> getUpdateCommand(ICollection<P, ?> collection, CliDependencyManager<?> dependencyManager, BaseId id, IPrototypeCallback<P> callback) {
     final var receiver = new CollectionCommandReceiver<>(collection);
     return new UpdateCommand<P>(id, receiver, callback);
   }

@@ -26,14 +26,14 @@ public class OrganisationElement implements ICollectionElement<OrganisationEleme
   private static final String ELEMENT_TITLE = "Organisation";
 
   // !!! METADATA !!!
-  private static final FieldMetadata<String, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement, ?>> NAME_METADATA = new FieldMetadata<>(
-      new FieldMetadata.Metadata<String, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement, ?>>()
+  private static final FieldMetadata<String, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement>> NAME_METADATA = new FieldMetadata<>(
+      new FieldMetadata.Metadata<String, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement>>()
           .setDisplayedName("name")
           .setRequired("Company name must be specified")
           .addValidator((value, _unused) -> new ValidationResult<>(value.length() >= 1, "String should not be empty")));
 
-  private static final FieldMetadata<UUID_ElementId, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement, ?>> ID_METADATA = new FieldMetadata<>(
-      new FieldMetadata.Metadata<UUID_ElementId, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement, ?>>()
+  private static final FieldMetadata<UUID_ElementId, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement>> ID_METADATA = new FieldMetadata<>(
+      new FieldMetadata.Metadata<UUID_ElementId, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement>>()
           .setDisplayedName("ID")
           .setRequired("ID must be provided for collection element")
           .addValidator((value, collection) -> {
@@ -46,51 +46,51 @@ public class OrganisationElement implements ICollectionElement<OrganisationEleme
             
           }));
 
-  private static final FieldMetadata<OrganisationType, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement, ?>> TYPE_METADATA = new FieldMetadata<>(
-      new FieldMetadata.Metadata<OrganisationType, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement, ?>>()
+  private static final FieldMetadata<OrganisationType, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement>> TYPE_METADATA = new FieldMetadata<>(
+      new FieldMetadata.Metadata<OrganisationType, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement>>()
       .setDisplayedName("type")
       .setRequired("Type of organisation should be specified!")
       .setHint(OrganisationType.getHint()));
 
-  public static FieldMetadata<String, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement, ?>> getNameMetadata() {
+  public static FieldMetadata<String, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement>> getNameMetadata() {
     return NAME_METADATA;
   }
 
   // !!! FIELDS !!!
-  private final FieldDefinition<String, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement, ?>> name;
-  private final FieldDefinition<UUID_ElementId, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement, ?>> ID;
+  private final FieldDefinition<String, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement>> name;
+  private final FieldDefinition<UUID_ElementId, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement>> ID;
   private final Coordinates coordinates;
-  private final FieldDefinition<OrganisationType, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement, ?>> type;
+  private final FieldDefinition<OrganisationType, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement>> type;
 
   // !!! GETTERS !!!
-  public FieldDefinition<String, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement, ?>> getName() {
+  public FieldDefinition<String, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement>> getName() {
     return name;
   }
 
-  public FieldDefinition<UUID_ElementId, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement, ?>> getID() {
+  public FieldDefinition<UUID_ElementId, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement>> getID() {
     return ID;
   }
 
-  public FieldDefinition<OrganisationType, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement, ?>> getType() {
+  public FieldDefinition<OrganisationType, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement>> getType() {
     return type;
   }
 
   // !!! CONSTRUCTOR !!!
-  public OrganisationElement(ICollection<OrganisationElementPrototype, OrganisationElement, ?> collection,
+  public OrganisationElement(ICollection<OrganisationElementPrototype, OrganisationElement> collection,
       OrganisationElementPrototype prototype)
       throws ValidationError {
-    this.name = new FieldDefinition<String, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement, ?>>(
+    this.name = new FieldDefinition<String, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement>>(
         OrganisationElement.NAME_METADATA,
         prototype.name.getValue(),
         collection);
 
-    this.ID = new FieldDefinition<UUID_ElementId, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement, ?>>(
+    this.ID = new FieldDefinition<UUID_ElementId, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement>>(
         ID_METADATA, prototype.ID.getValue(),
         collection);
 
     this.coordinates = new Coordinates(prototype.coordinates);
 
-    this.type = new FieldDefinition<OrganisationType,ICollection<OrganisationElementPrototype,OrganisationElement,?>>(TYPE_METADATA, prototype.type.getValue(), collection);
+    this.type = new FieldDefinition<OrganisationType,ICollection<OrganisationElementPrototype,OrganisationElement>>(TYPE_METADATA, prototype.type.getValue(), collection);
   }
 
   public static class OrganisationElementRawData {

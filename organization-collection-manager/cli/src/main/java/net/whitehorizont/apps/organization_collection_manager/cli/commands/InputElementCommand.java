@@ -9,6 +9,7 @@ import org.jline.reader.LineReader;
 
 import net.whitehorizont.apps.organization_collection_manager.cli.CliDependencyManager;
 import net.whitehorizont.apps.organization_collection_manager.cli.Streams;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.CollectionMetadata;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollection;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollectionManager;
 import net.whitehorizont.apps.organization_collection_manager.core.storage.errors.StorageInaccessibleError;
@@ -140,11 +141,11 @@ public class InputElementCommand extends BaseElementCommand {
   }
 
 
-  protected <CM extends ICollectionManager<?>> CM getCollectionManager(CliDependencyManager<? extends CM> dependencyManager) {
+  protected <CM extends ICollectionManager<? extends ICollection<?, ?>>> CM getCollectionManager(CliDependencyManager<? extends CM> dependencyManager) {
     return dependencyManager.getCollectionManager();
   }
 
-  protected <C extends ICollection<?, ?, ?>> C getCollection(ICollectionManager<C> collectionManager) throws StorageInaccessibleError {
+  protected <C extends ICollection<?, ?>> C getCollection(ICollectionManager<C> collectionManager) throws StorageInaccessibleError {
     return collectionManager.getCollection().blockingFirst();
   }
 }

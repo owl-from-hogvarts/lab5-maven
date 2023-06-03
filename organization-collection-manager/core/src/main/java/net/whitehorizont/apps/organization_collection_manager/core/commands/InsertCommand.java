@@ -9,16 +9,16 @@ import net.whitehorizont.apps.organization_collection_manager.core.collection.ke
 @NonNullByDefault
 public class InsertCommand<P extends IElementPrototype<?>> implements ICommand<Void> {
   private final P prototype;
-  private final CollectionCommandReceiver<P, ?, ?> collection;
+  private final CollectionCommandReceiver<P, ?> collection;
   private final ElementKey key;
 
-  public InsertCommand(ElementKey key, P prototype, CollectionCommandReceiver<P, ?, ?> collectionReceiver) {
+  public InsertCommand(ElementKey key, P prototype, CollectionCommandReceiver<P, ?> collectionReceiver) {
     this.prototype = prototype;
     this.collection = collectionReceiver;
     this.key = key;
   }
 
-  // @Override
+  @Override
   public Observable<Void> execute() {
     return Observable.create(subscriber -> {
       final var collection = this.collection;

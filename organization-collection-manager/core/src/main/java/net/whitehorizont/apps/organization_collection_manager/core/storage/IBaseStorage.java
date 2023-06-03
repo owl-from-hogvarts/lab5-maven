@@ -4,6 +4,7 @@ package net.whitehorizont.apps.organization_collection_manager.core.storage;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import io.reactivex.rxjava3.core.Observable;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.CollectionMetadata;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollection;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.BaseId;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.IWithId;
@@ -25,7 +26,7 @@ import net.whitehorizont.apps.organization_collection_manager.core.storage.error
  * @param <M> collection metadata (pray on type inference)
  */
 @NonNullByDefault
-public interface IBaseStorage<C extends ICollection<?, ?, M>, M extends IWithId< ? extends BaseId>> {
+public interface IBaseStorage<C extends ICollection<?, ?>> {
   /**
    * Loads default collection. 
    * 
@@ -38,7 +39,7 @@ public interface IBaseStorage<C extends ICollection<?, ?, M>, M extends IWithId<
    * new collection with specified id and returns it
    * 
    */
-  Observable<C> loadSafe(M metadata);
+  Observable<C> loadSafe(CollectionMetadata metadata);
 
   /**
    * Loads all collections. USE WITH CAUTION!
@@ -54,8 +55,8 @@ public interface IBaseStorage<C extends ICollection<?, ?, M>, M extends IWithId<
    * Useful for ui for user to choose collection
    * @return
    */
-  Observable<M> loadMetadata() throws CollectionNotFound;
-  Observable<M> loadMetadata(BaseId key) throws CollectionNotFound;
+  Observable<CollectionMetadata> loadMetadata() throws CollectionNotFound;
+  Observable<CollectionMetadata> loadMetadata(BaseId key) throws CollectionNotFound;
 
   void save(C collection) throws StorageInaccessibleError;
 }

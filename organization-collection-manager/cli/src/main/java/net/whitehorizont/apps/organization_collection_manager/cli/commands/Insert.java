@@ -6,6 +6,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import io.reactivex.rxjava3.core.Observable;
 import net.whitehorizont.apps.organization_collection_manager.cli.CliDependencyManager;
 import net.whitehorizont.apps.organization_collection_manager.cli.Streams;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.CollectionMetadata;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollection;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.IElementPrototype;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.ElementKey;
@@ -44,7 +45,7 @@ public class Insert
     }
   }
 
-  private <P extends IElementPrototype<?>> InsertCommand<P> getInsertCommand(ElementKey key, ICollection<P, ?, ?> collection, CliDependencyManager<?> dependencyManager) throws ValidationError {
+  private <P extends IElementPrototype<?>> InsertCommand<P> getInsertCommand(ElementKey key, ICollection<P, ?> collection, CliDependencyManager<?> dependencyManager) throws ValidationError {
     final var prototype = collection.getElementPrototype();
     final var lineReader = dependencyManager.getGenericLineReader();
     final Streams streams = prepareStreams(dependencyManager);

@@ -11,10 +11,10 @@ import net.whitehorizont.apps.organization_collection_manager.core.collection.ke
 @NonNullByDefault
 public class ShowCommand<E extends ICollectionElement<?>> implements ICommand<Entry<ElementKey, E>> {
 
-  private final CollectionCommandReceiver<?, E, ?> collection;
+  private final CollectionCommandReceiver<?, E> collection;
   
 
-  public ShowCommand(CollectionCommandReceiver<?, E, ?> collection) {
+  public ShowCommand(CollectionCommandReceiver<?, E> collection) {
     this.collection = collection;
   }
 

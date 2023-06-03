@@ -3,7 +3,6 @@ package net.whitehorizont.apps.organization_collection_manager.core.collection;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import io.reactivex.rxjava3.core.Observable;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.BaseId;
-import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.IWithId;
 import net.whitehorizont.apps.organization_collection_manager.core.storage.IBaseStorage;
 import net.whitehorizont.apps.organization_collection_manager.core.storage.errors.CollectionNotFound;
 import net.whitehorizont.apps.organization_collection_manager.core.storage.errors.StorageInaccessibleError;
@@ -16,14 +15,14 @@ import net.whitehorizont.apps.organization_collection_manager.core.storage.error
  * passes on operations on collections to appropriate storage.
  */
 @NonNullByDefault
-public class CollectionManager<C extends ICollection<?, ?, M>, M extends IWithId<? extends BaseId>>
+public class CollectionManager<C extends ICollection<?, ?>>
     implements ICollectionManager<C> {
-  private final IBaseStorage<C, M> storage;
+  private final IBaseStorage<C> storage;
   private final C collection;
 
   // makes collections in source available for loading
 
-  public CollectionManager(IBaseStorage<C, M> storage) {
+  public CollectionManager(IBaseStorage<C> storage) {
     this.storage = storage;
     collection = storage.load().blockingFirst();
   }

@@ -16,9 +16,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Single;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.CollectionMetadata;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollection;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.BaseId;
-import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.IWithId;
 import net.whitehorizont.apps.organization_collection_manager.core.storage.errors.CollectionNotFound;
 import net.whitehorizont.apps.organization_collection_manager.core.storage.errors.ResourceEmpty;
 import net.whitehorizont.apps.organization_collection_manager.core.storage.errors.StorageInaccessibleError;
@@ -31,12 +31,12 @@ import net.whitehorizont.libs.file_system.PathHelpers;
 // composition and aggregation of data should be done somewhere else
 // can store only one collection
 @NonNullByDefault
-public class FileStorage<C extends ICollection<?, ?, M>, M extends IWithId<? extends BaseId>>
-    implements IBaseStorage<C, M> {
-  private final IFileAdapter<C, M> adapter;
+public class FileStorage<C extends ICollection<?, ?>>
+    implements IBaseStorage<C> {
+  private final IFileAdapter<C> adapter;
   private final Path path;
 
-  public IFileAdapter<C, M> getAdapter() {
+  public IFileAdapter<C> getAdapter() {
     return adapter;
   }
 
@@ -45,7 +45,7 @@ public class FileStorage<C extends ICollection<?, ?, M>, M extends IWithId<? ext
       StandardOpenOption.WRITE,
       StandardOpenOption.READ };
 
-  public FileStorage(String path, IFileAdapter<C, M> adapter) {
+  public FileStorage(String path, IFileAdapter<C> adapter) {
     this.adapter = adapter;
     @SuppressWarnings("null")
     final @NonNull Path preparedPath = PathHelpers.resolve(Paths.get(path));
@@ -147,12 +147,12 @@ public class FileStorage<C extends ICollection<?, ?, M>, M extends IWithId<? ext
   }
 
   @Override
-  public Observable<M> loadMetadata() {
+  public Observable<CollectionMetadata> loadMetadata() {
     return this.load().map(collection -> collection.getMetadataSnapshot());
   }
 
   @Override
-  public Observable<M> loadMetadata(BaseId key) {
+  public Observable<CollectionMetadata> loadMetadata(BaseId key) {
     return findCollectionById(key, this.load()).map(collection -> collection.getMetadataSnapshot());
   }
 
@@ -168,7 +168,7 @@ public class FileStorage<C extends ICollection<?, ?, M>, M extends IWithId<? ext
   }
 
   @Override
-  public Observable<C> loadSafe(M metadata) {
+  public Observable<C> loadSafe(CollectionMetadata metadata) {
     return this.load(metadata.getId()).onErrorResumeNext(error -> {
       if (error instanceof CollectionNotFound) {
         return Observable.just(adapter.deserializeSafe(metadata));

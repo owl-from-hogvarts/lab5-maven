@@ -6,6 +6,7 @@ import java.util.Map.Entry;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import io.reactivex.rxjava3.core.Observable;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.CollectionMetadata;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.DuplicateElements;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollection;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollectionElement;
@@ -13,7 +14,6 @@ import net.whitehorizont.apps.organization_collection_manager.core.collection.IE
 import net.whitehorizont.apps.organization_collection_manager.core.collection.NoSuchElement;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.BaseId;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.ElementKey;
-import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.IWithId;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.KeyGenerationError;
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationError;
 
@@ -22,10 +22,10 @@ import net.whitehorizont.apps.organization_collection_manager.lib.validators.Val
  * It does absolutely nothing except just passing calls to underling collection
  */
 @NonNullByDefault
-public class CollectionCommandReceiver<P extends IElementPrototype<?>, E extends ICollectionElement<P>, M extends IWithId<? extends BaseId>> implements ICollection<P, E, M> {
-  private final ICollection<P, E, M> collection;
+public class CollectionCommandReceiver<P extends IElementPrototype<?>, E extends ICollectionElement<P>> implements ICollection<P, E> {
+  private final ICollection<P, E> collection;
 
-  public CollectionCommandReceiver(ICollection<P, E, M> collection) {
+  public CollectionCommandReceiver(ICollection<P, E> collection) {
     this.collection = collection;
   }
 
@@ -85,7 +85,7 @@ public class CollectionCommandReceiver<P extends IElementPrototype<?>, E extends
   }
 
   @Override
-  public M getMetadataSnapshot() {
+  public CollectionMetadata getMetadataSnapshot() {
     return this.collection.getMetadataSnapshot();
   }
 

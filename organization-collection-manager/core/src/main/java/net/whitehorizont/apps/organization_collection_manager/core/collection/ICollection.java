@@ -13,7 +13,7 @@ import net.whitehorizont.apps.organization_collection_manager.core.collection.ke
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationError;
 
 @NonNullByDefault
-public interface ICollection<P extends IElementPrototype<?>, E extends ICollectionElement<P>, M extends IWithId<? extends BaseId>> {
+public interface ICollection<P extends IElementPrototype<?>, E extends ICollectionElement<P>> {
 
   /**
    * Collection listens on returned sink to receive new elements
@@ -49,7 +49,7 @@ public interface ICollection<P extends IElementPrototype<?>, E extends ICollecti
   Observable<List<E>> getAll$();
 
   // stores creation time
-  M getMetadataSnapshot();
+  CollectionMetadata getMetadataSnapshot();
 
   void clear();
 

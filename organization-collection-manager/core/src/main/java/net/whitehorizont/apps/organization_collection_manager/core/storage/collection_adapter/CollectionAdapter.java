@@ -21,8 +21,8 @@ import net.whitehorizont.apps.organization_collection_manager.core.storage.error
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationError;
 
 @NonNullByDefault
-public class CollectionAdapter<R, P extends IElementPrototype<R>, E extends ICollectionElement<P>, F extends IElementFactory<P, E, ICollection<P, E, ?>, ?>>
-    implements IFileAdapter<ICollection<P, E, CollectionMetadata>, CollectionMetadata> {
+public class CollectionAdapter<R, P extends IElementPrototype<R>, E extends ICollectionElement<P>, F extends IElementFactory<P, E, ICollection<P, E>, ?>>
+    implements IFileAdapter<ICollection<P, E>> {
   private final XStream serializer = new XStream();
   {
     serializer.allowTypesByWildcard(new String[]{"net.whitehorizont.apps.organization_collection_manager.core.**"});
@@ -36,7 +36,7 @@ public class CollectionAdapter<R, P extends IElementPrototype<R>, E extends ICol
     this.elementFactory = dataSinkSourceFactory;
   }
 
-  private CollectionXml<R, CollectionMetadata> prepareCollection(ICollection<P, E, CollectionMetadata> collection) {    
+  private CollectionXml<R, CollectionMetadata> prepareCollection(ICollection<P, E> collection) {    
     final var elements = collection.getEvery$()
         .map(element -> element.getPrototype().getRawElementData())
         .toList().blockingGet();
@@ -44,7 +44,7 @@ public class CollectionAdapter<R, P extends IElementPrototype<R>, E extends ICol
   }
 
   @Override
-  public byte[] serialize(ICollection<P, E, CollectionMetadata> toSerialize) {
+  public byte[] serialize(ICollection<P, E> toSerialize) {
     final var collectionXml = prepareCollection(toSerialize);
 
     final String collectionXmlSerialized = serializer.toXML(collectionXml);

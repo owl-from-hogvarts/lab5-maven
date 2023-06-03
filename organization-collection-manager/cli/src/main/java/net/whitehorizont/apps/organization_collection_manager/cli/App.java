@@ -41,7 +41,7 @@ public class App
     
         // other configuration 
         final var streams = new Streams(System.in, System.out, System.err);
-        final var dependencyManagerBuilder = new CliDependencyManager.Builder<ICollectionManager<ICollection<OrganisationElementPrototype, OrganisationElement, CollectionMetadata>>>()
+        final var dependencyManagerBuilder = new CliDependencyManager.Builder<ICollectionManager<ICollection<OrganisationElementPrototype, OrganisationElement>>>()
             .setStreams(streams)
             .setCollectionManager(collectionManager)
             .setGlobalErrorHandler(CLI::defaultGlobalErrorHandler)
@@ -52,7 +52,7 @@ public class App
         cli.start();
     }
 
-    public static FileStorage<ICollection<OrganisationElementPrototype, OrganisationElement, CollectionMetadata>, CollectionMetadata> setupStorage(String fileStoragePath) {
+    public static FileStorage<ICollection<OrganisationElementPrototype, OrganisationElement>> setupStorage(String fileStoragePath) {
         final var organisationElementFactory = new OrganisationElementFactory();
         final var xmlCollectionAdapter = new CollectionAdapter<>(organisationElementFactory);
         final var testStorage = new FileStorage<>(fileStoragePath, xmlCollectionAdapter);

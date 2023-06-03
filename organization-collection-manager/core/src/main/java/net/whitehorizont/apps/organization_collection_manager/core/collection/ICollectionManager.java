@@ -4,7 +4,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import io.reactivex.rxjava3.core.Observable;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.BaseId;
-import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.IWithId;
 import net.whitehorizont.apps.organization_collection_manager.core.storage.errors.CollectionNotFound;
 import net.whitehorizont.apps.organization_collection_manager.core.storage.errors.StorageInaccessibleError;
 
@@ -12,7 +11,7 @@ import net.whitehorizont.apps.organization_collection_manager.core.storage.error
 // !It should choose storage and pass collection creation request to it
 
 @NonNullByDefault
-public interface ICollectionManager<C extends ICollection<?, ?, ? extends IWithId<? extends BaseId>>> {
+public interface ICollectionManager<C extends ICollection<?, ?>> {
 
   /**
    * Loads default collection. 
