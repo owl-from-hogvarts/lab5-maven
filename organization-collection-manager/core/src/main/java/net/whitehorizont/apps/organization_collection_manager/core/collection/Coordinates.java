@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.javatuples.Pair;
 
+import net.whitehorizont.apps.organization_collection_manager.lib.EnrichedNode;
 import net.whitehorizont.apps.organization_collection_manager.lib.FieldDefinition;
 import net.whitehorizont.apps.organization_collection_manager.lib.FieldMetadataWithValidators;
 import net.whitehorizont.apps.organization_collection_manager.lib.IntegerFactory;
@@ -13,7 +15,8 @@ import net.whitehorizont.apps.organization_collection_manager.lib.TitledNode;
 import net.whitehorizont.apps.organization_collection_manager.lib.WritableFromStringFieldDefinition;
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationError;
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationResult;
-import net.whitehorizont.apps.organization_collection_manager.lib.IWriteableFieldDefinitionNode;
+import net.whitehorizont.apps.organization_collection_manager.lib.validators.Validator;
+import net.whitehorizont.apps.organization_collection_manager.lib.Node;
 
 @NonNullByDefault
 public class Coordinates implements IWithPrototype<Coordinates.CoordinatesPrototype> {
@@ -26,6 +29,10 @@ public class Coordinates implements IWithPrototype<Coordinates.CoordinatesProtot
     return result;
   }).setDisplayedName("X")
   .build();
+
+  public static final EnrichedNode<FieldMetadataWithValidators, List<Validator>> COORDINATES_METADATA = new EnrichedNode<>(COORDINATES_TITLE, new Pair[]{
+    new Pair<>(X_METADATA, X_METADATA.getValidators())
+   }, new Node[]{});
 
   private final FieldDefinition<Integer, ?> x;
 
@@ -66,7 +73,7 @@ public class Coordinates implements IWithPrototype<Coordinates.CoordinatesProtot
     }
 
     @Override
-    public Iterable<WritableFromStringFieldDefinition<?>> getWriteableFromStringFields() {
+    public List<WritableFromStringFieldDefinition<?>> getLeafs() {
       final List<WritableFromStringFieldDefinition<?>> fields = new ArrayList<>();
       fields.add(x);
 
@@ -74,7 +81,7 @@ public class Coordinates implements IWithPrototype<Coordinates.CoordinatesProtot
     }
 
     @Override
-    public Iterable<IWriteableFieldDefinitionNode> getChildren() {
+    public List<Node<WritableFromStringFieldDefinition<?>>> getChildren() {
       return new ArrayList<>();
     }
 
@@ -87,6 +94,19 @@ public class Coordinates implements IWithPrototype<Coordinates.CoordinatesProtot
   @Override
   public String getDisplayedName() {
     return COORDINATES_TITLE;
+  }
+
+  @Override
+  public List<FieldDefinition<?, ?>> getLeafs() {
+    final List<FieldDefinition<?, ?>> fields = new ArrayList<>();
+    fields.add(x);
+
+    return fields;
+  }
+
+  @Override
+  public List<Node<FieldDefinition<?, ?>>> getChildren() {
+    return new ArrayList<>();
   }
 
   @Override

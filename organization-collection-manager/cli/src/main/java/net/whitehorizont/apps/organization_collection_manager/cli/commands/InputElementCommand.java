@@ -2,6 +2,8 @@ package net.whitehorizont.apps.organization_collection_manager.cli.commands;
 
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -15,6 +17,10 @@ import net.whitehorizont.apps.organization_collection_manager.core.collection.IC
 import net.whitehorizont.apps.organization_collection_manager.core.storage.errors.StorageInaccessibleError;
 import net.whitehorizont.apps.organization_collection_manager.lib.FieldMetadataWithValidators;
 import net.whitehorizont.apps.organization_collection_manager.lib.IWriteableFieldDefinitionNode;
+import net.whitehorizont.apps.organization_collection_manager.lib.Node;
+import net.whitehorizont.apps.organization_collection_manager.lib.RawField;
+import net.whitehorizont.apps.organization_collection_manager.lib.TitledNode;
+import net.whitehorizont.apps.organization_collection_manager.lib.WritableFromStringFieldDefinition;
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationError;
 import net.whitehorizont.libs.file_system.StringHelper;
 
@@ -47,13 +53,27 @@ public class InputElementCommand extends BaseElementCommand {
   }
 
   
-  protected IWriteableFieldDefinitionNode promptForFields(IWriteableFieldDefinitionNode node, LineReader lineReader, Streams streams) throws ValidationError {
+  protected Node promptForFields(TitledNode<FieldMetadata<?, ?>> node, LineReader lineReader, Streams streams) throws ValidationError {
     return promptForFields(node, lineReader, streams, 0);
   }
 
-  private IWriteableFieldDefinitionNode promptForFields(IWriteableFieldDefinitionNode node, LineReader lineReader, Streams streams,
+  private Node promptForFields(TitledNode<FieldMetadata<?, ?>> node, LineReader lineReader, Streams streams,
       int nestLevel) throws ValidationError {
-    final var fields = node.getWriteableFromStringFields();
+        // node contains metadata
+        // if node has value builder, prompt user
+          // receive user input as string
+          // build RawField -> use value builder 
+          // to convert user input (string) to a value
+          // init RawField with obtained value
+          // add node to list
+        // if not then skip
+        // after all leafs were proceeded
+        // proceed with children
+        // when complete with children
+        // build and return Node<RawField> (populate with computed leafs and children)
+        // The resulting tree is known to contain syntactically
+        // valid data. It may be directly sent server
+    final var fieldsMetadata = node.getLeafs().stream().filter(metadata -> metadata.getValueBuilder().isPresent()).toList();
     final var out = streams.out;
     final var err = streams.err;
 
@@ -61,8 +81,9 @@ public class InputElementCommand extends BaseElementCommand {
     final String title = isElement(nestLevel) ? prepareNodeTitle(nodeTitle).build() : buildChildNodeTitle(nodeTitle);
     out.println(title);
 
-    for (final var field : fields) {
-      final var metadata = field.getMetadata();
+    final var fields = new ArrayList<>(fieldsMetadata.size());
+
+    for (final var metadata : fieldsMetadata) {
       int retriesLeft = this.retries.retries;
 
       // repeat until succeed
@@ -75,7 +96,11 @@ public class InputElementCommand extends BaseElementCommand {
         String userInput = readUserInput(lineReader, fieldPrompt);
 
         try {
-          field.setValueFromString(userInput);
+          final var valueBuilder = metadata.getValueBuilder().get();
+          new WritableFromStringFieldDefinition(metadata, valueBuilder, userInput).ge;
+          // FIXME: handle NPE
+          fields.add(new RawField<>(value));
+
           // if successful, get out of here
           // on error next statement will be skipped
           break;
@@ -95,11 +120,14 @@ public class InputElementCommand extends BaseElementCommand {
       }
     }
 
-    for (final var child : node.getChildren()) {
-      promptForFields(child, lineReader, streams, nestLevel + 1);
-    }
+    final List<Node> children = new ArrayList<>();
 
-    return node;
+    for (final var childMetadata : node.getChildren()) {
+      final var child = promptForFields(childMetadata, lineReader, streams, nestLevel + 1);
+      children.add(child);
+    }
+    
+    return new Node(fields.toArray(), children.toArray(new Node[]{}));
   }
 
   protected Streams prepareStreams(CliDependencyManager<?> dependencyManager) {

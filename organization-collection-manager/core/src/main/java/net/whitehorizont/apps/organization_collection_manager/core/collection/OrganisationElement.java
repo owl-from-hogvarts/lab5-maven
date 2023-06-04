@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.javatuples.Pair;
 
 import net.whitehorizont.apps.organization_collection_manager.core.collection.Coordinates.CoordinatesPrototype;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.Coordinates.CoordinatesRawData;
@@ -12,14 +13,18 @@ import net.whitehorizont.apps.organization_collection_manager.lib.DoubleFactory;
 import net.whitehorizont.apps.organization_collection_manager.lib.EnumFactory;
 import net.whitehorizont.apps.organization_collection_manager.lib.FieldDefinition;
 import net.whitehorizont.apps.organization_collection_manager.lib.FieldMetadataWithValidators;
+import net.whitehorizont.apps.organization_collection_manager.lib.EnrichedNode;
+import net.whitehorizont.apps.organization_collection_manager.lib.IFieldDefinitionNode;
 import net.whitehorizont.apps.organization_collection_manager.lib.StringFactory;
 import net.whitehorizont.apps.organization_collection_manager.lib.TitledNode;
 import net.whitehorizont.apps.organization_collection_manager.lib.WritableFromStringFieldDefinition;
 import net.whitehorizont.apps.organization_collection_manager.lib.WriteableFieldDefinition;
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationError;
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationResult;
+import net.whitehorizont.apps.organization_collection_manager.lib.validators.Validator;
 import net.whitehorizont.apps.organization_collection_manager.lib.IWriteableFieldDefinitionNode;
 import net.whitehorizont.apps.organization_collection_manager.lib.ReadonlyField;
+import net.whitehorizont.apps.organization_collection_manager.lib.Node;
 
 @NonNullByDefault
 public class OrganisationElement implements ICollectionElement<OrganisationElement.OrganisationElementPrototype> {
@@ -30,6 +35,7 @@ public class OrganisationElement implements ICollectionElement<OrganisationEleme
   private static final FieldMetadataWithValidators<String, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement>> NAME_METADATA = new FieldMetadataWithValidators.Metadata<String, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement>>()
           .setDisplayedName("name")
           .setRequired("Company name must be specified")
+          .setValueBuilder(new StringFactory())
           .addValidator((value, _unused) -> new ValidationResult<>(value.length() >= 1, "String should not be empty"))
           .build();
 
@@ -65,6 +71,13 @@ public class OrganisationElement implements ICollectionElement<OrganisationEleme
   public static FieldMetadataWithValidators<String, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement>> getNameMetadata() {
     return NAME_METADATA;
   }
+
+  private static final EnrichedNode<FieldWithMetadata, List<Validator>> OrganisationElementMetadataTree = new EnrichedNode<>(ELEMENT_TITLE,
+   new Pair[]{new Pair<>(NAME_METADATA,  NAME_METADATA.getValidators()), new Pair<>(ID_METADATA, ID_METADATA, ID_METADATA.getValidators() )},
+   new Node[]{Coordinates.COORDINATES_METADATA}
+  );
+  
+  
 
   // !!! FIELDS !!!
   private final FieldDefinition<String, ICollection<OrganisationElementPrototype, OrganisationElement>> name;
@@ -110,6 +123,10 @@ public class OrganisationElement implements ICollectionElement<OrganisationEleme
     this.type = new FieldDefinition<OrganisationType,ICollection<OrganisationElementPrototype,OrganisationElement>>(TYPE_METADATA, prototype.type.getValue(), collection);
   }
 
+  // is itself only a data structure
+  // should be replaced with tree
+  // ! raw data is replaced with depleted tree (contains only values)
+  // new Node<RawField>({RAW_NAME, RAW_ID}, {RAW_COORDINATES})
   public static class OrganisationElementRawData {
     private String name = "-()0=";
     private UUID_ElementId ID = new UUID_ElementId(); // init with default value which is easily overridable
@@ -166,6 +183,7 @@ public class OrganisationElement implements ICollectionElement<OrganisationEleme
 
   }
 
+  // redundant. generated tree is checked against metadata
   public static class OrganisationElementPrototype
       implements IElementPrototype<OrganisationElement.OrganisationElementRawData> {
 
@@ -209,7 +227,7 @@ public class OrganisationElement implements ICollectionElement<OrganisationEleme
     }
 
     @Override
-    public Iterable<WritableFromStringFieldDefinition<?>> getWriteableFromStringFields() {
+    public List<WritableFromStringFieldDefinition<?>> getLeafs() {
       return this.inputFields;
     }
 
@@ -228,7 +246,7 @@ public class OrganisationElement implements ICollectionElement<OrganisationEleme
     }
 
     @Override
-    public Iterable<IWriteableFieldDefinitionNode> getChildren() {
+    public List<Node<WritableFromStringFieldDefinition<?>>> getChildren() {
       final List<IWriteableFieldDefinitionNode> children = new ArrayList<>();
       children.add(coordinates);
 
