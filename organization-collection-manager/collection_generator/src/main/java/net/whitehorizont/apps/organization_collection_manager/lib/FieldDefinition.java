@@ -6,19 +6,19 @@ import net.whitehorizont.apps.organization_collection_manager.lib.validators.Val
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.Validator;
 
 @NonNullByDefault
-public class FieldDefinition<V, T> extends BaseFieldDefinition<V, FieldMetadata<V, T>> {
+public class FieldDefinition<V, T> extends BaseFieldDefinition<V, FieldMetadataWithValidators<V, T>> {
 
   @SuppressWarnings("null")
-  public FieldDefinition(FieldMetadata<V, T> metadata, V initValue, T t) throws ValidationError {
+  public FieldDefinition(FieldMetadataWithValidators<V, T> metadata, V initValue, T t) throws ValidationError {
     super(metadata, checkValue(metadata, initValue, t));
   }
 
-  private static <V, T> V checkValue(FieldMetadata<V, T> metadata, V value, T t) throws ValidationError {
+  private static <V, T> V checkValue(FieldMetadataWithValidators<V, T> metadata, V value, T t) throws ValidationError {
     runValidators(metadata.getValidators(), value, t, metadata);
     return value;
   }
 
-  private static <V, T> void runValidators(Iterable<Validator<V, T>> validators, V value, T t, FieldMetadata<V, T> metadata) throws ValidationError {
+  private static <V, T> void runValidators(Iterable<Validator<V, T>> validators, V value, T t, FieldMetadataWithValidators<V, T> metadata) throws ValidationError {
     for (Validator<V, T> validator : validators) {
       final var validationResult = validator.validate(value, t);
       reportValidationError(validationResult, metadata);

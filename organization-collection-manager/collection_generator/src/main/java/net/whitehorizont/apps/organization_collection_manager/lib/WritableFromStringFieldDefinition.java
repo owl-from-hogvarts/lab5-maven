@@ -8,12 +8,12 @@ import net.whitehorizont.apps.organization_collection_manager.lib.validators.Val
 public class WritableFromStringFieldDefinition<V> extends WriteableFieldDefinition<V> {
   private IFromStringBuilder<V> builder;
 
-  public WritableFromStringFieldDefinition(FieldMetadata<V, ?> metadata, IFromStringBuilder<V> builder, String initialValue) throws ValidationError {
+  public WritableFromStringFieldDefinition(FieldMetadataWithValidators<V, ?> metadata, IFromStringBuilder<V> builder, String initialValue) throws ValidationError {
     super(metadata, builder.buildFromString(initialValue));
     this.builder = builder;
   }
   // arguments have different order to resolve ambiguity
-  public WritableFromStringFieldDefinition(FieldMetadata<V, ?> metadata, V initialValue, IFromStringBuilder<V> builder) throws ValidationError {
+  public WritableFromStringFieldDefinition(FieldMetadataWithValidators<V, ?> metadata, V initialValue, IFromStringBuilder<V> builder) throws ValidationError {
     super(metadata, initialValue);
     this.builder = builder;
   }

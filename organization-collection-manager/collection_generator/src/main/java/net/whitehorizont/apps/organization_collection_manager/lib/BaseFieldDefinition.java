@@ -6,7 +6,7 @@ import net.whitehorizont.apps.organization_collection_manager.lib.validators.Val
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationResult;
 
 @NonNullByDefault
-public abstract class BaseFieldDefinition<V, M extends FieldMetadata<V, ?>> {
+public abstract class BaseFieldDefinition<V, M extends FieldMetadataWithValidators<V, ?>> {
   private V value;
   private M metadata;
 
@@ -35,7 +35,7 @@ public abstract class BaseFieldDefinition<V, M extends FieldMetadata<V, ?>> {
     reportValidationError(metadata.getNullCheckValidator().validate(value), metadata);
   }
 
-  protected static <M extends FieldMetadata<?, ?>> void reportValidationError(ValidationResult<Boolean> validationResult, M metadata) throws ValidationError {
+  protected static <M extends FieldMetadataWithValidators<?, ?>> void reportValidationError(ValidationResult<Boolean> validationResult, M metadata) throws ValidationError {
     if (!validationResult.getResult()) {
       throw new ValidationError(metadata.getDisplayedName() + ": " + validationResult.getDisplayedMessage());
     }

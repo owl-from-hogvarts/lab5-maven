@@ -13,7 +13,7 @@ import net.whitehorizont.apps.organization_collection_manager.core.collection.Co
 import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollection;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollectionManager;
 import net.whitehorizont.apps.organization_collection_manager.core.storage.errors.StorageInaccessibleError;
-import net.whitehorizont.apps.organization_collection_manager.lib.FieldMetadata;
+import net.whitehorizont.apps.organization_collection_manager.lib.FieldMetadataWithValidators;
 import net.whitehorizont.apps.organization_collection_manager.lib.IWriteableFieldDefinitionNode;
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationError;
 import net.whitehorizont.libs.file_system.StringHelper;
@@ -110,7 +110,7 @@ public class InputElementCommand extends BaseElementCommand {
     return streams;
   }
 
-  private static String preparePrompt(FieldMetadata<?, ?> metadata, int nestLevel) {
+  private static String preparePrompt(FieldMetadataWithValidators<?, ?> metadata, int nestLevel) {
         final String fieldPrompt = metadata.getDisplayedName() + FIELD_NAME_VALUE_SEPARATOR;
         final String fieldPromptPadded = StringHelper.padStart(fieldPrompt,
             computeNestedPadding(nestLevel, fieldPrompt),
@@ -119,7 +119,7 @@ public class InputElementCommand extends BaseElementCommand {
         return fieldPromptPadded;
   }
 
-  private static void printHint(FieldMetadata<?, ?> metadata, int nestLevel, PrintStream out) {
+  private static void printHint(FieldMetadataWithValidators<?, ?> metadata, int nestLevel, PrintStream out) {
     if (metadata.getHint().isPresent()) {
       final String hint = HINT_PREFIX + metadata.getHint().get();
       final String hintPadded = StringHelper.padStart(hint, computeNestedPadding(nestLevel, hint), PADDING_SYMBOL);

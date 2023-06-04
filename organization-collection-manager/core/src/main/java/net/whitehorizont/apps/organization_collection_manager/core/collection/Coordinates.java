@@ -8,7 +8,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.BaseId;
 import net.whitehorizont.apps.organization_collection_manager.lib.FieldDefinition;
-import net.whitehorizont.apps.organization_collection_manager.lib.FieldMetadata;
+import net.whitehorizont.apps.organization_collection_manager.lib.FieldMetadataWithValidators;
 import net.whitehorizont.apps.organization_collection_manager.lib.IFieldDefinitionNode;
 import net.whitehorizont.apps.organization_collection_manager.lib.NumberFactory;
 import net.whitehorizont.apps.organization_collection_manager.lib.WritableFromStringFieldDefinition;
@@ -20,7 +20,7 @@ import net.whitehorizont.apps.organization_collection_manager.lib.IWriteableFiel
 public class Coordinates implements IElement<Coordinates.CoordinatesPrototype> {
   private static final String COORDINATES_TITLE = "Coordinates";
   
-  private static final FieldMetadata<Integer, Object> X_METADATA = new FieldMetadata<>(new FieldMetadata.Metadata<Integer, Object>().addValidator((value, _unused) -> {
+  private static final FieldMetadataWithValidators<Integer, Object> X_METADATA = new FieldMetadataWithValidators<>(new FieldMetadataWithValidators.Metadata<Integer, Object>().addValidator((value, _unused) -> {
     final int x = value.intValue();
     final var isValueOk = x > -802;
     final var result = new ValidationResult<>(isValueOk, "Value should be strictly above -802");

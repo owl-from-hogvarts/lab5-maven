@@ -13,10 +13,10 @@ import net.whitehorizont.apps.organization_collection_manager.lib.validators.Val
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.Validator;
 
 @NonNullByDefault
-public class FieldMetadata<V, T> implements IValidatorsProvider<V, T> {
+public class FieldMetadataWithValidators<V, T> implements IValidatorsProvider<V, T> {
   private final Metadata<V, T> metadata;
 
-  public FieldMetadata(Metadata<V, T> metadata) {
+  public FieldMetadataWithValidators(Metadata<V, T> metadata) {
     this.metadata = metadata;
   }
 

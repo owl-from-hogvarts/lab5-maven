@@ -11,7 +11,7 @@ import net.whitehorizont.apps.organization_collection_manager.core.collection.Co
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.UUID_ElementId;
 import net.whitehorizont.apps.organization_collection_manager.lib.EnumFactory;
 import net.whitehorizont.apps.organization_collection_manager.lib.FieldDefinition;
-import net.whitehorizont.apps.organization_collection_manager.lib.FieldMetadata;
+import net.whitehorizont.apps.organization_collection_manager.lib.FieldMetadataWithValidators;
 import net.whitehorizont.apps.organization_collection_manager.lib.IFieldDefinitionNode;
 import net.whitehorizont.apps.organization_collection_manager.lib.StringFactory;
 import net.whitehorizont.apps.organization_collection_manager.lib.WritableFromStringFieldDefinition;
@@ -26,14 +26,14 @@ public class OrganisationElement implements ICollectionElement<OrganisationEleme
   private static final String ELEMENT_TITLE = "Organisation";
 
   // !!! METADATA !!!
-  private static final FieldMetadata<String, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement>> NAME_METADATA = new FieldMetadata<>(
-      new FieldMetadata.Metadata<String, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement>>()
+  private static final FieldMetadataWithValidators<String, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement>> NAME_METADATA = new FieldMetadataWithValidators<>(
+      new FieldMetadataWithValidators.Metadata<String, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement>>()
           .setDisplayedName("name")
           .setRequired("Company name must be specified")
           .addValidator((value, _unused) -> new ValidationResult<>(value.length() >= 1, "String should not be empty")));
 
-  private static final FieldMetadata<UUID_ElementId, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement>> ID_METADATA = new FieldMetadata<>(
-      new FieldMetadata.Metadata<UUID_ElementId, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement>>()
+  private static final FieldMetadataWithValidators<UUID_ElementId, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement>> ID_METADATA = new FieldMetadataWithValidators<>(
+      new FieldMetadataWithValidators.Metadata<UUID_ElementId, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement>>()
           .setDisplayedName("ID")
           .setRequired("ID must be provided for collection element")
           .addValidator((value, collection) -> {
@@ -46,13 +46,13 @@ public class OrganisationElement implements ICollectionElement<OrganisationEleme
             
           }));
 
-  private static final FieldMetadata<OrganisationType, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement>> TYPE_METADATA = new FieldMetadata<>(
-      new FieldMetadata.Metadata<OrganisationType, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement>>()
+  private static final FieldMetadataWithValidators<OrganisationType, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement>> TYPE_METADATA = new FieldMetadataWithValidators<>(
+      new FieldMetadataWithValidators.Metadata<OrganisationType, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement>>()
       .setDisplayedName("type")
       .setRequired("Type of organisation should be specified!")
       .setHint(OrganisationType.getHint()));
 
-  public static FieldMetadata<String, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement>> getNameMetadata() {
+  public static FieldMetadataWithValidators<String, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement>> getNameMetadata() {
     return NAME_METADATA;
   }
 
