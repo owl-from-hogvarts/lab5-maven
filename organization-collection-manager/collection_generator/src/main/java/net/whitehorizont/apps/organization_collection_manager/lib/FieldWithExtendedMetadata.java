@@ -6,12 +6,14 @@ import net.whitehorizont.apps.organization_collection_manager.lib.validators.Val
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationResult;
 
 @NonNullByDefault
-public abstract class FieldWithExtendedMetadata<V, M extends FieldMetadataWithValidators<V, ?>> {
+public abstract class FieldWithExtendedMetadata<V, M extends FieldMetadataWithValidators<V, ?>> extends ReadonlyField<V, M> {
+  // shadow to eliminate nullness
   private V value;
   private M metadata;
 
   @SuppressWarnings("null")
   public FieldWithExtendedMetadata(M metadata, V initialValue) throws ValidationError {
+    super(metadata);
     this.metadata = metadata;
     setValue(initialValue);
   }
