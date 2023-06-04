@@ -39,6 +39,10 @@ public class CollectionMetadata implements IWithId<UUID_CollectionId> {
     private Optional<UUID_CollectionId> collectionId = Optional.empty();
     private Optional<Instant> creationTime = Optional.empty();
 
+    public Builder() {
+      this(new UUID_CollectionId());
+    }
+
     public Builder(UUID_CollectionId collectionId) {
       this.collectionId = Optional.of(collectionId);
     }
