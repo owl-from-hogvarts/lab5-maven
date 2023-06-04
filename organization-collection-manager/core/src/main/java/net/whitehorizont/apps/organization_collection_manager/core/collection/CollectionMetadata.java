@@ -1,19 +1,24 @@
 package net.whitehorizont.apps.organization_collection_manager.core.collection;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.IWithId;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.UUID_CollectionId;
-import net.whitehorizont.apps.organization_collection_manager.lib.FieldDefinition;
-import net.whitehorizont.apps.organization_collection_manager.lib.IFieldDefinitionNode;
+import net.whitehorizont.apps.organization_collection_manager.lib.BasicFieldMetadata;
+import net.whitehorizont.apps.organization_collection_manager.lib.ReadonlyField;
+import net.whitehorizont.apps.organization_collection_manager.lib.TitledNode;
 
 @NonNullByDefault
-public class CollectionMetadata implements IWithId<UUID_CollectionId>, IFieldDefinitionNode {
+public class CollectionMetadata implements IWithId<UUID_CollectionId> {
   private static String TITLE = "Metadata";
-  
+
+  private static BasicFieldMetadata CREATION_TIME_METADATA = new BasicFieldMetadata("Creation time");
+
   private final UUID_CollectionId collectionId;
   private final Instant creationTime;
   
@@ -42,26 +47,11 @@ public class CollectionMetadata implements IWithId<UUID_CollectionId>, IFieldDef
       this.creationTime = Optional.of(creationTime);
       return this;
     }
-
-    public Builder() {
-    }
-    
-
   }
 
-  @Override
-  public String getDisplayedName() {
-    return TITLE;
-  }
-
-  @Override
-  public Iterable<FieldDefinition<?, ?>> getFields() {
-
-  }
-
-  @Override
-  public Iterable<IFieldDefinitionNode> getChildren() {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'getChildren'");
+  public TitledNode<ReadonlyField<?, BasicFieldMetadata>> getTree() {
+    final List<ReadonlyField<?, BasicFieldMetadata>> leafs = new ArrayList<>();
+    leafs.add(new ReadonlyField<Instant,BasicFieldMetadata>(CREATION_TIME_METADATA, creationTime));
+    return new TitledNode<>(TITLE, leafs, new ArrayList<>());
   }
 }
