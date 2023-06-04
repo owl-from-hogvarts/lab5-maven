@@ -1,12 +1,19 @@
 package net.whitehorizont.apps.organization_collection_manager.cli.commands;
 
+import java.io.PrintStream;
+import java.util.Optional;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import net.whitehorizont.apps.organization_collection_manager.cli.CliDependencyManager;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollection;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollectionManager;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.ISerializableKey;
 import net.whitehorizont.apps.organization_collection_manager.core.storage.errors.StorageInaccessibleError;
+import net.whitehorizont.apps.organization_collection_manager.lib.ReadonlyField;
+import net.whitehorizont.apps.organization_collection_manager.lib.TitledNode;
 import net.whitehorizont.libs.file_system.DecoratedString;
+import net.whitehorizont.libs.file_system.StringHelper;
 
 @NonNullByDefault
 public abstract class BaseElementCommand {
@@ -55,5 +62,34 @@ public abstract class BaseElementCommand {
 
   protected static <C extends ICollection<?, ?>> C getCollection(ICollectionManager<C> collectionManager) throws StorageInaccessibleError {
     return collectionManager.getCollection().blockingFirst();
+  }
+
+  protected static void printFields(TitledNode<ReadonlyField<?>> node, PrintStream out) {
+    printFields(node, Optional.empty(), out, INITIAL_NEST_LEVEL);
+  }
+
+  protected static void printFields(TitledNode<ReadonlyField<?>> node, ISerializableKey key, PrintStream out) {
+    printFields(node, Optional.of(key), out, INITIAL_NEST_LEVEL);
+  }
+
+  private static void printFields(TitledNode<ReadonlyField<?>> node, Optional<ISerializableKey> key, PrintStream out, int nestLevel) {
+    final String nodeTitle = node.getDisplayedName();
+    final var titleDecorated = prepareNodeTitle(nodeTitle);
+    if (key.isPresent()) {
+      titleDecorated.setLeft(key.get().serialize());
+    }
+    out.println(isElement(nestLevel) ? titleDecorated.build() : buildChildNodeTitle(nodeTitle));
+
+    final var fields = node.getLeafs();
+    for (final var field : fields) {
+      final var value = field.getValue() != null ? field.getValue().toString() : "null";
+      final String fieldNameValue = field.getMetadata().getDisplayedName() + FIELD_NAME_VALUE_SEPARATOR + value;
+      final String paddedFieldNameValue = StringHelper.padStart(fieldNameValue, computeNestedPadding(nestLevel, fieldNameValue), PADDING_SYMBOL);
+      out.println(paddedFieldNameValue);
+    }
+
+    for (final var child : node.getChildren()) {
+      printFields(child, key, out, nestLevel + 1);
+    }
   }
 }
