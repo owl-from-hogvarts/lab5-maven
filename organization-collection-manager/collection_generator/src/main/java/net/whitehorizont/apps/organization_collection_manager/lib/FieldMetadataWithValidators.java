@@ -13,10 +13,11 @@ import net.whitehorizont.apps.organization_collection_manager.lib.validators.Val
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.Validator;
 
 @NonNullByDefault
-public class FieldMetadataWithValidators<V, T> implements IValidatorsProvider<V, T>, IDisplayable {
+public class FieldMetadataWithValidators<V, T> extends BasicFieldMetadata implements IValidatorsProvider<V, T> {
   private final Metadata<V, T> metadata;
 
   public FieldMetadataWithValidators(Metadata<V, T> metadata) {
+    super(metadata.displayedName);
     this.metadata = metadata;
   }
 
@@ -67,11 +68,7 @@ public class FieldMetadataWithValidators<V, T> implements IValidatorsProvider<V,
       return (Metadata<V, T>) super.clone();
     }
   }
-  
-  @Override
-  public String getDisplayedName() {
-    return metadata.displayedName;
-  }
+
   public String getDescription() {
     return metadata.description;
   }
