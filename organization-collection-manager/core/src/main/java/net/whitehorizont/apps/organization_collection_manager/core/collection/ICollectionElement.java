@@ -6,4 +6,4 @@ import net.whitehorizont.apps.organization_collection_manager.core.collection.ke
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.UUID_ElementId;
 
 @NonNullByDefault
-public interface ICollectionElement<P extends IElementPrototype<?>> extends IWithId<UUID_ElementId>, IElement<P> {}
+public interface ICollectionElement<P extends IElementPrototype<?>> extends IWithId<UUID_ElementId>, IWithPrototype<P> {}

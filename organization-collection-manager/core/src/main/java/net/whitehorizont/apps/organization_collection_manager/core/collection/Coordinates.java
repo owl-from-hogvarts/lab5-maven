@@ -17,7 +17,7 @@ import net.whitehorizont.apps.organization_collection_manager.lib.validators.Val
 import net.whitehorizont.apps.organization_collection_manager.lib.IWriteableFieldDefinitionNode;
 
 @NonNullByDefault
-public class Coordinates implements IElement<Coordinates.CoordinatesPrototype> {
+public class Coordinates implements IWithPrototype<Coordinates.CoordinatesPrototype> {
   private static final String COORDINATES_TITLE = "Coordinates";
   
   private static final FieldMetadataWithValidators<Integer, Object> X_METADATA = new FieldMetadataWithValidators<>(new FieldMetadataWithValidators.Metadata<Integer, Object>().addValidator((value, _unused) -> {
