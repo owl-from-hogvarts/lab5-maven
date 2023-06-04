@@ -2,7 +2,10 @@ package net.whitehorizont.apps.organization_collection_manager.cli.commands;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
-import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.ISerializableKey;
+import net.whitehorizont.apps.organization_collection_manager.cli.CliDependencyManager;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollection;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollectionManager;
+import net.whitehorizont.apps.organization_collection_manager.core.storage.errors.StorageInaccessibleError;
 import net.whitehorizont.libs.file_system.DecoratedString;
 
 @NonNullByDefault
@@ -44,5 +47,13 @@ public abstract class BaseElementCommand {
     final var decorator = new DecoratedString(DEFAULT_DECORATOR, DECORATED_TITLE_WIDTH,decorations);
 
     return decorator;
+  }
+
+  protected static <CM extends ICollectionManager<? extends ICollection<?, ?>>> CM getCollectionManager(CliDependencyManager<? extends CM> dependencyManager) {
+    return dependencyManager.getCollectionManager();
+  }
+
+  protected static <C extends ICollection<?, ?>> C getCollection(ICollectionManager<C> collectionManager) throws StorageInaccessibleError {
+    return collectionManager.getCollection().blockingFirst();
   }
 }

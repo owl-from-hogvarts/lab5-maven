@@ -139,13 +139,4 @@ public class InputElementCommand extends BaseElementCommand {
 
     return userInput;
   }
-
-
-  protected <CM extends ICollectionManager<? extends ICollection<?, ?>>> CM getCollectionManager(CliDependencyManager<? extends CM> dependencyManager) {
-    return dependencyManager.getCollectionManager();
-  }
-
-  protected <C extends ICollection<?, ?>> C getCollection(ICollectionManager<C> collectionManager) throws StorageInaccessibleError {
-    return collectionManager.getCollection().blockingFirst();
-  }
 }
