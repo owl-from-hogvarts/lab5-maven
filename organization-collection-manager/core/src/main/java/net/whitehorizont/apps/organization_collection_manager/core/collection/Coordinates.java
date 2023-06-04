@@ -3,14 +3,14 @@ package net.whitehorizont.apps.organization_collection_manager.core.collection;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
-import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.BaseId;
+import net.whitehorizont.apps.organization_collection_manager.lib.BasicFieldMetadata;
 import net.whitehorizont.apps.organization_collection_manager.lib.FieldDefinition;
 import net.whitehorizont.apps.organization_collection_manager.lib.FieldMetadataWithValidators;
-import net.whitehorizont.apps.organization_collection_manager.lib.IFieldDefinitionNode;
 import net.whitehorizont.apps.organization_collection_manager.lib.NumberFactory;
+import net.whitehorizont.apps.organization_collection_manager.lib.ReadonlyField;
+import net.whitehorizont.apps.organization_collection_manager.lib.TitledNode;
 import net.whitehorizont.apps.organization_collection_manager.lib.WritableFromStringFieldDefinition;
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationError;
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationResult;
@@ -90,19 +90,6 @@ public class Coordinates implements IWithPrototype<Coordinates.CoordinatesProtot
   }
 
   @Override
-  public Iterable<FieldDefinition<?, ?>> getFields() {
-    final List<FieldDefinition<?, ?>> fields = new ArrayList<>();
-    fields.add(x);
-
-    return fields;
-  }
-
-  @Override
-  public Iterable<IFieldDefinitionNode> getChildren() {
-    return new ArrayList<>();
-  }
-
-  @Override
   public CoordinatesPrototype getPrototype() {
     final var prototype = new CoordinatesPrototype();
     try {
@@ -115,5 +102,13 @@ public class Coordinates implements IWithPrototype<Coordinates.CoordinatesProtot
       assert false;
       throw new RuntimeException();
     }
+  }
+
+  @Override
+  public TitledNode<ReadonlyField<?>> getTree() {
+    final List<ReadonlyField<?>> leafs = new ArrayList<>();
+    leafs.add(new ReadonlyField<>(X_METADATA, x.getValue()));
+
+    return new TitledNode<>(COORDINATES_TITLE, leafs, new ArrayList<>());
   }
 }

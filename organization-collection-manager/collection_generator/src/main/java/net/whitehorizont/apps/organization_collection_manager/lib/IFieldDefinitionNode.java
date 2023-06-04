@@ -4,6 +4,5 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 @NonNullByDefault
 public interface IFieldDefinitionNode extends IDisplayable {
-  Iterable<FieldDefinition<?, ?>> getFields();
-  Iterable<IFieldDefinitionNode> getChildren();
+  TitledNode<ReadonlyField<?>> getTree();
 }

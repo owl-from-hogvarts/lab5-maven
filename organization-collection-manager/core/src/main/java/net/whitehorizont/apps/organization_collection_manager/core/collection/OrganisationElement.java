@@ -9,16 +9,19 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.Coordinates.CoordinatesPrototype;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.Coordinates.CoordinatesRawData;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.UUID_ElementId;
+import net.whitehorizont.apps.organization_collection_manager.lib.BasicFieldMetadata;
 import net.whitehorizont.apps.organization_collection_manager.lib.EnumFactory;
 import net.whitehorizont.apps.organization_collection_manager.lib.FieldDefinition;
 import net.whitehorizont.apps.organization_collection_manager.lib.FieldMetadataWithValidators;
 import net.whitehorizont.apps.organization_collection_manager.lib.IFieldDefinitionNode;
 import net.whitehorizont.apps.organization_collection_manager.lib.StringFactory;
+import net.whitehorizont.apps.organization_collection_manager.lib.TitledNode;
 import net.whitehorizont.apps.organization_collection_manager.lib.WritableFromStringFieldDefinition;
 import net.whitehorizont.apps.organization_collection_manager.lib.WriteableFieldDefinition;
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationError;
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationResult;
 import net.whitehorizont.apps.organization_collection_manager.lib.IWriteableFieldDefinitionNode;
+import net.whitehorizont.apps.organization_collection_manager.lib.ReadonlyField;
 
 @NonNullByDefault
 public class OrganisationElement implements ICollectionElement<OrganisationElement.OrganisationElementPrototype> {
@@ -215,25 +218,23 @@ public class OrganisationElement implements ICollectionElement<OrganisationEleme
   }
 
   @Override
-  public Iterable<FieldDefinition<?, ?>> getFields() {
-    final List<FieldDefinition<?, ?>> fieldDefinitions = new ArrayList<>();
+  public TitledNode<ReadonlyField<?>> getTree() {
+    final List<ReadonlyField<?>> fieldDefinitions = new ArrayList<>();
     fieldDefinitions.add(getName());
     fieldDefinitions.add(getID());
     fieldDefinitions.add(getType());
 
-    return fieldDefinitions;
+    final List<TitledNode<ReadonlyField<?>>> children = new ArrayList<>();
+    children.add(coordinates.getTree());
+    
+    final var node = new TitledNode<>(ELEMENT_TITLE, fieldDefinitions, children);
+
+    // totally safe
+    return node;
   }
 
   @Override
   public String getDisplayedName() {
     return ELEMENT_TITLE;
-  }
-
-  @Override
-  public Iterable<IFieldDefinitionNode> getChildren() {
-    final List<IFieldDefinitionNode> children = new ArrayList<>();
-    children.add(coordinates);
-
-    return children;
   }
 }

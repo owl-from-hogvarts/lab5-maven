@@ -12,7 +12,8 @@ import net.whitehorizont.apps.organization_collection_manager.core.collection.ke
 import net.whitehorizont.apps.organization_collection_manager.core.commands.CollectionCommandReceiver;
 import net.whitehorizont.apps.organization_collection_manager.core.commands.ShowCommand;
 import net.whitehorizont.apps.organization_collection_manager.core.storage.errors.StorageInaccessibleError;
-import net.whitehorizont.apps.organization_collection_manager.lib.IFieldDefinitionNode;
+import net.whitehorizont.apps.organization_collection_manager.lib.ReadonlyField;
+import net.whitehorizont.apps.organization_collection_manager.lib.TitledNode;
 import net.whitehorizont.libs.file_system.StringHelper;
 
 @NonNullByDefault
@@ -45,7 +46,7 @@ public class Show extends BaseElementCommand
         final var out = dependencyManager.getStreams().out;
         dependencyManager.getCommandQueue().push(show).subscribe(keyElement -> {
           final var element = keyElement.getValue();
-          printFields(element, keyElement.getKey(), out);
+          printFields(element.getTree(), keyElement.getKey(), out);
         });
 
         subscriber.onComplete();
@@ -55,17 +56,17 @@ public class Show extends BaseElementCommand
 
 
 
-  private static void printFields(IFieldDefinitionNode node, ISerializableKey key, PrintStream out) {
+  private static void printFields(TitledNode<ReadonlyField<?>> node, ISerializableKey key, PrintStream out) {
     printFields(node, key, out, INITIAL_NEST_LEVEL);
   }
 
-  private static void printFields(IFieldDefinitionNode node, ISerializableKey key, PrintStream out, int nestLevel) {
+  private static void printFields(TitledNode<ReadonlyField<?>> node, ISerializableKey key, PrintStream out, int nestLevel) {
     final String nodeTitle = node.getDisplayedName();
     final var titleDecorated = prepareNodeTitle(nodeTitle);
     titleDecorated.setLeft(key.serialize());
     out.println(isElement(nestLevel) ? titleDecorated.build() : buildChildNodeTitle(nodeTitle));
 
-    final var fields = node.getFields();
+    final var fields = node.getLeafs();
     for (final var field : fields) {
       final var value = field.getValue() != null ? field.getValue().toString() : "null";
       final String fieldNameValue = field.getMetadata().getDisplayedName() + FIELD_NAME_VALUE_SEPARATOR + value;

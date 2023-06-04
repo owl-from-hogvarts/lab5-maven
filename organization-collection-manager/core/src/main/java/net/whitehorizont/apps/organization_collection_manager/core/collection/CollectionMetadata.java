@@ -53,9 +53,9 @@ public class CollectionMetadata implements IWithId<UUID_CollectionId> {
     }
   }
 
-  public TitledNode<ReadonlyField<?, BasicFieldMetadata>> getTree() {
-    final List<ReadonlyField<?, BasicFieldMetadata>> leafs = new ArrayList<>();
-    leafs.add(new ReadonlyField<Instant,BasicFieldMetadata>(CREATION_TIME_METADATA, creationTime));
+  public TitledNode<ReadonlyField<?>> getTree() {
+    final List<ReadonlyField<?>> leafs = new ArrayList<>();
+    leafs.add(new ReadonlyField<>(CREATION_TIME_METADATA, creationTime));
     return new TitledNode<>(TITLE, leafs, new ArrayList<>());
   }
 }

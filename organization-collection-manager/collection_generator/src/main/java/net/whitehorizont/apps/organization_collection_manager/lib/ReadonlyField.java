@@ -2,15 +2,15 @@ package net.whitehorizont.apps.organization_collection_manager.lib;
 
 import org.eclipse.jdt.annotation.Nullable;
 
-public class ReadonlyField<V, M extends BasicFieldMetadata> {
+public class ReadonlyField<V> {
   protected @Nullable V value;
   public @Nullable V getValue() {
     return value;
   }
 
-  private M metadata;
+  private BasicFieldMetadata metadata;
 
-  public M getMetadata() {
+  public BasicFieldMetadata getMetadata() {
     return metadata;
   }
 
@@ -18,11 +18,11 @@ public class ReadonlyField<V, M extends BasicFieldMetadata> {
    * ! USE WITH CAUTION !
    * it is now up to you to init field
    */
-  protected ReadonlyField(M metadata) {
+  protected ReadonlyField(BasicFieldMetadata metadata) {
     this(metadata, null);
   }
 
-  public ReadonlyField(M metadata, @Nullable V initialValue) {
+  public ReadonlyField(BasicFieldMetadata metadata, @Nullable V initialValue) {
     this.value = initialValue;
     this.metadata = metadata;
   }
