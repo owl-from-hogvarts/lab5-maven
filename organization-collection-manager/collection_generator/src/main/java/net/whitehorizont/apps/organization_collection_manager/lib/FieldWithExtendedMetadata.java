@@ -1,6 +1,7 @@
 package net.whitehorizont.apps.organization_collection_manager.lib;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationError;
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationResult;
@@ -8,7 +9,7 @@ import net.whitehorizont.apps.organization_collection_manager.lib.validators.Val
 @NonNullByDefault
 public abstract class FieldWithExtendedMetadata<V, M extends FieldMetadataWithValidators<V, ?>> extends ReadonlyField<V, M> {
   // shadow to eliminate nullness
-  private V value;
+  // private V value;
   private M metadata;
 
   @SuppressWarnings("null")
@@ -43,7 +44,8 @@ public abstract class FieldWithExtendedMetadata<V, M extends FieldMetadataWithVa
     }
   }
 
-  public V getValue() {
+  @Override
+  public @Nullable V getValue() {
     return value;
   }
 }

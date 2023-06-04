@@ -4,7 +4,7 @@ import org.eclipse.jdt.annotation.Nullable;
 
 public class ReadonlyField<V, M extends BasicFieldMetadata> {
   protected @Nullable V value;
-  public V getValue() {
+  public @Nullable V getValue() {
     return value;
   }
 

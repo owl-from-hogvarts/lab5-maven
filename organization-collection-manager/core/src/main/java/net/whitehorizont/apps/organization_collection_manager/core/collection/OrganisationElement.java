@@ -39,7 +39,7 @@ public class OrganisationElement implements ICollectionElement<OrganisationEleme
           .addValidator((value, collection) -> {
             // pray once more 🙏
             final var hasDuplicateIds = collection.getEvery$().filter((element) -> {
-              return element.getID().getValue().equals(value);
+              return element.getId().equals(value);
             }).count().map(count -> count > 0).blockingGet();
 
             return new ValidationResult<Boolean>(!hasDuplicateIds, "Duplicate ID's found! ID should be unique!");
