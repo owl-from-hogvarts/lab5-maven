@@ -24,7 +24,13 @@ public class FieldMetadataWithValidators<V, T> extends BasicFieldMetadata implem
     private String displayedName = "";
     private String description = "";
     private Optional<String> hint = Optional.empty();
+    private Optional<IFromStringBuilder<V>> valueBuilder = Optional.empty();
   
+    public Metadata<V, T> setValueBuilder(IFromStringBuilder<V> valueBuilder) {
+      this.valueBuilder = Optional.of(valueBuilder);
+      return this;
+    }
+
     private Optional<String> onNullMessage = Optional.of("Field should NOT be empty");
     private static final String OK_MESSAGE = "Everything ok!";
 
@@ -72,6 +78,14 @@ public class FieldMetadataWithValidators<V, T> extends BasicFieldMetadata implem
     }
   }
 
+  public Optional<IFromStringBuilder<V>> getValueBuilder() {
+    return metadata.valueBuilder;
+  }
+  
+  @Override
+  public String getDisplayedName() {
+    return metadata.displayedName;
+  }
   public String getDescription() {
     return metadata.description;
   }
