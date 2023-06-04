@@ -10,6 +10,7 @@ import net.whitehorizont.apps.organization_collection_manager.cli.commands.Execu
 import net.whitehorizont.apps.organization_collection_manager.cli.commands.Exit;
 import net.whitehorizont.apps.organization_collection_manager.cli.commands.Help;
 import net.whitehorizont.apps.organization_collection_manager.cli.commands.ICliCommand;
+import net.whitehorizont.apps.organization_collection_manager.cli.commands.Info;
 import net.whitehorizont.apps.organization_collection_manager.cli.commands.Insert;
 import net.whitehorizont.apps.organization_collection_manager.cli.commands.Save;
 import net.whitehorizont.apps.organization_collection_manager.cli.commands.Show;
@@ -84,6 +85,8 @@ public class App
         commands.put("save", save);
         final var clear = new Clear();
         commands.put("clear", clear);
+        final var info = new Info();
+        commands.put("info", info);
 
         return commands;
     }

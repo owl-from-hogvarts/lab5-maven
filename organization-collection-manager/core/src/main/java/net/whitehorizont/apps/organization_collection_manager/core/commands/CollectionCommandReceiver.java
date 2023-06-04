@@ -1,5 +1,6 @@
 package net.whitehorizont.apps.organization_collection_manager.core.commands;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
 
@@ -15,6 +16,9 @@ import net.whitehorizont.apps.organization_collection_manager.core.collection.No
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.BaseId;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.ElementKey;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.KeyGenerationError;
+import net.whitehorizont.apps.organization_collection_manager.lib.BasicFieldMetadata;
+import net.whitehorizont.apps.organization_collection_manager.lib.ReadonlyField;
+import net.whitehorizont.apps.organization_collection_manager.lib.TitledNode;
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationError;
 
 /**
@@ -87,6 +91,19 @@ public class CollectionCommandReceiver<P extends IElementPrototype<?>, E extends
   @Override
   public CollectionMetadata getMetadataSnapshot() {
     return this.collection.getMetadataSnapshot();
+  }
+
+  public TitledNode<ReadonlyField<?>> getMetadataTree() {
+    final var metadataTree = this.collection.getMetadataSnapshot().getTree();
+    final var metadataTopLevelFields = new ArrayList<>(metadataTree.getLeafs());
+
+    final var countElements = this.collection.getEvery$().count().blockingGet();
+    metadataTopLevelFields.add(new ReadonlyField<>(new BasicFieldMetadata("Elements count"), countElements));
+    final var collectionType = this.collection.getElementPrototype().getDisplayedName();
+    metadataTopLevelFields.add(new ReadonlyField<>(new BasicFieldMetadata("Type of collection"), collectionType));
+    metadataTopLevelFields.add(new ReadonlyField<>(new BasicFieldMetadata("Etc. "), "etc."));
+
+    return new TitledNode<>(metadataTree.getDisplayedName(), metadataTopLevelFields, metadataTree.getChildren());
   }
 
   @Override

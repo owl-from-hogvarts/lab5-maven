@@ -29,7 +29,9 @@ public class Info extends BaseElementCommand implements ICliCommand {
         final var collectionManager = getCollectionManager(dependencyManager);
         final var collection = getCollection(collectionManager);
         final var receiver = new CollectionCommandReceiver<>(collection);
-        dependencyManager.getCommandQueue().push(new InfoCommand(receiver)).blockingSubscribe();
+        dependencyManager.getCommandQueue().push(new InfoCommand(receiver)).blockingSubscribe(collectionMetadata -> {
+          printFields(collectionMetadata, dependencyManager.getStreams().out);
+        });
         return Observable.empty();
       }
 

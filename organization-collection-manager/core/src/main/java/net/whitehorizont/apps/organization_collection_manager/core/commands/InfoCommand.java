@@ -17,7 +17,7 @@ public class InfoCommand implements ICommand<TitledNode<ReadonlyField<?>>> {
 
   @Override
   public Observable<TitledNode<ReadonlyField<?>>> execute() {
-    return Observable.just(collection.getMetadataSnapshot().getTree());
+    return Observable.just(collection.getMetadataTree());
   }
   
 }

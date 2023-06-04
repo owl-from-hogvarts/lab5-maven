@@ -2,6 +2,7 @@ package net.whitehorizont.apps.organization_collection_manager.core.collection;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -55,7 +56,7 @@ public class CollectionMetadata implements IWithId<UUID_CollectionId> {
 
   public TitledNode<ReadonlyField<?>> getTree() {
     final List<ReadonlyField<?>> leafs = new ArrayList<>();
-    leafs.add(new ReadonlyField<>(CREATION_TIME_METADATA, creationTime));
+    leafs.add(new ReadonlyField<>(CREATION_TIME_METADATA, Date.from(creationTime)));
     return new TitledNode<>(TITLE, leafs, new ArrayList<>());
   }
 }
