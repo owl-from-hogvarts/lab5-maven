@@ -1,13 +1,14 @@
 package net.whitehorizont.apps.organization_collection_manager.core.commands;
 
-import java.time.Instant;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import io.reactivex.rxjava3.core.Observable;
+import net.whitehorizont.apps.organization_collection_manager.lib.BasicFieldMetadata;
+import net.whitehorizont.apps.organization_collection_manager.lib.ReadonlyField;
+import net.whitehorizont.apps.organization_collection_manager.lib.TitledNode;
 
 @NonNullByDefault
-public class InfoCommand implements ICommand<Instant> {
+public class InfoCommand implements ICommand<TitledNode<ReadonlyField<?, BasicFieldMetadata>>> {
 
   private final CollectionCommandReceiver<?, ?> collection;
 
@@ -16,8 +17,8 @@ public class InfoCommand implements ICommand<Instant> {
   }
 
   @Override
-  public Observable<Instant> execute() {
-    return Observable.just(collection.getMetadataSnapshot().getCreationTime());
+  public Observable<TitledNode<ReadonlyField<?, BasicFieldMetadata>>> execute() {
+    return Observable.just(collection.getMetadataSnapshot().getTree());
   }
   
 }
