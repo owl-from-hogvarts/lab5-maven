@@ -13,7 +13,7 @@ import net.whitehorizont.apps.organization_collection_manager.lib.BasicFieldMeta
 import net.whitehorizont.apps.organization_collection_manager.lib.EnumFactory;
 import net.whitehorizont.apps.organization_collection_manager.lib.FieldDefinition;
 import net.whitehorizont.apps.organization_collection_manager.lib.FieldMetadataWithValidators;
-import net.whitehorizont.apps.organization_collection_manager.lib.IFieldDefinitionNode;
+import net.whitehorizont.apps.organization_collection_manager.lib.IReadonlyTreeProvider;
 import net.whitehorizont.apps.organization_collection_manager.lib.StringFactory;
 import net.whitehorizont.apps.organization_collection_manager.lib.TitledNode;
 import net.whitehorizont.apps.organization_collection_manager.lib.WritableFromStringFieldDefinition;
