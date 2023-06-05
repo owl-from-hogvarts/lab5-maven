@@ -13,6 +13,7 @@ import net.whitehorizont.apps.organization_collection_manager.cli.commands.Help;
 import net.whitehorizont.apps.organization_collection_manager.cli.commands.ICliCommand;
 import net.whitehorizont.apps.organization_collection_manager.cli.commands.Info;
 import net.whitehorizont.apps.organization_collection_manager.cli.commands.Insert;
+import net.whitehorizont.apps.organization_collection_manager.cli.commands.RemoveById;
 import net.whitehorizont.apps.organization_collection_manager.cli.commands.Save;
 import net.whitehorizont.apps.organization_collection_manager.cli.commands.Show;
 import net.whitehorizont.apps.organization_collection_manager.cli.commands.Update;
@@ -92,6 +93,8 @@ public class App
         commands.put("info", info);
         final var count = new CountByType();
         commands.put("count_by_type", count);
+        final var removeById = new RemoveById();
+        commands.put("remove_by_id", removeById);
 
         return commands;
     }

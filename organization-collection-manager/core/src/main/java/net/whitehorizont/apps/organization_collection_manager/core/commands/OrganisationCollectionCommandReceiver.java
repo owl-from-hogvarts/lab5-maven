@@ -11,6 +11,7 @@ import net.whitehorizont.apps.organization_collection_manager.core.collection.Or
 import net.whitehorizont.apps.organization_collection_manager.core.collection.OrganisationType;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.OrganisationElement.OrganisationElementPrototype;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.BaseId;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.UUID_ElementId;
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationError;
 
 /**
@@ -46,6 +47,17 @@ public class OrganisationCollectionCommandReceiver extends CollectionCommandRece
 
   public Single<Long> countByType(OrganisationType type) {
     return this.collection.getEvery$().filter(element -> element.getType().getValue().equals(type)).count();
+  }
+
+  public void removeById(UUID_ElementId id) {
+    this.collection.getEveryWithKey$()
+      .filter(keyElement -> keyElement
+                              .getValue()
+                              .getID()
+                              .getValue()
+                              .equals(id))
+      .map(keyElement -> keyElement.getKey())
+      .blockingSubscribe(key -> this.collection.delete(key));
   }
 
   public static interface IPrototypeCallback<P extends IElementPrototype<?>> {
