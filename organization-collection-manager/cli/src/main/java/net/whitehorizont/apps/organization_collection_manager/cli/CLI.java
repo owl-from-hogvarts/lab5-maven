@@ -14,21 +14,20 @@ import org.jline.reader.UserInterruptException;
 
 import io.reactivex.rxjava3.core.Observable;
 import net.whitehorizont.apps.organization_collection_manager.cli.commands.Exit;
-import net.whitehorizont.apps.organization_collection_manager.cli.commands.Help;
 import net.whitehorizont.apps.organization_collection_manager.cli.commands.ICliCommand;
 import net.whitehorizont.apps.organization_collection_manager.cli.errors.IGlobalErrorHandler;
 import net.whitehorizont.apps.organization_collection_manager.cli.errors.IInterruptHandler;
 import net.whitehorizont.apps.organization_collection_manager.cli.errors.IncorrectNumberOfArguments;
 import net.whitehorizont.apps.organization_collection_manager.cli.errors.UnknownCommand;
-import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollectionManager;
+import net.whitehorizont.apps.organization_collection_manager.core.commands.CollectionCommandReceiver;
 
 @NonNullByDefault
-public class CLI<CM extends ICollectionManager<?>> {
+public class CLI<CR extends CollectionCommandReceiver<?, ?>> {
   private static final String DEFAULT_PROMPT = " > ";
   private static final String COMMAND_SEPARATOR = " ";
   private final LineReader reader;
-  private final Map<String, ICliCommand> commands;
-  private final CliDependencyManager<CM> dependencyManager;
+  private final Map<String, ICliCommand<? super CR>> commands;
+  private final CliDependencyManager<CR> dependencyManager;
   private final IInterruptHandler interruptHandler;
   private final IGlobalErrorHandler globalErrorHandler;
 
@@ -57,7 +56,7 @@ public class CLI<CM extends ICollectionManager<?>> {
     }
   }
 
-  public CLI(CliDependencyManager<CM> dependencyManager)
+  public CLI(CliDependencyManager<CR> dependencyManager)
       throws IOException {
     this.dependencyManager = dependencyManager;
     this.reader = dependencyManager.getCommandLineReader();
@@ -73,7 +72,7 @@ public class CLI<CM extends ICollectionManager<?>> {
 
   public Observable<Void> promptCommand()
       throws Exception {
-      final String userInput = reader.readLine(DEFAULT_PROMPT).trim().strip().toLowerCase();
+      final String userInput = reader.readLine(DEFAULT_PROMPT).trim().strip();
 
       // separate string into command and the reminder
       // everything after the command is single argument

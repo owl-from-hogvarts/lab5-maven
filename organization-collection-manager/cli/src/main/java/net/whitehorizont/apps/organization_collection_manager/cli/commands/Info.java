@@ -10,7 +10,7 @@ import net.whitehorizont.apps.organization_collection_manager.core.commands.Coll
 import net.whitehorizont.apps.organization_collection_manager.core.commands.InfoCommand;
 
 @NonNullByDefault
-public class Info extends BaseElementCommand implements ICliCommand {
+public class Info extends BaseElementCommand implements ICliCommand<CollectionCommandReceiver<?, ?>> {
   private static String INFO_DESCRIPTION = "show information about collection itself";
 
   @Override
@@ -26,9 +26,7 @@ public class Info extends BaseElementCommand implements ICliCommand {
   @Override
   public Observable<Void> run(CliDependencyManager<?> dependencyManager,
       Stack<String> arguments) throws Exception {
-        final var collectionManager = getCollectionManager(dependencyManager);
-        final var collection = getCollection(collectionManager);
-        final var receiver = new CollectionCommandReceiver<>(collection);
+        final var receiver = dependencyManager.getCollectionReceiver();
         dependencyManager.getCommandQueue().push(new InfoCommand(receiver)).blockingSubscribe(collectionMetadata -> {
           printFields(collectionMetadata, dependencyManager.getStreams().out);
         });

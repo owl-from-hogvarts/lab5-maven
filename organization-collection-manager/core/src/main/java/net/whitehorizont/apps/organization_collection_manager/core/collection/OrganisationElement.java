@@ -1,6 +1,5 @@
 package net.whitehorizont.apps.organization_collection_manager.core.collection;
 
-import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,11 +8,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.Coordinates.CoordinatesPrototype;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.Coordinates.CoordinatesRawData;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.UUID_ElementId;
-import net.whitehorizont.apps.organization_collection_manager.lib.BasicFieldMetadata;
 import net.whitehorizont.apps.organization_collection_manager.lib.EnumFactory;
 import net.whitehorizont.apps.organization_collection_manager.lib.FieldDefinition;
 import net.whitehorizont.apps.organization_collection_manager.lib.FieldMetadataWithValidators;
-import net.whitehorizont.apps.organization_collection_manager.lib.IReadonlyTreeProvider;
 import net.whitehorizont.apps.organization_collection_manager.lib.StringFactory;
 import net.whitehorizont.apps.organization_collection_manager.lib.TitledNode;
 import net.whitehorizont.apps.organization_collection_manager.lib.WritableFromStringFieldDefinition;
@@ -26,7 +23,7 @@ import net.whitehorizont.apps.organization_collection_manager.lib.ReadonlyField;
 @NonNullByDefault
 public class OrganisationElement implements ICollectionElement<OrganisationElement.OrganisationElementPrototype> {
   // DONE: make iterator for fields
-  private static final String ELEMENT_TITLE = "Organisation";
+  static final String ELEMENT_TITLE = "Organisation";
 
   // !!! METADATA !!!
   private static final FieldMetadataWithValidators<String, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement>> NAME_METADATA = new FieldMetadataWithValidators<>(
@@ -42,7 +39,7 @@ public class OrganisationElement implements ICollectionElement<OrganisationEleme
           .addValidator((value, collection) -> {
             // pray once more 🙏
             final var hasDuplicateIds = collection.getEvery$().filter((element) -> {
-              return element.getId().equals(value);
+              return element.getID().getValue().equals(value);
             }).count().map(count -> count > 0).blockingGet();
 
             return new ValidationResult<Boolean>(!hasDuplicateIds, "Duplicate ID's found! ID should be unique!");
@@ -123,10 +120,7 @@ public class OrganisationElement implements ICollectionElement<OrganisationEleme
     }
   }
 
-  @Override
-  public UUID_ElementId getId() {
-    return this.ID.getValue();
-  }
+
 
   // !!! BUILD PROTOTYPE !!!
   @Override

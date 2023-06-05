@@ -10,6 +10,7 @@ import net.whitehorizont.apps.organization_collection_manager.lib.validators.Val
 public class OrganisationElementFactory implements IElementFactory<OrganisationElementPrototype, OrganisationElement, ICollection<OrganisationElementPrototype, OrganisationElement>, UUID_ElementId> {
 
   // return new OrganisationElement(validationObject, prototype);
+  private static final String COLLECTION_TYPE = OrganisationElement.ELEMENT_TITLE;
 
   @Override
   public OrganisationElementPrototype getElementPrototype() {
@@ -25,6 +26,11 @@ public class OrganisationElementFactory implements IElementFactory<OrganisationE
   @Override
   public UUID_ElementId getElementId(String idString) throws ValidationError {
     return new UUID_ElementId(idString);
+  }
+
+  @Override
+  public String getCollectionType() {
+    return COLLECTION_TYPE;
   }
 
       

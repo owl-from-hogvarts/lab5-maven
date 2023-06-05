@@ -10,7 +10,7 @@ import net.whitehorizont.apps.organization_collection_manager.core.commands.Clea
 import net.whitehorizont.apps.organization_collection_manager.core.commands.CollectionCommandReceiver;
 
 @NonNullByDefault
-public class Clear implements ICliCommand {
+public class Clear implements ICliCommand<CollectionCommandReceiver<?, ?>> {
   private static final String DESCRIPTION = "delete all elements from collection";
 
   @Override
@@ -25,8 +25,7 @@ public class Clear implements ICliCommand {
 
   @Override
   public Observable<Void> run(CliDependencyManager<?> dependencyManager, Stack<String> arguments) throws Exception {
-    final var collection = dependencyManager.getCollectionManager().getCollection().blockingFirst();
-    final var collectionReceiver = new CollectionCommandReceiver<>(collection);
+    final var collectionReceiver = dependencyManager.getCollectionReceiver();
     final var clear = new ClearCommand(collectionReceiver);
 
     return dependencyManager.getCommandQueue().push(clear);

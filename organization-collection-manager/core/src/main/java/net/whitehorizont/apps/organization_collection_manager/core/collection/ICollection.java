@@ -8,7 +8,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import io.reactivex.rxjava3.core.Observable;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.BaseId;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.ElementKey;
-import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.IWithId;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.KeyGenerationError;
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationError;
 
@@ -57,11 +56,13 @@ public interface ICollection<P extends IElementPrototype<?>, E extends ICollecti
 
   BaseId getElementIdFromString(String idString) throws ValidationError;
 
+  String getCollectionType();
+
   /**
    * Try to not mess up with element ids! Ids are the part of element. Keys are a
    * part of collection and more of implementation detail
    */
-  // TODO: ideally keys should be separated from ids by type hierarchy
+  // DONE: ideally keys should be separated from ids by type hierarchy
   ElementKey getElementKeyFromString(String keyString) throws ValidationError;
 
 }

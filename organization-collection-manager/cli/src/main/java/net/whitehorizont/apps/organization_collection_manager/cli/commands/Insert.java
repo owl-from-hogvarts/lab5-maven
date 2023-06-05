@@ -16,7 +16,7 @@ import net.whitehorizont.apps.organization_collection_manager.lib.validators.Val
 
 @NonNullByDefault
 public class Insert
-    extends InputElementCommand implements ICliCommand {
+    extends InputElementCommand implements ICliCommand<CollectionCommandReceiver<?, ?>> {
   
   public Insert(Retries retries) {
     super(retries);
@@ -28,10 +28,7 @@ public class Insert
   public Observable<Void> run(CliDependencyManager<?> dependencyManager, Stack<String> arguments)
       throws StorageInaccessibleError, ValidationError {
 
-    final var collectionManager = getCollectionManager(dependencyManager);
-    // from time to time this may fix the issue
-    // collectionManager.getCollection();
-    final var collection = getCollection(collectionManager);
+    final var collection = dependencyManager.getCollectionReceiver();
     final var key = collection.getElementKeyFromString(arguments.pop());
 
     try {

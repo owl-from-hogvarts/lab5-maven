@@ -56,14 +56,6 @@ public abstract class BaseElementCommand {
     return decorator;
   }
 
-  protected static <CM extends ICollectionManager<? extends ICollection<?, ?>>> CM getCollectionManager(CliDependencyManager<? extends CM> dependencyManager) {
-    return dependencyManager.getCollectionManager();
-  }
-
-  protected static <C extends ICollection<?, ?>> C getCollection(ICollectionManager<C> collectionManager) throws StorageInaccessibleError {
-    return collectionManager.getCollection().blockingFirst();
-  }
-
   protected static void printFields(TitledNode<ReadonlyField<?>> node, PrintStream out) {
     printFields(node, Optional.empty(), out, INITIAL_NEST_LEVEL);
   }

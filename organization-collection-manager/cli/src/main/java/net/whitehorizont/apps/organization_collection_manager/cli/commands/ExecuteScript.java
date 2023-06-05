@@ -14,16 +14,17 @@ import net.whitehorizont.apps.organization_collection_manager.cli.CLI;
 import net.whitehorizont.apps.organization_collection_manager.cli.CliDependencyManager;
 import net.whitehorizont.apps.organization_collection_manager.cli.Streams;
 import net.whitehorizont.apps.organization_collection_manager.cli.errors.RecursionDetected;
+import net.whitehorizont.apps.organization_collection_manager.core.commands.CollectionCommandReceiver;
 import net.whitehorizont.libs.file_system.PathHelpers;
 
 @NonNullByDefault
-public class ExecuteScript implements ICliCommand {
+public class ExecuteScript<CR extends CollectionCommandReceiver<?, ?>> implements ICliCommand<CR> {
   public static final String EXECUTE_SCRIPT_COMMAND = "execute-script";
   private static final String DESCRIPTION = "executes new line separated sequence of commands from file";
   private final Set<Path> runningScripts = new HashSet<>();
-  private final Map<String, ICliCommand> executeScriptCommandSet;
+  private final Map<String, ICliCommand<? super CR>> executeScriptCommandSet;
 
-  public ExecuteScript(Map<String, ICliCommand> executeScriptCommandSet) {
+  public ExecuteScript(Map<String, ICliCommand<? super CR>> executeScriptCommandSet) {
     this.executeScriptCommandSet = executeScriptCommandSet;
   }
 
@@ -38,7 +39,7 @@ public class ExecuteScript implements ICliCommand {
   }
 
   @Override
-  public Observable<Void> run(CliDependencyManager<?> dependencyManager, Stack<String> arguments)
+  public Observable<Void> run(CliDependencyManager<? extends CR> dependencyManager, Stack<String> arguments)
       throws Exception {
     return Observable.create((subscriber) -> {
       // turn argument into resolved path
@@ -57,15 +58,16 @@ public class ExecuteScript implements ICliCommand {
       final var scriptStreams = new Streams(fileInput, dependencyManager.getStreams().out, dependencyManager.getStreams().err);
       // leave err untouched since we wan't to report errors into console
       // construct new cli instance with new stream configuration      
-      final var executeScriptDependenciesConfig = new CliDependencyManager.Builder<>()
+      final var executeScriptDependenciesConfig = new CliDependencyManager.Builder<CR>()
           .setStreams(scriptStreams)
-          .setCollectionManager(dependencyManager.getCollectionManager())
+          .setCollectionReceiver(dependencyManager.getCollectionReceiver())
           .setCommands(executeScriptCommandSet)
           .setOnInterruptHandler(() -> Observable.empty())
           .setGlobalErrorHandler((e, _dependencyManager) -> {
             dependencyManager.getGlobalErrorHandler().handle(e, _dependencyManager);
             return true;
           })
+          .setCollectionManager(dependencyManager.getCollectionManager())
           .setDisplayPrompts(false)
           .setSystemTerminal(false);
       final var executeScriptDependencies = new CliDependencyManager<>(executeScriptDependenciesConfig);

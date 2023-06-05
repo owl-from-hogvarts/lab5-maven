@@ -6,16 +6,12 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import io.reactivex.rxjava3.core.Observable;
 import net.whitehorizont.apps.organization_collection_manager.cli.CliDependencyManager;
-import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollection;
-import net.whitehorizont.apps.organization_collection_manager.core.collection.IElementPrototype;
-import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.BaseId;
-import net.whitehorizont.apps.organization_collection_manager.core.commands.CollectionCommandReceiver;
+import net.whitehorizont.apps.organization_collection_manager.core.commands.OrganisationCollectionCommandReceiver;
 import net.whitehorizont.apps.organization_collection_manager.core.commands.UpdateCommand;
-import net.whitehorizont.apps.organization_collection_manager.core.commands.CollectionCommandReceiver.IPrototypeCallback;
 
 @NonNullByDefault
 public class Update
- extends InputElementCommand implements ICliCommand {
+ extends InputElementCommand implements ICliCommand<OrganisationCollectionCommandReceiver> {
   public Update(Retries retries) {
     super(retries);
   }
@@ -34,20 +30,21 @@ public class Update
   }
 
   @Override
-  public Observable<Void> run(CliDependencyManager<?> dependencyManager, Stack<String> arguments) throws Exception {
-    final var collectionManager = getCollectionManager(dependencyManager);
-    final var collection = getCollection(collectionManager);
+  public Observable<Void> run(CliDependencyManager<? extends OrganisationCollectionCommandReceiver> dependencyManager, Stack<String> arguments) throws Exception {
+    final var collection = dependencyManager.getCollectionReceiver();
     
     final String idString = arguments.pop().trim().strip();
     final var id = collection.getElementIdFromString(idString);
 
     final var lineReader = dependencyManager.getGenericLineReader();
 
-    final var updateCommand = getUpdateCommand(collection, dependencyManager, id, (oldPrototype) -> {
+    final var receiver = dependencyManager.getCollectionReceiver();
+    final var updateCommand = new UpdateCommand(id, receiver, (oldPrototype) -> {
       final var streams = prepareStreams(dependencyManager);
       promptForFields(oldPrototype, lineReader, streams);
       return oldPrototype;
     });
+
 
     return dependencyManager.getCommandQueue().push(updateCommand);
 
@@ -57,9 +54,4 @@ public class Update
     // update new's element id with the old one
     // propose new element to collection
   } 
-
-  private <P extends IElementPrototype<?>> UpdateCommand<P> getUpdateCommand(ICollection<P, ?> collection, CliDependencyManager<?> dependencyManager, BaseId id, IPrototypeCallback<P> callback) {
-    final var receiver = new CollectionCommandReceiver<>(collection);
-    return new UpdateCommand<P>(id, receiver, callback);
-  }
 }

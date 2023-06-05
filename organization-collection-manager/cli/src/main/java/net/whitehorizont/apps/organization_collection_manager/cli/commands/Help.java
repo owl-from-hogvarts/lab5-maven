@@ -10,11 +10,12 @@ import org.javatuples.Pair;
 
 import io.reactivex.rxjava3.core.Observable;
 import net.whitehorizont.apps.organization_collection_manager.cli.CliDependencyManager;
+import net.whitehorizont.apps.organization_collection_manager.core.commands.CollectionCommandReceiver;
 import net.whitehorizont.apps.organization_collection_manager.core.commands.ICommand;
 import net.whitehorizont.libs.file_system.StringHelper;
 
 @NonNullByDefault
-public class Help implements ICliCommand {
+public class Help implements ICliCommand<CollectionCommandReceiver<?, ?>> {
 
   private static final String DESCRIPTION = "prints this help message";
   private static final int INDENT_SIZE = 2;

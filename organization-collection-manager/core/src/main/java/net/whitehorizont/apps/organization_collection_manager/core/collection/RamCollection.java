@@ -1,6 +1,5 @@
 package net.whitehorizont.apps.organization_collection_manager.core.collection;
 
-import java.security.Key;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -169,5 +168,10 @@ public class RamCollection<P extends IElementPrototype<?>, E extends ICollection
   @Override
   public ElementKey getElementKeyFromString(String keyString) throws ValidationError {
     return ElementKey.buildFromString(keyString);
+  }
+
+  @Override
+  public String getCollectionType() {
+    return this.elementFactory.getCollectionType();
   }
 }

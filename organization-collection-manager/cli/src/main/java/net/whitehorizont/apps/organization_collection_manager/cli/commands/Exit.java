@@ -6,10 +6,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import io.reactivex.rxjava3.core.Observable;
 import net.whitehorizont.apps.organization_collection_manager.cli.CliDependencyManager;
+import net.whitehorizont.apps.organization_collection_manager.core.commands.CollectionCommandReceiver;
 import net.whitehorizont.apps.organization_collection_manager.core.commands.ExitCommand;
 
 @NonNullByDefault
-public class Exit implements ICliCommand {
+public class Exit implements ICliCommand<CollectionCommandReceiver<?, ?>> {
   public static final String EXIT_COMMAND = "exit";
   private static final String DESCRIPTION = "exit without saving";
   private static final String EXIT_MESSAGE = "Exiting without saving!";

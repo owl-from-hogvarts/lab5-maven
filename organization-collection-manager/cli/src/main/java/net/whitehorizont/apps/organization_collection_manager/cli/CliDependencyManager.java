@@ -17,12 +17,18 @@ import net.whitehorizont.apps.organization_collection_manager.cli.errors.IGlobal
 import net.whitehorizont.apps.organization_collection_manager.cli.errors.IInterruptHandler;
 import net.whitehorizont.apps.organization_collection_manager.cli.errors.TerminalUnavailable;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollectionManager;
+import net.whitehorizont.apps.organization_collection_manager.core.commands.CollectionCommandReceiver;
 import net.whitehorizont.apps.organization_collection_manager.core.commands.CommandQueue;
 
 @NonNullByDefault
-public class CliDependencyManager<CM extends ICollectionManager<?>> {
-  private final CM collectionManager;
-  private final Map<String, ICliCommand> commands;
+public class CliDependencyManager<CR extends CollectionCommandReceiver<?, ?>> {
+  private final CR collectionReceiver;
+  private final ICollectionManager<?> collectionManager;
+  public ICollectionManager<?> getCollectionManager() {
+    return collectionManager;
+  }
+
+  private final Map<String, ICliCommand<? super CR>> commands;
   private final LineReader commandLineReader;
   private final LineReader genericLineReader;
   private final boolean displayPrompts;
@@ -52,11 +58,11 @@ public class CliDependencyManager<CM extends ICollectionManager<?>> {
     return onInterrupt;
   }
 
-  public CM getCollectionManager() {
-    return collectionManager;
+  public CR getCollectionReceiver() {
+    return collectionReceiver;
   }
 
-  public Map<String, ICliCommand> getCommands() {
+  public Map<String, ICliCommand<? super CR>> getCommands() {
     return this.commands;
   }
 
@@ -76,9 +82,10 @@ public class CliDependencyManager<CM extends ICollectionManager<?>> {
     return this.streams;
   }
 
-  public CliDependencyManager(Builder<CM> builder)
+  public CliDependencyManager(Builder<CR> builder)
       throws TerminalUnavailable {
     this.collectionManager = builder.collectionManager;
+    this.collectionReceiver = builder.collectionReceiver;
     this.commands = builder.commands;
     this.streams = builder.streams;
     this.onInterrupt = Optional.ofNullable(builder.onInterruptHandler);
@@ -105,9 +112,10 @@ public class CliDependencyManager<CM extends ICollectionManager<?>> {
     }
   }
 
-  public static class Builder<CM extends ICollectionManager<?>> {
-    private CM collectionManager;
-    private Map<String, ICliCommand> commands;
+  public static class Builder<CR extends CollectionCommandReceiver<?, ?>> {
+    private ICollectionManager<?> collectionManager;
+    private CR collectionReceiver;
+    private Map<String, ICliCommand<? super CR>> commands;
     private Streams streams;
     private @Nullable IInterruptHandler onInterruptHandler;
     private boolean isSystemTerminal = true;
@@ -115,8 +123,13 @@ public class CliDependencyManager<CM extends ICollectionManager<?>> {
     private boolean displayPrompts = true;
 
 
-    public Builder<CM> setDisplayPrompts(boolean displayPrompts) {
+    public Builder<CR> setDisplayPrompts(boolean displayPrompts) {
       this.displayPrompts = displayPrompts;
+      return this;
+    }
+
+    public Builder<CR> setCollectionManager(ICollectionManager<?> collectionManager) {
+      this.collectionManager = collectionManager;
       return this;
     }
     /**
@@ -126,27 +139,27 @@ public class CliDependencyManager<CM extends ICollectionManager<?>> {
      * @param globalErrorHandler
      * @return
      */
-    public Builder<CM> setGlobalErrorHandler(IGlobalErrorHandler globalErrorHandler) {
+    public Builder<CR> setGlobalErrorHandler(IGlobalErrorHandler globalErrorHandler) {
       this.globalErrorHandler = globalErrorHandler;
       return this;
     }
-    public Builder<CM> setSystemTerminal(boolean isSystemTerminal) {
+    public Builder<CR> setSystemTerminal(boolean isSystemTerminal) {
       this.isSystemTerminal = isSystemTerminal;
       return this;
     }
-    public Builder<CM> setOnInterruptHandler(IInterruptHandler onInterruptHandler) {
+    public Builder<CR> setOnInterruptHandler(IInterruptHandler onInterruptHandler) {
       this.onInterruptHandler = onInterruptHandler;
       return this;
     }
-    public Builder<CM> setCollectionManager(CM collectionManager) {
-      this.collectionManager = collectionManager;
+    public Builder<CR> setCollectionReceiver(CR collectionManager) {
+      this.collectionReceiver = collectionManager;
       return this;
     }
-    public Builder<CM> setCommands(Map<String, ICliCommand> commands) {
+    public Builder<CR> setCommands(Map<String, ICliCommand<? super CR>> commands) {
       this.commands = commands;
       return this;
     }
-    public Builder<CM> setStreams(Streams streams) {
+    public Builder<CR> setStreams(Streams streams) {
       this.streams = streams;
       return this;
     }

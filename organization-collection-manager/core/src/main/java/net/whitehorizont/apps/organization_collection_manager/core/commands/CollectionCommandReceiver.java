@@ -27,7 +27,7 @@ import net.whitehorizont.apps.organization_collection_manager.lib.validators.Val
  */
 @NonNullByDefault
 public class CollectionCommandReceiver<P extends IElementPrototype<?>, E extends ICollectionElement<P>> implements ICollection<P, E> {
-  private final ICollection<P, E> collection;
+  protected final ICollection<P, E> collection;
 
   public CollectionCommandReceiver(ICollection<P, E> collection) {
     this.collection = collection;
@@ -41,27 +41,6 @@ public class CollectionCommandReceiver<P extends IElementPrototype<?>, E extends
   @Override
   public void replace(ElementKey key, P prototype) throws ValidationError, NoSuchElement {
     this.collection.replace(key, prototype);
-  }
-
-  public Observable<Void> replace(BaseId id, IPrototypeCallback<P> callback) {
-    final var entries = this.collection.getEveryWithKey$()
-    .filter(keyElement -> keyElement.getValue().getId().equals(id));
-    final var amount = entries.count().blockingGet();
-    if (amount < 1) {
-      return Observable.error(new NoSuchElement(id));
-    }
-
-    return entries.flatMap(keyElement -> {
-      final var prototype = keyElement.getValue().getPrototype();
-      try {
-        final var updatedPrototype = callback.apply(prototype);
-        final var key = keyElement.getKey();
-        this.collection.replace(key, updatedPrototype);
-        return Observable.empty();
-      } catch (ValidationError | NoSuchElement e) {
-        return Observable.error(e);
-      }
-    });
   }
 
   public static interface IPrototypeCallback<P extends IElementPrototype<?>> {
@@ -99,7 +78,8 @@ public class CollectionCommandReceiver<P extends IElementPrototype<?>, E extends
 
     final var countElements = this.collection.getEvery$().count().blockingGet();
     metadataTopLevelFields.add(new ReadonlyField<>(new BasicFieldMetadata("Elements count"), countElements));
-    final var collectionType = this.collection.getElementPrototype().getDisplayedName();
+    final var collectionType = this.collection.getCollectionType();
+    // DONE: request collection type from factory
     metadataTopLevelFields.add(new ReadonlyField<>(new BasicFieldMetadata("Type of collection"), collectionType));
     metadataTopLevelFields.add(new ReadonlyField<>(new BasicFieldMetadata("Etc. "), "etc."));
 
@@ -129,6 +109,11 @@ public class CollectionCommandReceiver<P extends IElementPrototype<?>, E extends
   @Override
   public void insert(ElementKey key, P prototype) throws ValidationError, DuplicateElements {
     this.collection.insert(key, prototype);
+  }
+
+  @Override
+  public String getCollectionType() {
+    return this.collection.getCollectionType();
   }
   
 }

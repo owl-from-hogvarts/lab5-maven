@@ -10,4 +10,5 @@ public interface IElementFactory<P extends IElementPrototype<?>, E, V, K extends
   E buildElementFrom(P prototype, V validationObject) throws ValidationError;
   P getElementPrototype();
   K getElementId(String idString) throws ValidationError;
+  String getCollectionType();
 }

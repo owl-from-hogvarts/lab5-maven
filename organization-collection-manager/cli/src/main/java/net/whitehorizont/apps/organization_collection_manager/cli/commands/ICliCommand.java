@@ -6,9 +6,10 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import io.reactivex.rxjava3.core.Observable;
 import net.whitehorizont.apps.organization_collection_manager.cli.CliDependencyManager;
+import net.whitehorizont.apps.organization_collection_manager.core.commands.CollectionCommandReceiver;
 
 @NonNullByDefault
-public interface ICliCommand {
+public interface ICliCommand<CR extends CollectionCommandReceiver<?, ?>> {
   boolean hasArgument();
   String getCommandDescription();
 
@@ -22,5 +23,5 @@ public interface ICliCommand {
    * @return
    * @throws Exception if command can't handle something, let's just fail and pass error to global error handler
    */
-  Observable<Void> run(CliDependencyManager<?> dependencyManager, Stack<String> arguments) throws Exception;
+  Observable<Void> run(CliDependencyManager<? extends CR> dependencyManager, Stack<String> arguments) throws Exception;
 }
