@@ -8,6 +8,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.Coordinates.CoordinatesPrototype;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.Coordinates.CoordinatesRawData;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.UUID_ElementId;
+import net.whitehorizont.apps.organization_collection_manager.lib.DoubleFactory;
 import net.whitehorizont.apps.organization_collection_manager.lib.EnumFactory;
 import net.whitehorizont.apps.organization_collection_manager.lib.FieldDefinition;
 import net.whitehorizont.apps.organization_collection_manager.lib.FieldMetadataWithValidators;
@@ -54,26 +55,34 @@ public class OrganisationElement implements ICollectionElement<OrganisationEleme
       .setHint(OrganisationType.getHint())
       .build();
 
+  private static final FieldMetadataWithValidators<Double, ICollection<OrganisationElementPrototype, OrganisationElement>> ANNUAL_TURNOVER_METADATA =
+   new FieldMetadataWithValidators.Metadata<Double, ICollection<OrganisationElementPrototype, OrganisationElement>>()
+   .setDisplayedName("Annual Turnover")
+   .setRequired("Annual Turnover must be provided")
+   .addValidator((value, _unused) -> new ValidationResult<>(value > 0, "Annual Turnover should be strictly above zero"))
+   .build();
+
   public static FieldMetadataWithValidators<String, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement>> getNameMetadata() {
     return NAME_METADATA;
   }
 
   // !!! FIELDS !!!
-  private final FieldDefinition<String, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement>> name;
-  private final FieldDefinition<UUID_ElementId, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement>> ID;
+  private final FieldDefinition<String, ICollection<OrganisationElementPrototype, OrganisationElement>> name;
+  private final FieldDefinition<UUID_ElementId, ICollection<OrganisationElementPrototype, OrganisationElement>> ID;
   private final Coordinates coordinates;
-  private final FieldDefinition<OrganisationType, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement>> type;
+  private final FieldDefinition<OrganisationType, ICollection<OrganisationElementPrototype, OrganisationElement>> type;
+  private final FieldDefinition<Double, ICollection<OrganisationElementPrototype, OrganisationElement>> annualTurnover;
 
   // !!! GETTERS !!!
-  public FieldDefinition<String, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement>> getName() {
+  public FieldDefinition<String, ICollection<OrganisationElementPrototype, OrganisationElement>> getName() {
     return name;
   }
 
-  public FieldDefinition<UUID_ElementId, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement>> getID() {
+  public FieldDefinition<UUID_ElementId, ICollection<OrganisationElementPrototype, OrganisationElement>> getID() {
     return ID;
   }
 
-  public FieldDefinition<OrganisationType, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement>> getType() {
+  public FieldDefinition<OrganisationType, ICollection<OrganisationElementPrototype, OrganisationElement>> getType() {
     return type;
   }
 
@@ -90,6 +99,8 @@ public class OrganisationElement implements ICollectionElement<OrganisationEleme
         ID_METADATA, prototype.ID.getValue(),
         collection);
 
+    this.annualTurnover = new FieldDefinition(ANNUAL_TURNOVER_METADATA, prototype.annualTurnover, collection);
+
     this.coordinates = new Coordinates(prototype.coordinates);
 
     this.type = new FieldDefinition<OrganisationType,ICollection<OrganisationElementPrototype,OrganisationElement>>(TYPE_METADATA, prototype.type.getValue(), collection);
@@ -100,9 +111,15 @@ public class OrganisationElement implements ICollectionElement<OrganisationEleme
     private UUID_ElementId ID = new UUID_ElementId(); // init with default value which is easily overridable
     private CoordinatesRawData coordinates = new CoordinatesRawData();
     private OrganisationType type;
+    private Double annualTurnover;
 
     private OrganisationElementRawData name(String name) {
       this.name = name;
+      return this;
+    }
+
+    private OrganisationElementRawData annualTurnover(Double annualTurnover) {
+      this.annualTurnover = annualTurnover;
       return this;
     }
 
@@ -133,6 +150,7 @@ public class OrganisationElement implements ICollectionElement<OrganisationEleme
       prototype.name.setValue(this.name.getValue());
       prototype.coordinates = this.coordinates.getPrototype();
       prototype.type.setValue(this.type.getValue());
+      prototype.annualTurnover.setValue(this.annualTurnover.getValue());
 
       return prototype;
     } catch (ValidationError e) {
@@ -151,6 +169,7 @@ public class OrganisationElement implements ICollectionElement<OrganisationEleme
     private final WritableFromStringFieldDefinition<String> name;
     private CoordinatesPrototype coordinates = new CoordinatesPrototype();
     private final WritableFromStringFieldDefinition<OrganisationType> type;
+    private final WritableFromStringFieldDefinition<Double> annualTurnover;
 
     private final List<WritableFromStringFieldDefinition<?>> inputFields = new ArrayList<>();
 
@@ -163,6 +182,9 @@ public class OrganisationElement implements ICollectionElement<OrganisationEleme
 
         this.type = new WritableFromStringFieldDefinition<OrganisationType>(TYPE_METADATA, OrganisationType.COMMERCIAL ,new EnumFactory<>(OrganisationType.class));
         this.inputFields.add(type);
+
+        this.annualTurnover = new WritableFromStringFieldDefinition<Double>(ANNUAL_TURNOVER_METADATA, 1.0, new DoubleFactory());
+        this.inputFields.add(annualTurnover);
 
       } catch (ValidationError e) {
         assert false; // default value is hardcoded. if error happens here, it is a bug
@@ -178,7 +200,8 @@ public class OrganisationElement implements ICollectionElement<OrganisationEleme
         .ID(this.ID.getValue())
         .name(this.name.getValue())
         .coordinates(coordinates.getRawElementData())
-        .type(this.type.getValue());
+        .type(this.type.getValue())
+        .annualTurnover(this.annualTurnover.getValue());
     }
 
     @Override
@@ -195,6 +218,7 @@ public class OrganisationElement implements ICollectionElement<OrganisationEleme
       this.name.setValueFromString(rawData.name);
       this.coordinates.setFromRawData(rawData.coordinates);
       this.type.setValue(rawData.type);
+      this.annualTurnover.setValue(rawData.annualTurnover);
 
       return this;
     }
