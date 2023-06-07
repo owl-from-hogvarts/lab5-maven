@@ -47,7 +47,7 @@ public class Coordinates implements IWithPrototype<Coordinates.CoordinatesProtot
 
     public CoordinatesPrototype() {
       try {
-        this.x = new WritableFromStringFieldDefinition<Integer>(X_METADATA, 0, new NumberFactory());
+        this.x = new WritableFromStringFieldDefinition<Integer>(X_METADATA, 0, new IntegerFactory());
       } catch (ValidationError e) {
         assert false;
         throw new RuntimeException();

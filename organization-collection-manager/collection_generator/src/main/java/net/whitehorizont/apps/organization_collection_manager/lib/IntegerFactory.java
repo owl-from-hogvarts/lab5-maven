@@ -2,7 +2,7 @@ package net.whitehorizont.apps.organization_collection_manager.lib;
 
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationError;
 
-public class NumberFactory implements IFromStringBuilder<Integer> {
+public class IntegerFactory implements IFromStringBuilder<Integer> {
 
   @Override
   public Integer buildFromString(String string) throws ValidationError {

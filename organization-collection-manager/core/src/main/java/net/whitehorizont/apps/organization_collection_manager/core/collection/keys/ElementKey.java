@@ -5,13 +5,13 @@ import java.util.stream.Stream;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import net.whitehorizont.apps.organization_collection_manager.lib.IFromStringBuilder;
-import net.whitehorizont.apps.organization_collection_manager.lib.NumberFactory;
+import net.whitehorizont.apps.organization_collection_manager.lib.IntegerFactory;
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationError;
 
 @NonNullByDefault
 public class ElementKey extends BaseId implements Comparable<ElementKey> {
   private static int current = 0;
-  private static IFromStringBuilder<Integer> intParser = new NumberFactory();
+  private static IFromStringBuilder<Integer> intParser = new IntegerFactory();
   
   private final int key;
 
