@@ -257,4 +257,10 @@ public class OrganisationElement implements ICollectionElement<OrganisationEleme
   public String getDisplayedName() {
     return ELEMENT_TITLE;
   }
+
+  @Override
+  public int compareTo(ICollectionElement<OrganisationElementPrototype> other) {
+    // will not return null, 'cause field is not nullable
+    return (int) (this.annualTurnover.getValue() - other.getPrototype().annualTurnover.getValue());
+  }
 }
