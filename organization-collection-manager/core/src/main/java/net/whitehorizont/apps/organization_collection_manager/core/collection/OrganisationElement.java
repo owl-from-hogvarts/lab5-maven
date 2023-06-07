@@ -59,7 +59,7 @@ public class OrganisationElement implements ICollectionElement<OrganisationEleme
    new FieldMetadataWithValidators.Metadata<Double, ICollection<OrganisationElementPrototype, OrganisationElement>>()
    .setDisplayedName("Annual Turnover")
    .setRequired("Annual Turnover must be provided")
-   .addValidator((value, _unused) -> new ValidationResult<>(value > 0, "Annual Turnover should be strictly above zero"))
+   .addValidator((value, _unused) -> new ValidationResult<>(value > 0.0, "Annual Turnover should be strictly above zero"))
    .build();
 
   public static FieldMetadataWithValidators<String, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement>> getNameMetadata() {
@@ -103,7 +103,7 @@ public class OrganisationElement implements ICollectionElement<OrganisationEleme
         ID_METADATA, prototype.ID.getValue(),
         collection);
 
-    this.annualTurnover = new FieldDefinition(ANNUAL_TURNOVER_METADATA, prototype.annualTurnover, collection);
+    this.annualTurnover = new FieldDefinition<>(ANNUAL_TURNOVER_METADATA, prototype.annualTurnover.getValue(), collection);
 
     this.coordinates = new Coordinates(prototype.coordinates);
 
@@ -247,6 +247,7 @@ public class OrganisationElement implements ICollectionElement<OrganisationEleme
     fieldDefinitions.add(getName());
     fieldDefinitions.add(getID());
     fieldDefinitions.add(getType());
+    fieldDefinitions.add(getAnnualTurnover());
 
     final List<TitledNode<ReadonlyField<?>>> children = new ArrayList<>();
     children.add(coordinates.getTree());
