@@ -18,11 +18,6 @@ public class RemoveCommand implements ICommand<Long> {
   }
   // public RemoveCommand(SortDirection sortDirection, int revenue) {}
 
-  public enum SortDirection {
-    DESCENDING,
-    ASCENDING
-  }
-
   @Override
   public Observable<Long> execute() {
     this.collection.removeById(id.get());

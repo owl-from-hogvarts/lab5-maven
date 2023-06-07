@@ -2,6 +2,7 @@ package net.whitehorizont.apps.organization_collection_manager.core.commands;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Single;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollection;
@@ -62,5 +63,21 @@ public class OrganisationCollectionCommandReceiver extends CollectionCommandRece
 
   public static interface IPrototypeCallback<P extends IElementPrototype<?>> {
     P apply(P prototype) throws ValidationError;
+  }
+
+  public void removeByRevenue(RemovalCriteria sortDirection, double targetValue) {
+    this.getEveryWithKey$().filter(keyElement -> {
+      final @NonNull var currentAnnualTurnover = keyElement.getValue().getAnnualTurnover().getValue();
+      return switch (sortDirection) {
+        case ABOVE -> currentAnnualTurnover > targetValue;
+        case BELOW -> currentAnnualTurnover < targetValue;
+        default -> {throw new RuntimeException();}
+      };
+    });
+  }
+
+  public enum RemovalCriteria {
+    BELOW,
+    ABOVE
   }
 }

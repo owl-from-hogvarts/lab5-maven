@@ -86,6 +86,10 @@ public class OrganisationElement implements ICollectionElement<OrganisationEleme
     return type;
   }
 
+  public FieldDefinition<Double, ICollection<OrganisationElementPrototype, OrganisationElement>> getAnnualTurnover() {
+    return annualTurnover;
+  }
+
   // !!! CONSTRUCTOR !!!
   public OrganisationElement(ICollection<OrganisationElementPrototype, OrganisationElement> collection,
       OrganisationElementPrototype prototype)
