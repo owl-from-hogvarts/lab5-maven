@@ -14,6 +14,7 @@ import net.whitehorizont.apps.organization_collection_manager.cli.commands.ICliC
 import net.whitehorizont.apps.organization_collection_manager.cli.commands.Info;
 import net.whitehorizont.apps.organization_collection_manager.cli.commands.Insert;
 import net.whitehorizont.apps.organization_collection_manager.cli.commands.RemoveById;
+import net.whitehorizont.apps.organization_collection_manager.cli.commands.RemoveGreater;
 import net.whitehorizont.apps.organization_collection_manager.cli.commands.RemoveLower;
 import net.whitehorizont.apps.organization_collection_manager.cli.commands.Save;
 import net.whitehorizont.apps.organization_collection_manager.cli.commands.Show;
@@ -98,6 +99,8 @@ public class App
         commands.put("remove_by_id", removeById);
         final var removeLower = new RemoveLower();
         commands.put("remove_lower", removeLower);
+        final var RemoveGreater = new RemoveGreater();
+        commands.put("remove_greater", RemoveGreater);
 
         return commands;
     }
