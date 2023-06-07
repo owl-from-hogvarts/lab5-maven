@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.IValidatorsProvider;
@@ -16,7 +15,7 @@ import net.whitehorizont.apps.organization_collection_manager.lib.validators.Val
 public class FieldMetadataWithValidators<V, T> extends BasicFieldMetadata implements IValidatorsProvider<V, T> {
   private final Metadata<V, T> metadata;
 
-  public FieldMetadataWithValidators(Metadata<V, T> metadata) {
+  private FieldMetadataWithValidators(Metadata<V, T> metadata) {
     super(metadata.displayedName);
     this.metadata = metadata;
   }
@@ -61,6 +60,10 @@ public class FieldMetadataWithValidators<V, T> extends BasicFieldMetadata implem
     public Metadata<V, T> setHint(String hint) {
       this.hint = Optional.of(hint);
       return this;
+    }
+
+    public FieldMetadataWithValidators<V, T> build() {
+      return new FieldMetadataWithValidators<>(this);
     }
 
     @Override

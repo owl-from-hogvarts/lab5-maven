@@ -5,10 +5,9 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
-import net.whitehorizont.apps.organization_collection_manager.lib.BasicFieldMetadata;
 import net.whitehorizont.apps.organization_collection_manager.lib.FieldDefinition;
 import net.whitehorizont.apps.organization_collection_manager.lib.FieldMetadataWithValidators;
-import net.whitehorizont.apps.organization_collection_manager.lib.NumberFactory;
+import net.whitehorizont.apps.organization_collection_manager.lib.IntegerFactory;
 import net.whitehorizont.apps.organization_collection_manager.lib.ReadonlyField;
 import net.whitehorizont.apps.organization_collection_manager.lib.TitledNode;
 import net.whitehorizont.apps.organization_collection_manager.lib.WritableFromStringFieldDefinition;
@@ -20,12 +19,13 @@ import net.whitehorizont.apps.organization_collection_manager.lib.IWriteableFiel
 public class Coordinates implements IWithPrototype<Coordinates.CoordinatesPrototype> {
   private static final String COORDINATES_TITLE = "Coordinates";
   
-  private static final FieldMetadataWithValidators<Integer, Object> X_METADATA = new FieldMetadataWithValidators<>(new FieldMetadataWithValidators.Metadata<Integer, Object>().addValidator((value, _unused) -> {
+  private static final FieldMetadataWithValidators<Integer, Object> X_METADATA = new FieldMetadataWithValidators.Metadata<Integer, Object>().addValidator((value, _unused) -> {
     final int x = value.intValue();
     final var isValueOk = x > -802;
     final var result = new ValidationResult<>(isValueOk, "Value should be strictly above -802");
     return result;
-  }).setDisplayedName("X"));
+  }).setDisplayedName("X")
+  .build();
 
   private final FieldDefinition<Integer, ?> x;
 
