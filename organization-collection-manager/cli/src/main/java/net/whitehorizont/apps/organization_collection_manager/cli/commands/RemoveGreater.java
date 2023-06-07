@@ -7,7 +7,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import io.reactivex.rxjava3.core.Observable;
 import net.whitehorizont.apps.organization_collection_manager.cli.CliDependencyManager;
 import net.whitehorizont.apps.organization_collection_manager.core.commands.OrganisationCollectionCommandReceiver;
-import net.whitehorizont.apps.organization_collection_manager.core.commands.RemoveByRevenue;
+import net.whitehorizont.apps.organization_collection_manager.core.commands.RemoveByRevenueCommand;
 import net.whitehorizont.apps.organization_collection_manager.core.commands.OrganisationCollectionCommandReceiver.RemovalCriteria;
 import net.whitehorizont.apps.organization_collection_manager.lib.DoubleFactory;
 import net.whitehorizont.apps.organization_collection_manager.lib.IFromStringBuilder;
@@ -35,7 +35,7 @@ public class RemoveGreater implements ICliCommand<OrganisationCollectionCommandR
 
         final String targetTurnoverString = arguments.pop().trim().strip();
         final double targetTurnover = doubleParser.buildFromString(targetTurnoverString);
-        final var removeLowerCommand = new RemoveByRevenue(collection, RemovalCriteria.ABOVE, targetTurnover);
+        final var removeLowerCommand = new RemoveByRevenueCommand(collection, RemovalCriteria.ABOVE, targetTurnover);
         return dependencyManager.getCommandQueue().push(removeLowerCommand);
       }
   
