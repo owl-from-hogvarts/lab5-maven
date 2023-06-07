@@ -65,15 +65,17 @@ public class OrganisationCollectionCommandReceiver extends CollectionCommandRece
     P apply(P prototype) throws ValidationError;
   }
 
-  public void removeByRevenue(RemovalCriteria sortDirection, double targetValue) {
+  public void removeByRevenue(RemovalCriteria removalCriteria, double targetValue) {
     this.getEveryWithKey$().filter(keyElement -> {
       final @NonNull var currentAnnualTurnover = keyElement.getValue().getAnnualTurnover().getValue();
-      return switch (sortDirection) {
+      return switch (removalCriteria) {
         case ABOVE -> currentAnnualTurnover > targetValue;
         case BELOW -> currentAnnualTurnover < targetValue;
         default -> {throw new RuntimeException();}
       };
-    });
+    })
+    .map(keyElement -> keyElement.getKey())
+    .subscribe(key -> collection.delete(key));
   }
 
   public enum RemovalCriteria {
