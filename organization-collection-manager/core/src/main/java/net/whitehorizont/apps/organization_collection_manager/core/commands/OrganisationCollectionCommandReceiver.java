@@ -99,4 +99,13 @@ public class OrganisationCollectionCommandReceiver extends CollectionCommandRece
     BELOW,
     ABOVE
   }
+
+  public Observable<Entry<ElementKey, OrganisationElement>> getDescending$() {
+    return this.collection.getEveryWithKey$().sorted((a, b)-> {
+      final var aElement = a.getValue();
+      final var bElement = b.getValue();
+      // b to a to reverse order
+      return bElement.compareTo(aElement);
+    });
+  }
 }
