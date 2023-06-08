@@ -36,7 +36,8 @@ public class OrganisationCollectionCommandReceiver extends CollectionCommandRece
       return Observable.error(new NoSuchElement(id));
     }
 
-    return entries.flatMap(keyElement -> {
+
+    return entries.singleOrError().flatMapObservable(keyElement -> {
       final var prototype = keyElement.getValue().getPrototype();
       try {
         final var updatedPrototype = callback.apply(prototype);
@@ -69,7 +70,7 @@ public class OrganisationCollectionCommandReceiver extends CollectionCommandRece
   }
 
   public void removeByRevenue(RemovalCriteria removalCriteria, double targetValue) {
-    this.getEveryWithKey$().filter(keyElement -> {
+    final var keysToDelete = this.getEveryWithKey$().filter(keyElement -> {
       final @NonNull var currentAnnualTurnover = keyElement.getValue().getAnnualTurnover().getValue();
       return switch (removalCriteria) {
         case ABOVE -> currentAnnualTurnover > targetValue;
@@ -77,8 +78,17 @@ public class OrganisationCollectionCommandReceiver extends CollectionCommandRece
         default -> {throw new RuntimeException();}
       };
     })
-    .map(keyElement -> keyElement.getKey())
-    .subscribe(key -> collection.delete(key));
+    .map(keyElement -> keyElement.getKey()).toList().blockingGet();
+
+    for (final var key : keysToDelete) {
+      try {
+        this.collection.delete(key);
+      } catch (Exception _ignore) {
+        // should never happen
+        assert false;
+        throw new RuntimeException();
+      }
+    }
   }
 
   public Observable<Entry<ElementKey, OrganisationElement>> getStartsWith$(String startOfFullName) {
