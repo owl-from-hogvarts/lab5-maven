@@ -9,6 +9,7 @@ import net.whitehorizont.apps.organization_collection_manager.cli.commands.Clear
 import net.whitehorizont.apps.organization_collection_manager.cli.commands.CountByType;
 import net.whitehorizont.apps.organization_collection_manager.cli.commands.ExecuteScript;
 import net.whitehorizont.apps.organization_collection_manager.cli.commands.Exit;
+import net.whitehorizont.apps.organization_collection_manager.cli.commands.FilterStartsWith;
 import net.whitehorizont.apps.organization_collection_manager.cli.commands.Help;
 import net.whitehorizont.apps.organization_collection_manager.cli.commands.ICliCommand;
 import net.whitehorizont.apps.organization_collection_manager.cli.commands.Info;
@@ -101,6 +102,8 @@ public class App
         commands.put("remove_lower", removeLower);
         final var RemoveGreater = new RemoveGreater();
         commands.put("remove_greater", RemoveGreater);
+        final var filterStartsWith = new FilterStartsWith();
+        commands.put("filter_starts_with_full_name", filterStartsWith);
 
         return commands;
     }

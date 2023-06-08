@@ -1,5 +1,7 @@
 package net.whitehorizont.apps.organization_collection_manager.core.commands;
 
+import java.util.Map.Entry;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import io.reactivex.rxjava3.annotations.NonNull;
@@ -12,6 +14,7 @@ import net.whitehorizont.apps.organization_collection_manager.core.collection.Or
 import net.whitehorizont.apps.organization_collection_manager.core.collection.OrganisationType;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.OrganisationElement.OrganisationElementPrototype;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.BaseId;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.ElementKey;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.UUID_ElementId;
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationError;
 
@@ -76,6 +79,10 @@ public class OrganisationCollectionCommandReceiver extends CollectionCommandRece
     })
     .map(keyElement -> keyElement.getKey())
     .subscribe(key -> collection.delete(key));
+  }
+
+  public Observable<Entry<ElementKey, OrganisationElement>> getStartsWith$(String startOfFullName) {
+    return collection.getEveryWithKey$().filter(keyElement -> keyElement.getValue().getName().getValue().startsWith(startOfFullName));
   }
 
   public enum RemovalCriteria {
