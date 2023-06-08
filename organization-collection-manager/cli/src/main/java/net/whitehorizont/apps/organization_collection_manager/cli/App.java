@@ -11,6 +11,7 @@ import net.whitehorizont.apps.organization_collection_manager.cli.commands.Execu
 import net.whitehorizont.apps.organization_collection_manager.cli.commands.Exit;
 import net.whitehorizont.apps.organization_collection_manager.cli.commands.FilterStartsWith;
 import net.whitehorizont.apps.organization_collection_manager.cli.commands.Help;
+import net.whitehorizont.apps.organization_collection_manager.cli.commands.History;
 import net.whitehorizont.apps.organization_collection_manager.cli.commands.ICliCommand;
 import net.whitehorizont.apps.organization_collection_manager.cli.commands.Info;
 import net.whitehorizont.apps.organization_collection_manager.cli.commands.Insert;
@@ -104,6 +105,8 @@ public class App
         commands.put("remove_greater", RemoveGreater);
         final var filterStartsWith = new FilterStartsWith();
         commands.put("filter_starts_with_full_name", filterStartsWith);
+        final var history = new History();
+        commands.put("history", history);
 
         return commands;
     }
