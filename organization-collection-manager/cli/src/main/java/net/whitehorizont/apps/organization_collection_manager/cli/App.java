@@ -38,9 +38,13 @@ import net.whitehorizont.apps.organization_collection_manager.core.storage.colle
 @NonNullByDefault
 public class App 
 {
+    static {
+        Thread.setDefaultUncaughtExceptionHandler(CLI::defaultGlobalErrorHandler);
+    }
+
     public static void main( String[] args ) throws Throwable
     {
-        final var testStorage = setupStorage("./test.xml");
+        final var testStorage = setupStorage(getStoragePath());
         final var collectionManager = new CollectionManager<>(testStorage);
 
         final var commands = buildMainCommandSet();
@@ -127,5 +131,15 @@ public class App
     public static void addSystemCommands(Map<String, ICliCommand<? super OrganisationCollectionCommandReceiver>> commands) {
         commands.put(Exit.EXIT_COMMAND, new Exit());
         commands.put(Help.HELP_COMMAND, new Help());
+    }
+
+    private static String getStoragePath() {
+        final String variableName = "collection_path";
+        final String maybePath = System.getenv(variableName);
+        if (maybePath == null) {
+            throw new Error("Env variable " + variableName + " is not defined!");
+        }
+
+        return maybePath;
     }
 }

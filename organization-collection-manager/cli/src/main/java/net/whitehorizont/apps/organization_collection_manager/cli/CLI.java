@@ -102,6 +102,19 @@ public class CLI<CR extends CollectionCommandReceiver<?, ?>> {
       return commandDescriptor.run(this.dependencyManager, wordsStack);
   }
 
+  public static void defaultGlobalErrorHandler(Thread thread, Throwable e) {
+    if (e.getCause() != null) {
+      e = e.getCause();
+    }
+    if (e instanceof RuntimeException) {
+      System.err.println("Error: Unknown error ocurred! Please, file new issue on https://github.com/owl-from-hogvarts/lab5-maven");
+      // ? if something unknown happened, may be better crash?
+      return;
+    }
+
+    System.err.println("Error: " + e.getMessage());
+  }
+
   public static boolean defaultGlobalErrorHandler(Throwable e, CliDependencyManager<?> dependencyManager) {
     final var err = dependencyManager.getStreams().err;
     if (e instanceof RuntimeException) {
