@@ -1,5 +1,6 @@
 package net.whitehorizont.apps.organization_collection_manager.cli.commands;
 
+import java.util.Optional;
 import java.util.Stack;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -10,7 +11,7 @@ import net.whitehorizont.apps.organization_collection_manager.core.commands.Coll
 
 @NonNullByDefault
 public interface ICliCommand<CR extends CollectionCommandReceiver<?, ?>> {
-  boolean hasArgument();
+  Optional<String> getArgument();
   String getCommandDescription();
 
   /**

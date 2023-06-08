@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.Stack;
 
@@ -29,8 +30,8 @@ public class ExecuteScript<CR extends CollectionCommandReceiver<?, ?>> implement
   }
 
   @Override
-  public boolean hasArgument() {
-    return true;
+  public Optional<String> getArgument() {
+    return Optional.of("path");
   }
 
   @Override

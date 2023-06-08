@@ -1,5 +1,6 @@
 package net.whitehorizont.apps.organization_collection_manager.cli.commands;
 
+import java.util.Optional;
 import java.util.Stack;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -15,8 +16,8 @@ public class RemoveById implements ICliCommand<OrganisationCollectionCommandRece
   private static final String DESCRIPTION = "removes element with specified id";
 
   @Override
-  public boolean hasArgument() {
-    return true;
+  public Optional<String> getArgument() {
+    return Optional.of("id");
   }
 
   @Override

@@ -1,6 +1,7 @@
 package net.whitehorizont.apps.organization_collection_manager.cli.commands;
 
 import java.io.IOException;
+import java.util.Optional;
 import java.util.Stack;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -18,8 +19,8 @@ public class Save implements ICliCommand<CollectionCommandReceiver<?, ?>> {
   private static final String DESCRIPTION = "saves collection to disk";
 
   @Override
-  public boolean hasArgument() {
-    return false;
+  public Optional<String> getArgument() {
+    return Optional.empty();
   }
 
   @Override

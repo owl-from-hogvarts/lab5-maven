@@ -1,5 +1,6 @@
 package net.whitehorizont.apps.organization_collection_manager.cli.commands;
 
+import java.util.Optional;
 import java.util.Stack;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -14,8 +15,8 @@ public class FilterStartsWith extends BaseElementCommand implements ICliCommand<
   private static final String DESCRIPTION = "display organisations, which name starts with {prefix}";
 
   @Override
-  public boolean hasArgument() {
-    return true;
+  public Optional<String> getArgument() {
+    return Optional.of("prefix");
   }
 
   @Override

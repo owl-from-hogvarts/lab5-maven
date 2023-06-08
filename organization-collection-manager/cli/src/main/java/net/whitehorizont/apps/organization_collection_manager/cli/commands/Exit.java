@@ -1,5 +1,6 @@
 package net.whitehorizont.apps.organization_collection_manager.cli.commands;
 
+import java.util.Optional;
 import java.util.Stack;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -16,8 +17,8 @@ public class Exit implements ICliCommand<CollectionCommandReceiver<?, ?>> {
   private static final String EXIT_MESSAGE = "Exiting without saving!";
 
   @Override
-  public boolean hasArgument() {
-    return false;
+  public Optional<String> getArgument() {
+    return Optional.empty();
   }
   
 

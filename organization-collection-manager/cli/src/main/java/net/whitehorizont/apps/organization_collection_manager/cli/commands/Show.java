@@ -1,6 +1,7 @@
 package net.whitehorizont.apps.organization_collection_manager.cli.commands;
 
 import java.io.IOException;
+import java.util.Optional;
 import java.util.Stack;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -17,8 +18,8 @@ public class Show extends BaseElementCommand
   private static final String DESCRIPTION = "print all collection elements";
 
   @Override
-  public boolean hasArgument() {
-    return false;
+  public Optional<String> getArgument() {
+    return Optional.empty();
   }
 
   @Override

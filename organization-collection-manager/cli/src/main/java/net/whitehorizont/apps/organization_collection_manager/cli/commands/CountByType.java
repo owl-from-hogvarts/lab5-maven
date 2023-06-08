@@ -1,12 +1,12 @@
 package net.whitehorizont.apps.organization_collection_manager.cli.commands;
 
+import java.util.Optional;
 import java.util.Stack;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import io.reactivex.rxjava3.core.Observable;
 import net.whitehorizont.apps.organization_collection_manager.cli.CliDependencyManager;
-import net.whitehorizont.apps.organization_collection_manager.core.collection.OrganisationElement;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.OrganisationType;
 import net.whitehorizont.apps.organization_collection_manager.core.commands.CountCommand;
 import net.whitehorizont.apps.organization_collection_manager.core.commands.OrganisationCollectionCommandReceiver;
@@ -14,12 +14,12 @@ import net.whitehorizont.apps.organization_collection_manager.lib.EnumFactory;
 
 @NonNullByDefault
 public class CountByType extends BaseElementCommand implements ICliCommand<OrganisationCollectionCommandReceiver> {
-  private static final String DESCRIPTION = "Count element of collection which have type {type}";
+  private static final String DESCRIPTION = "Count element of collection which have type specified";
   private final EnumFactory<OrganisationType> enumFactory = new EnumFactory<>(OrganisationType.class);
 
   @Override
-  public boolean hasArgument() {
-    return true;
+  public Optional<String> getArgument() {
+    return Optional.of("type");
   }
 
   @Override

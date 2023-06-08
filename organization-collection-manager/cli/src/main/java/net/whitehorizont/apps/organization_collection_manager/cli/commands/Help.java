@@ -2,6 +2,7 @@ package net.whitehorizont.apps.organization_collection_manager.cli.commands;
 
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Map.Entry;
 import java.util.Stack;
 
@@ -26,8 +27,8 @@ public class Help implements ICliCommand<CollectionCommandReceiver<?, ?>> {
   public static final String HELP_COMMAND = "help";
 
   @Override
-  public boolean hasArgument() {
-    return false;
+  public Optional<String> getArgument() {
+    return Optional.empty();
   }
 
   @Override
@@ -39,7 +40,7 @@ public class Help implements ICliCommand<CollectionCommandReceiver<?, ?>> {
   public Observable<Void> run(CliDependencyManager<?> dependencyManager, Stack<String> arguments) {
     return Observable.create(subscriber -> {
       final var commandDescriptions = new ArrayList<Pair<String, String>>();
-      final Map<String, ? extends ICliCommand> commands = dependencyManager
+      final Map<String, ? extends ICliCommand<?>> commands = dependencyManager
           .getCommands();
       for (final var command : commands.entrySet()) {
         final var commandDescription = retrieveCommandDescription(command);
@@ -67,8 +68,12 @@ public class Help implements ICliCommand<CollectionCommandReceiver<?, ?>> {
   }
 
   private Pair<String, String> retrieveCommandDescription(
-      Entry<String, ? extends ICliCommand> command) {
-    return new Pair<String, String>(command.getKey(), command.getValue().getCommandDescription());
+      Entry<String, ? extends ICliCommand<?>> command) {
+        String argument = "";
+        if (command.getValue().getArgument().isPresent()) {
+          argument = " {" + command.getValue().getArgument().get() + "}";
+        }
+    return new Pair<String, String>(command.getKey() + argument, command.getValue().getCommandDescription());
   }
 
 }

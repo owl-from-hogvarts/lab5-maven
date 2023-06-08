@@ -1,5 +1,6 @@
 package net.whitehorizont.apps.organization_collection_manager.cli.commands;
 
+import java.util.Optional;
 import java.util.Stack;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -14,8 +15,8 @@ public class PrintDescending extends BaseElementCommand implements ICliCommand<O
   private static final String DESCRIPTION = "print organisations sorted by annual turnover by descending order";
 
   @Override
-  public boolean hasArgument() {
-    return false;
+  public Optional<String> getArgument() {
+    return Optional.empty();
   }
 
   @Override

@@ -94,9 +94,9 @@ public class CLI<CR extends CollectionCommandReceiver<?, ?>> {
       }
 
       final var commandDescriptor = commands.get(command);
-      if (convertBoolean(commandDescriptor.hasArgument()) != wordsStack.size()) {
+      if (convertBoolean(commandDescriptor.getArgument().isPresent()) != wordsStack.size()) {
         // 1 because all command accept either one or zero arguments
-        throw new IncorrectNumberOfArguments(command, convertBoolean(commandDescriptor.hasArgument()), wordsStack.size());
+        throw new IncorrectNumberOfArguments(command, convertBoolean(commandDescriptor.getArgument().isPresent()), wordsStack.size());
       }
 
       return commandDescriptor.run(this.dependencyManager, wordsStack);
