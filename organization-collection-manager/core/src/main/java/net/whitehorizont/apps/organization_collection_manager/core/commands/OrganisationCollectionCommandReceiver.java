@@ -36,8 +36,9 @@ public class OrganisationCollectionCommandReceiver extends CollectionCommandRece
       return Observable.error(new NoSuchElement(id));
     }
 
-
-    return entries.singleOrError().flatMapObservable(keyElement -> {
+    // iteration would happen over freshly constructed list so 
+    // no concurrent modification exception should happen
+    return entries.toList().flatMapObservable(list -> Observable.fromIterable(list)).flatMap(keyElement -> {
       final var prototype = keyElement.getValue().getPrototype();
       try {
         final var updatedPrototype = callback.apply(prototype);
@@ -62,6 +63,7 @@ public class OrganisationCollectionCommandReceiver extends CollectionCommandRece
                               .getValue()
                               .equals(id))
       .map(keyElement -> keyElement.getKey())
+      // blocking prevents concurrent modification
       .blockingSubscribe(key -> this.collection.delete(key));
   }
 
