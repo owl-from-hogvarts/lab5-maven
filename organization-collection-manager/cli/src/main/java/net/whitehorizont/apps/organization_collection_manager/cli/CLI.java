@@ -2,6 +2,7 @@ package net.whitehorizont.apps.organization_collection_manager.cli;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -103,27 +104,28 @@ public class CLI<CR extends CollectionCommandReceiver<?, ?>> {
   }
 
   public static void defaultGlobalErrorHandler(Thread thread, Throwable e) {
-    if (e.getCause() != null) {
-      e = e.getCause();
-    }
-    if (e instanceof RuntimeException) {
-      System.err.println("Error: Unknown error ocurred! Please, file new issue on https://github.com/owl-from-hogvarts/lab5-maven");
-      // ? if something unknown happened, may be better crash?
-      return;
-    }
-
-    System.err.println("Error: " + e.getMessage());
+    defaultGlobalErrorHandler(e, System.err);
   }
 
-  public static boolean defaultGlobalErrorHandler(Throwable e, CliDependencyManager<?> dependencyManager) {
-    final var err = dependencyManager.getStreams().err;
+  private static boolean defaultGlobalErrorHandler(Throwable e, PrintStream err) {
     if (e instanceof RuntimeException) {
-      err.println("Error: Unknown error ocurred! Please, file new issue on https://github.com/owl-from-hogvarts/lab5-maven");
-      // ? if something unknown happened, may be better crash?
+      if (e.getCause() == null) {
+        err.println("Error: Unknown error ocurred! Please, file new issue on https://github.com/owl-from-hogvarts/lab5-maven");
+        // ? if something unknown happened, may be better crash?
+        return false;
+      }
+
+      e = e.getCause();
+      err.println("Unknown error: " + e.getMessage());
       return false;
     }
     err.println("Error: " + e.getMessage());
     return false;
+  }
+
+  public static boolean defaultGlobalErrorHandler(Throwable e, CliDependencyManager<?> dependencyManager) {
+    final var err = dependencyManager.getStreams().err;
+    return defaultGlobalErrorHandler(e, err);
   }
 
   public OutputStream getErrorStream() {

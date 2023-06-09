@@ -7,7 +7,7 @@
 
   <groupId>net.whitehorizont.apps.organization_collection_manager</groupId>
   <artifactId>cli</artifactId>
-  <version>0.1.0</version>
+  <version>0.1.1</version>
 
   <name>cli</name>
   <!-- FIXME change it to the project's website -->
