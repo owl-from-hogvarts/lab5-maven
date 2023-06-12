@@ -6,10 +6,10 @@ import net.whitehorizont.apps.organization_collection_manager.lib.validators.Val
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.Validator;
 
 @NonNullByDefault
-public class FieldDefinition<V, T> extends FieldWithExtendedMetadata<V, FieldMetadataWithValidators<V, T>> {
+public class ValidatedFieldDefinition<V, T> extends FieldWithExtendedMetadata<V, FieldMetadataWithValidators<V, T>> {
 
   @SuppressWarnings("null")
-  public FieldDefinition(FieldMetadataWithValidators<V, T> metadata, V initValue, T t) throws ValidationError {
+  public ValidatedFieldDefinition(FieldMetadataWithValidators<V, T> metadata, V initValue, T t) throws ValidationError {
     super(metadata, checkValue(metadata, initValue, t));
   }
 

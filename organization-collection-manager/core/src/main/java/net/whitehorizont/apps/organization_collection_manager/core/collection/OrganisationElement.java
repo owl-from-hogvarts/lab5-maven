@@ -11,7 +11,7 @@ import net.whitehorizont.apps.organization_collection_manager.core.collection.Co
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.UUID_ElementId;
 import net.whitehorizont.apps.organization_collection_manager.lib.DoubleFactory;
 import net.whitehorizont.apps.organization_collection_manager.lib.EnumFactory;
-import net.whitehorizont.apps.organization_collection_manager.lib.FieldDefinition;
+import net.whitehorizont.apps.organization_collection_manager.lib.ValidatedFieldDefinition;
 import net.whitehorizont.apps.organization_collection_manager.lib.FieldMetadataWithValidators;
 import net.whitehorizont.apps.organization_collection_manager.lib.EnrichedNode;
 import net.whitehorizont.apps.organization_collection_manager.lib.IFieldDefinitionNode;
@@ -80,26 +80,26 @@ public class OrganisationElement implements ICollectionElement<OrganisationEleme
   
 
   // !!! FIELDS !!!
-  private final FieldDefinition<String, ICollection<OrganisationElementPrototype, OrganisationElement>> name;
-  private final FieldDefinition<UUID_ElementId, ICollection<OrganisationElementPrototype, OrganisationElement>> ID;
+  private final ValidatedFieldDefinition<String, ICollection<OrganisationElementPrototype, OrganisationElement>> name;
+  private final ValidatedFieldDefinition<UUID_ElementId, ICollection<OrganisationElementPrototype, OrganisationElement>> ID;
   private final CoordinatesDefinition coordinates;
-  private final FieldDefinition<OrganisationType, ICollection<OrganisationElementPrototype, OrganisationElement>> type;
-  private final FieldDefinition<Double, ICollection<OrganisationElementPrototype, OrganisationElement>> annualTurnover;
+  private final ValidatedFieldDefinition<OrganisationType, ICollection<OrganisationElementPrototype, OrganisationElement>> type;
+  private final ValidatedFieldDefinition<Double, ICollection<OrganisationElementPrototype, OrganisationElement>> annualTurnover;
 
   // !!! GETTERS !!!
-  public FieldDefinition<String, ICollection<OrganisationElementPrototype, OrganisationElement>> getName() {
+  public ValidatedFieldDefinition<String, ICollection<OrganisationElementPrototype, OrganisationElement>> getName() {
     return name;
   }
 
-  public FieldDefinition<UUID_ElementId, ICollection<OrganisationElementPrototype, OrganisationElement>> getID() {
+  public ValidatedFieldDefinition<UUID_ElementId, ICollection<OrganisationElementPrototype, OrganisationElement>> getID() {
     return ID;
   }
 
-  public FieldDefinition<OrganisationType, ICollection<OrganisationElementPrototype, OrganisationElement>> getType() {
+  public ValidatedFieldDefinition<OrganisationType, ICollection<OrganisationElementPrototype, OrganisationElement>> getType() {
     return type;
   }
 
-  public FieldDefinition<Double, ICollection<OrganisationElementPrototype, OrganisationElement>> getAnnualTurnover() {
+  public ValidatedFieldDefinition<Double, ICollection<OrganisationElementPrototype, OrganisationElement>> getAnnualTurnover() {
     return annualTurnover;
   }
 
@@ -107,20 +107,20 @@ public class OrganisationElement implements ICollectionElement<OrganisationEleme
   public OrganisationElement(ICollection<OrganisationElementPrototype, OrganisationElement> collection,
       OrganisationElementPrototype prototype)
       throws ValidationError {
-    this.name = new FieldDefinition<String, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement>>(
+    this.name = new ValidatedFieldDefinition<String, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement>>(
         OrganisationElement.NAME_METADATA,
         prototype.name.getValue(),
         collection);
 
-    this.ID = new FieldDefinition<UUID_ElementId, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement>>(
+    this.ID = new ValidatedFieldDefinition<UUID_ElementId, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement>>(
         ID_METADATA, prototype.ID.getValue(),
         collection);
 
-    this.annualTurnover = new FieldDefinition<>(ANNUAL_TURNOVER_METADATA, prototype.annualTurnover.getValue(), collection);
+    this.annualTurnover = new ValidatedFieldDefinition<>(ANNUAL_TURNOVER_METADATA, prototype.annualTurnover.getValue(), collection);
 
     this.coordinates = new CoordinatesDefinition(prototype.coordinates);
 
-    this.type = new FieldDefinition<OrganisationType,ICollection<OrganisationElementPrototype,OrganisationElement>>(TYPE_METADATA, prototype.type.getValue(), collection);
+    this.type = new ValidatedFieldDefinition<OrganisationType,ICollection<OrganisationElementPrototype,OrganisationElement>>(TYPE_METADATA, prototype.type.getValue(), collection);
   }
 
   // is itself only a data structure
