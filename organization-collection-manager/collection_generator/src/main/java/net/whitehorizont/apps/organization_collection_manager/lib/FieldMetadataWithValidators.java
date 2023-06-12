@@ -3,6 +3,8 @@ package net.whitehorizont.apps.organization_collection_manager.lib;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.BiConsumer;
+import java.util.function.Function;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -12,22 +14,34 @@ import net.whitehorizont.apps.organization_collection_manager.lib.validators.Val
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.Validator;
 
 @NonNullByDefault
-public class FieldMetadataWithValidators<V, T> extends BasicFieldMetadata implements IValidatorsProvider<V, T> {
-  private final Metadata<V, T> metadata;
+public class FieldMetadataWithValidators<Host, WritableHost extends Host, V, T> extends BasicFieldMetadata implements IValidatorsProvider<V, T> {
+  private final Metadata<Host, WritableHost, V, T> metadata;
 
-  private FieldMetadataWithValidators(Metadata<V, T> metadata) {
+  private FieldMetadataWithValidators(Metadata<Host, WritableHost, V, T> metadata) {
     super(metadata.displayedName);
-    this.metadata = metadata;
+    this.metadata = metadata.clone();
   }
 
-  public static class Metadata<V, T> {
+  public static class Metadata<Host, WritableHost extends Host, V, T> {
     private String displayedName = "";
     private String description = "";
     private Optional<String> hint = Optional.empty();
     private Optional<IFromStringBuilder<V>> valueBuilder = Optional.empty();
+    private BiConsumer<WritableHost, V> valueSetter;
+    private Function<Host, V> valueGetter;
   
-    public Metadata<V, T> setValueBuilder(IFromStringBuilder<V> valueBuilder) {
+    public Metadata<Host, WritableHost, V, T> setValueGetter(Function<Host, V> valueGetter) {
+      this.valueGetter = valueGetter;
+      return this;
+    }
+
+    public Metadata<Host, WritableHost, V, T> setValueBuilder(IFromStringBuilder<V> valueBuilder) {
       this.valueBuilder = Optional.of(valueBuilder);
+      return this;
+    }
+
+    public Metadata<Host, WritableHost, V, T> setValueSetter(BiConsumer<WritableHost, V> valueSetter) {
+      this.valueSetter = valueSetter;
       return this;
     }
 
@@ -37,45 +51,59 @@ public class FieldMetadataWithValidators<V, T> extends BasicFieldMetadata implem
     private List<Validator<V, T>> validators = new ArrayList<>();
   
 
-    public Metadata<V, T> setDisplayedName(String displayedName) {
+    public Metadata<Host, WritableHost, V, T> setDisplayedName(String displayedName) {
       this.displayedName = displayedName;
       return this;
     }
-    public Metadata<V, T> setDescription(String description) {
+    public Metadata<Host, WritableHost, V, T> setDescription(String description) {
       this.description = description;
       return this;
     }
-    public Metadata<V, T> setRequired(String onNullMessage) {
+    public Metadata<Host, WritableHost, V, T> setRequired(String onNullMessage) {
       this.onNullMessage = Optional.of(onNullMessage);
       return this;
     }
-    public Metadata<V, T> setNullable() {
+    public Metadata<Host, WritableHost, V, T> setNullable() {
       this.onNullMessage = Optional.empty();
       return this;
     }
-    public Metadata<V, T> addValidators(List<Validator<V, T>> validators) {
+    public Metadata<Host, WritableHost, V, T> addValidators(List<Validator<V, T>> validators) {
       this.validators.addAll(validators);
       return this;
     }
-    public Metadata<V, T> addValidator(Validator<V, T> validator) {
+    public Metadata<Host, WritableHost, V, T> addValidator(Validator<V, T> validator) {
       this.validators.add(validator);
       
       return this;
     }
 
-    public Metadata<V, T> setHint(String hint) {
+    public Metadata<Host, WritableHost, V, T> setHint(String hint) {
       this.hint = Optional.of(hint);
       return this;
     }
 
-    public FieldMetadataWithValidators<V, T> build() {
+    public FieldMetadataWithValidators<Host, WritableHost, V, T> build() {
       return new FieldMetadataWithValidators<>(this);
     }
 
     @Override
-    protected Metadata<V, T> clone() throws CloneNotSupportedException {
-      return (Metadata<V, T>) super.clone();
+    protected Metadata<Host, WritableHost, V, T> clone() {
+      try {
+        return (Metadata<Host, WritableHost, V, T>) super.clone();
+      } catch (CloneNotSupportedException _ignore) {
+        // hope that will never happen
+        assert false;
+        throw new RuntimeException();
+      }
     }
+  }
+
+  public BiConsumer<WritableHost, V> getValueSetter() {
+    return this.metadata.valueSetter;
+  }
+
+  public Function<Host, V> getValueGetter() {
+    return this.metadata.valueGetter;
   }
 
   public Optional<IFromStringBuilder<V>> getValueBuilder() {

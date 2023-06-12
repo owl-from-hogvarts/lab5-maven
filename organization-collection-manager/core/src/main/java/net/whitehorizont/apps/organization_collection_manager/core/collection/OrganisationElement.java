@@ -6,8 +6,8 @@ import java.util.List;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.javatuples.Pair;
 
-import net.whitehorizont.apps.organization_collection_manager.core.collection.Coordinates.CoordinatesPrototype;
-import net.whitehorizont.apps.organization_collection_manager.core.collection.Coordinates.CoordinatesRawData;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.CoordinatesDefinition.CoordinatesPrototype;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.CoordinatesDefinition.CoordinatesRawData;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.UUID_ElementId;
 import net.whitehorizont.apps.organization_collection_manager.lib.DoubleFactory;
 import net.whitehorizont.apps.organization_collection_manager.lib.EnumFactory;
@@ -74,7 +74,7 @@ public class OrganisationElement implements ICollectionElement<OrganisationEleme
 
   private static final EnrichedNode<FieldWithMetadata, List<Validator>> OrganisationElementMetadataTree = new EnrichedNode<>(ELEMENT_TITLE,
    new Pair[]{new Pair<>(NAME_METADATA,  NAME_METADATA.getValidators()), new Pair<>(ID_METADATA, ID_METADATA, ID_METADATA.getValidators() )},
-   new Node[]{Coordinates.COORDINATES_METADATA}
+   new Node[]{CoordinatesDefinition.COORDINATES_METADATA}
   );
   
   
@@ -82,7 +82,7 @@ public class OrganisationElement implements ICollectionElement<OrganisationEleme
   // !!! FIELDS !!!
   private final FieldDefinition<String, ICollection<OrganisationElementPrototype, OrganisationElement>> name;
   private final FieldDefinition<UUID_ElementId, ICollection<OrganisationElementPrototype, OrganisationElement>> ID;
-  private final Coordinates coordinates;
+  private final CoordinatesDefinition coordinates;
   private final FieldDefinition<OrganisationType, ICollection<OrganisationElementPrototype, OrganisationElement>> type;
   private final FieldDefinition<Double, ICollection<OrganisationElementPrototype, OrganisationElement>> annualTurnover;
 
@@ -118,7 +118,7 @@ public class OrganisationElement implements ICollectionElement<OrganisationEleme
 
     this.annualTurnover = new FieldDefinition<>(ANNUAL_TURNOVER_METADATA, prototype.annualTurnover.getValue(), collection);
 
-    this.coordinates = new Coordinates(prototype.coordinates);
+    this.coordinates = new CoordinatesDefinition(prototype.coordinates);
 
     this.type = new FieldDefinition<OrganisationType,ICollection<OrganisationElementPrototype,OrganisationElement>>(TYPE_METADATA, prototype.type.getValue(), collection);
   }
