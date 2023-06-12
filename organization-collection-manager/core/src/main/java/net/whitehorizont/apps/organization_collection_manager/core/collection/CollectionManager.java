@@ -15,7 +15,7 @@ import net.whitehorizont.apps.organization_collection_manager.core.storage.error
  * passes on operations on collections to appropriate storage.
  */
 @NonNullByDefault
-public class CollectionManager<C extends ICollection<?, ?>>
+public class CollectionManager<C extends ICollection<?>>
     implements ICollectionManager<C> {
   private final IBaseStorage<C> storage;
   private final C collection;

@@ -15,7 +15,7 @@ import net.whitehorizont.apps.organization_collection_manager.lib.validators.Val
 // adapter is built for pair of collection type and file format
 // adapter provides introspection over storage
 @NonNullByDefault
-public interface IFileAdapter<C extends ICollection<?, ?>> {
+public interface IFileAdapter<C extends ICollection<?>> {
   byte[] serialize(C toSerialize);
   C deserialize(byte[] fileContent) throws DeserializationError, ValidationError, ResourceEmpty, NoSuchElement, KeyGenerationError, DuplicateElements;
   /** 

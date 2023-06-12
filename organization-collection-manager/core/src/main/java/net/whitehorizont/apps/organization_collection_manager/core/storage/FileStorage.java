@@ -31,7 +31,7 @@ import net.whitehorizont.libs.file_system.PathHelpers;
 // composition and aggregation of data should be done somewhere else
 // can store only one collection
 @NonNullByDefault
-public class FileStorage<C extends ICollection<?, ?>>
+public class FileStorage<C extends ICollection<?>>
     implements IBaseStorage<C> {
   private final IFileAdapter<C> adapter;
   private final Path path;

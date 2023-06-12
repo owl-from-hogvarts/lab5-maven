@@ -6,13 +6,12 @@ import java.util.Map.Entry;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import io.reactivex.rxjava3.core.Observable;
-import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.BaseId;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.ElementKey;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.KeyGenerationError;
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationError;
 
 @NonNullByDefault
-public interface ICollection<P extends IElementPrototype<?>, E extends ICollectionElement<P>> {
+public interface ICollection<E extends ICollectionElement> {
 
   /**
    * Collection listens on returned sink to receive new elements
@@ -23,8 +22,8 @@ public interface ICollection<P extends IElementPrototype<?>, E extends ICollecti
    * @throws KeyGenerationError
    * @throws NoSuchElement
    */
-  void insert(P rawElementData) throws ValidationError, DuplicateElements, KeyGenerationError;
-  void insert(ElementKey key, P prototype) throws ValidationError, DuplicateElements;
+  void insert(E element) throws ValidationError, DuplicateElements, KeyGenerationError;
+  void insert(ElementKey key, E element) throws ValidationError, DuplicateElements;
 
   /**
    * ! Only single element should be supplied !
@@ -37,7 +36,7 @@ public interface ICollection<P extends IElementPrototype<?>, E extends ICollecti
    * @throws ValidationError
    * @throws NoSuchElement
    */
-  void replace(ElementKey key, P prototype) throws ValidationError, NoSuchElement;
+  void replace(ElementKey key, E element) throws ValidationError, NoSuchElement;
 
   E delete(ElementKey key) throws NoSuchElement;
 
@@ -51,10 +50,6 @@ public interface ICollection<P extends IElementPrototype<?>, E extends ICollecti
   CollectionMetadata getMetadataSnapshot();
 
   void clear();
-
-  P getElementPrototype();
-
-  BaseId getElementIdFromString(String idString) throws ValidationError;
 
   String getCollectionType();
 

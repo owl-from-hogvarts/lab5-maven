@@ -12,7 +12,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.Observable;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.CollectionMetadata.Builder;
-import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.BaseId;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.ElementKey;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.ISerializableKey;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.KeyGenerationError;
@@ -23,25 +22,25 @@ import net.whitehorizont.apps.organization_collection_manager.lib.validators.Val
  * Holds collection in memory, without auto saving to disk
  */
 @NonNullByDefault
-public class RamCollection<P extends IElementPrototype<?>, E extends ICollectionElement<P>>
-    implements ICollection<P, E> {
+public class RamCollection<E extends ICollectionElement>
+    implements ICollection<E> {
 
   private static final int MAX_BRUT_FORCE_RETRIES = 10;
 
 
   private final Map<ElementKey, E> elements = new LinkedHashMap<>();
   private final CollectionMetadata metadata;
-  private final IElementFactory<P, E, ICollection<P, E>, ?> elementFactory;
+  private final IElementInfoProvider<E, RamCollection<E>> validators;
 
   // takes such dataSink factory which accepts any parent class of collection
   // we undertake to provide class not higher than collection
-  public RamCollection(IElementFactory<P, E, ICollection<P, E>, ?> elementFactory, CollectionMetadata metadata) {
+  public RamCollection(IElementInfoProvider<E, RamCollection<E>> validators, CollectionMetadata metadata) {
     this.metadata = metadata;
-    this.elementFactory = elementFactory;
+    this.validators = validators;
   }
 
-  public RamCollection(IElementFactory<P, E, ICollection<P, E>, ?> elementFactory) {
-    this(elementFactory, new CollectionMetadata(new Builder(new UUID_CollectionId())));
+  public RamCollection(IElementInfoProvider<E, RamCollection<E>> validators) {
+    this(validators, new CollectionMetadata(new Builder(new UUID_CollectionId())));
   }
 
   /**
@@ -54,19 +53,18 @@ public class RamCollection<P extends IElementPrototype<?>, E extends ICollection
    * @throws DuplicateElementsError
    */
   @Override
-  public void insert(P prototype) throws ValidationError, DuplicateElements, KeyGenerationError {
-    insert(generateElementKey(), prototype);
+  public void insert(E element) throws ValidationError, DuplicateElements, KeyGenerationError {
+    insert(generateElementKey(), element);
   }
+
 
   @Override
-  public void insert(ElementKey key, P prototype) throws ValidationError, DuplicateElements {
-    insert(key, this.elementFactory.buildElementFrom(prototype, this));
-  }
-
-  private void insert(ElementKey key, E element) throws ValidationError, DuplicateElements {
+  public void insert(ElementKey key, E element) throws ValidationError, DuplicateElements {
     if (containsKey(key)) {
       throw new DuplicateElements(key);
     }
+    // validate here
+    this.validators.validate(element, this);
     this.elements.put(key, element);
   }
 
@@ -126,12 +124,12 @@ public class RamCollection<P extends IElementPrototype<?>, E extends ICollection
   }
 
   @Override
-  public void replace(ElementKey key, P prototype) throws ValidationError, NoSuchElement {
+  public void replace(ElementKey key, E element) throws ValidationError, NoSuchElement {
     checkIfExists(key);
     final var removed = this.delete(key);
     try {
       try {
-        this.insert(key, prototype);
+        this.insert(key, element);
       } catch (ValidationError e) {
         // add back in case of failure
         this.insert(key, removed);
@@ -156,22 +154,12 @@ public class RamCollection<P extends IElementPrototype<?>, E extends ICollection
   }
 
   @Override
-  public P getElementPrototype() {
-    return this.elementFactory.getElementPrototype();
-  }
-
-  @Override
-  public BaseId getElementIdFromString(String idString) throws ValidationError {
-    return this.elementFactory.getElementId(idString);
-  }
-
-  @Override
   public ElementKey getElementKeyFromString(String keyString) throws ValidationError {
     return ElementKey.buildFromString(keyString);
   }
 
   @Override
   public String getCollectionType() {
-    return this.elementFactory.getCollectionType();
+    return this.validators.getDisplayedName();
   }
 }

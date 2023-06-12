@@ -12,8 +12,7 @@ import net.whitehorizont.apps.organization_collection_manager.core.collection.Co
 import net.whitehorizont.apps.organization_collection_manager.core.collection.DuplicateElements;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollection;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollectionElement;
-import net.whitehorizont.apps.organization_collection_manager.core.collection.IElementFactory;
-import net.whitehorizont.apps.organization_collection_manager.core.collection.IElementPrototype;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.IElementInfoProvider;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.CollectionMetadata.Builder;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.KeyGenerationError;
 import net.whitehorizont.apps.organization_collection_manager.core.storage.IFileAdapter;
@@ -21,30 +20,29 @@ import net.whitehorizont.apps.organization_collection_manager.core.storage.error
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationError;
 
 @NonNullByDefault
-public class CollectionAdapter<R, P extends IElementPrototype<R>, E extends ICollectionElement<P>, F extends IElementFactory<P, E, ICollection<P, E>, ?>>
-    implements IFileAdapter<ICollection<P, E>> {
+public class CollectionAdapter<E extends ICollectionElement>
+    implements IFileAdapter<ICollection<E>> {
   private final XStream serializer = new XStream();
+  private final IElementInfoProvider<E, RamCollection<E>> elementsInfo;
+  public CollectionAdapter(IElementInfoProvider<E, RamCollection<E>> elementsInfo) {
+    this.elementsInfo = elementsInfo;
+  }
+
   {
     serializer.allowTypesByWildcard(new String[]{"net.whitehorizont.apps.organization_collection_manager.core.**"});
     serializer.processAnnotations(StorageXml.class);
   }
-  private final F elementFactory;
   @SuppressWarnings("null")
   private static final Charset DEFAULT_ENCODING = StandardCharsets.UTF_8;
 
-  public CollectionAdapter(F dataSinkSourceFactory) {
-    this.elementFactory = dataSinkSourceFactory;
-  }
-
-  private CollectionXml<R, CollectionMetadata> prepareCollection(ICollection<P, E> collection) {    
+  private CollectionXml<E, CollectionMetadata> prepareCollection(ICollection<E> collection) {    
     final var elements = collection.getEvery$()
-        .map(element -> element.getPrototype().getRawElementData())
         .toList().blockingGet();
     return new CollectionXml<>(collection.getMetadataSnapshot(), elements);
   }
 
   @Override
-  public byte[] serialize(ICollection<P, E> toSerialize) {
+  public byte[] serialize(ICollection<E> toSerialize) {
     final var collectionXml = prepareCollection(toSerialize);
 
     final String collectionXmlSerialized = serializer.toXML(collectionXml);
@@ -61,24 +59,21 @@ public class CollectionAdapter<R, P extends IElementPrototype<R>, E extends ICol
     return serializedContent;
   }
 
-  public RamCollection<P, E> parse(ByteBuffer fileContent) throws ValidationError, KeyGenerationError, DuplicateElements {
+  public RamCollection<E> parse(ByteBuffer fileContent) throws ValidationError, KeyGenerationError, DuplicateElements {
     // receive buffer
     // cast to string
     final String xml_content = DEFAULT_ENCODING.decode(fileContent).toString();
     // parse xml:
     @SuppressWarnings("unchecked")
-    StorageXml<R, CollectionMetadata> storageXmlRepresentation = (StorageXml<R, CollectionMetadata>) serializer.fromXML(xml_content);
+    StorageXml<E, CollectionMetadata> storageXmlRepresentation = (StorageXml<E, CollectionMetadata>) serializer.fromXML(xml_content);
 
     final CollectionMetadata collectionMetadata = storageXmlRepresentation.collection.metadata;
     
-    final var collection = new RamCollection<P, E>(this.elementFactory, collectionMetadata);
+    final var collection = new RamCollection<E>(this.elementsInfo, collectionMetadata);
 
     
     for (var elementXmlRepresentation : storageXmlRepresentation.collection.elements) {
-      final var prototype = this.elementFactory.getElementPrototype();
-      prototype.setFromRawData(elementXmlRepresentation);
-
-      collection.insert(prototype);
+      collection.insert(elementXmlRepresentation);
     }
 
     return collection;
@@ -86,7 +81,7 @@ public class CollectionAdapter<R, P extends IElementPrototype<R>, E extends ICol
   }
 
   @Override
-  public RamCollection<P, E> deserialize(byte[] fileContent) throws ValidationError, ResourceEmpty, KeyGenerationError, DuplicateElements {
+  public RamCollection<E> deserialize(byte[] fileContent) throws ValidationError, ResourceEmpty, KeyGenerationError, DuplicateElements {
     if (fileContent.length == 0) {
       // if something wrong with file, error any way
       // this is responsibility of client code what to with errors
@@ -101,13 +96,13 @@ public class CollectionAdapter<R, P extends IElementPrototype<R>, E extends ICol
   }
 
   @Override
-  public RamCollection<P, @NonNull E> deserializeSafe(CollectionMetadata metadata) {
-    return new RamCollection<>(elementFactory, metadata);
+  public RamCollection<E> deserializeSafe(CollectionMetadata metadata) {
+    return new RamCollection<>(elementsInfo, metadata);
   }
 
   @Override
-  public RamCollection<P, E> deserializeSafe() {
+  public RamCollection<E> deserializeSafe() {
     final var emptyCollectionMetadata = new CollectionMetadata(new Builder());
-    return new RamCollection<>(elementFactory, emptyCollectionMetadata);
+    return new RamCollection<>(elementsInfo, emptyCollectionMetadata);
   }
 }
