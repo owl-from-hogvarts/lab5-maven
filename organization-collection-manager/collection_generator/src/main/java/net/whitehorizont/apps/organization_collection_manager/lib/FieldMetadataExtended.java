@@ -10,11 +10,12 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.IValidatorsProvider;
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.SimpleValidator;
+import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationError;
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationResult;
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.Validator;
 
 @NonNullByDefault
-public class FieldMetadataExtended<Host, WritableHost extends Host, V, T> extends BasicFieldMetadata implements IValidatorsProvider<V, T> {
+public class FieldMetadataExtended<Host, WritableHost extends Host, V, T> extends BasicFieldMetadata implements IValidatorsProvider<V, T>, ICanValidate<Host, T> {
   private final Metadata<Host, WritableHost, V, T> metadata;
 
   private FieldMetadataExtended(Metadata<Host, WritableHost, V, T> metadata) {
@@ -142,5 +143,23 @@ public class FieldMetadataExtended<Host, WritableHost extends Host, V, T> extend
       // t        f    ok
       // t        t    not ok
     };
+  }
+
+  @Override
+  public void validate(Host host, T validationObject) throws ValidationError {
+    final var getter = this.getValueGetter();
+    final var value = getter.apply(host);
+    final var validators = this.getValidators();
+
+    for (final var validator : validators) {
+      final var validationResult = validator.validate(value, validationObject);
+      reportValidationError(validationResult);
+    }
+  }
+
+  private void reportValidationError(ValidationResult<Boolean> validationResult) throws ValidationError {
+    if (!validationResult.getResult()) {
+      throw new ValidationError(getDisplayedName() + ": " + validationResult.getDisplayedMessage());
+    }
   }
 }
