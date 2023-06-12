@@ -49,7 +49,7 @@ public class CoordinatesDefinition {
 
   }
 
-  public static TitledNode<FieldMetadataExtended<Coordinates, CoordinatesWriteable, ?, ?>> getTree() {
+  public static TitledNode<?, FieldMetadataExtended<Coordinates, CoordinatesWriteable, ?, ?>> getTree() {
     final List<FieldMetadataExtended<Coordinates, CoordinatesWriteable, ?, ?>> leafs = new ArrayList<>();
     leafs.add(X_METADATA);
 

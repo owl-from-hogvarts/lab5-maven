@@ -6,8 +6,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.javatuples.Pair;
 
 @NonNullByDefault
-public class EnrichedNode<E, T> extends TitledNode<Pair<E, T>> {
+public class EnrichedNode<E, T> extends TitledNode<EnrichedNode<E, T>, Pair<E, T>> {
 
-  public EnrichedNode(String displayedName, List<Pair<E, T>> leafs, List<TitledNode<Pair<E, T>>> children) {
+  public EnrichedNode(String displayedName, List<Pair<E, T>> leafs, List<EnrichedNode<E, T>> children) {
     super(displayedName, leafs, children);
   }}

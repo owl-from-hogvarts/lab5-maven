@@ -4,5 +4,5 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 @NonNullByDefault
 public interface IReadonlyTreeProvider extends IDisplayable {
-  TitledNode<ReadonlyField<?>> getTree();
+  TitledNode<?, ReadonlyField<?>> getTree();
 }
