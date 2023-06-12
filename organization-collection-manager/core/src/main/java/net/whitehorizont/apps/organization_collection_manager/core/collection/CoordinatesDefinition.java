@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import net.whitehorizont.apps.organization_collection_manager.lib.FieldMetadataWithValidators;
+import net.whitehorizont.apps.organization_collection_manager.lib.FieldMetadataExtended;
 import net.whitehorizont.apps.organization_collection_manager.lib.IntegerFactory;
 import net.whitehorizont.apps.organization_collection_manager.lib.TitledNode;
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationResult;
@@ -13,7 +13,7 @@ import net.whitehorizont.apps.organization_collection_manager.lib.validators.Val
 public class CoordinatesDefinition {
   private static final String COORDINATES_TITLE = "Coordinates";
   
-  private static final FieldMetadataWithValidators<Coordinates, CoordinatesWriteable, Integer, Object> X_METADATA = new FieldMetadataWithValidators.Metadata<Coordinates, CoordinatesWriteable, Integer, Object>().addValidator((value, _unused) -> {
+  private static final FieldMetadataExtended<Coordinates, CoordinatesWriteable, Integer, Object> X_METADATA = new FieldMetadataExtended.Metadata<Coordinates, CoordinatesWriteable, Integer, Object>().addValidator((value, _unused) -> {
     final int x = value.intValue();
     final var isValueOk = x > -802;
     final var result = new ValidationResult<>(isValueOk, "Value should be strictly above -802");
@@ -49,8 +49,8 @@ public class CoordinatesDefinition {
 
   }
 
-  public static TitledNode<FieldMetadataWithValidators<Coordinates, CoordinatesWriteable, ?, ?>> getTree() {
-    final List<FieldMetadataWithValidators<Coordinates, CoordinatesWriteable, ?, ?>> leafs = new ArrayList<>();
+  public static TitledNode<FieldMetadataExtended<Coordinates, CoordinatesWriteable, ?, ?>> getTree() {
+    final List<FieldMetadataExtended<Coordinates, CoordinatesWriteable, ?, ?>> leafs = new ArrayList<>();
     leafs.add(X_METADATA);
 
     return new TitledNode<>(COORDINATES_TITLE, leafs, new ArrayList<>());

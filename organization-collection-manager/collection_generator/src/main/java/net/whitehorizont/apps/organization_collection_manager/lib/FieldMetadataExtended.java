@@ -14,10 +14,10 @@ import net.whitehorizont.apps.organization_collection_manager.lib.validators.Val
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.Validator;
 
 @NonNullByDefault
-public class FieldMetadataWithValidators<Host, WritableHost extends Host, V, T> extends BasicFieldMetadata implements IValidatorsProvider<V, T> {
+public class FieldMetadataExtended<Host, WritableHost extends Host, V, T> extends BasicFieldMetadata implements IValidatorsProvider<V, T> {
   private final Metadata<Host, WritableHost, V, T> metadata;
 
-  private FieldMetadataWithValidators(Metadata<Host, WritableHost, V, T> metadata) {
+  private FieldMetadataExtended(Metadata<Host, WritableHost, V, T> metadata) {
     super(metadata.displayedName);
     this.metadata = metadata.clone();
   }
@@ -82,8 +82,8 @@ public class FieldMetadataWithValidators<Host, WritableHost extends Host, V, T> 
       return this;
     }
 
-    public FieldMetadataWithValidators<Host, WritableHost, V, T> build() {
-      return new FieldMetadataWithValidators<>(this);
+    public FieldMetadataExtended<Host, WritableHost, V, T> build() {
+      return new FieldMetadataExtended<>(this);
     }
 
     @Override

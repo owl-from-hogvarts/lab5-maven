@@ -5,9 +5,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationError;
 
 @NonNullByDefault
-public class WriteableFieldDefinition<V> extends FieldWithExtendedMetadata<V, FieldMetadataWithValidators<V, ?>> {
+public class WriteableFieldDefinition<V> extends FieldWithExtendedMetadata<V, FieldMetadataExtended<V, ?>> {
 
-  public WriteableFieldDefinition(FieldMetadataWithValidators<V, ?> metadata, V initialValue) throws ValidationError {
+  public WriteableFieldDefinition(FieldMetadataExtended<V, ?> metadata, V initialValue) throws ValidationError {
     super(metadata, initialValue);
   }
 

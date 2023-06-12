@@ -12,7 +12,7 @@ import net.whitehorizont.apps.organization_collection_manager.core.collection.ke
 import net.whitehorizont.apps.organization_collection_manager.lib.DoubleFactory;
 import net.whitehorizont.apps.organization_collection_manager.lib.EnumFactory;
 import net.whitehorizont.apps.organization_collection_manager.lib.ValidatedFieldDefinition;
-import net.whitehorizont.apps.organization_collection_manager.lib.FieldMetadataWithValidators;
+import net.whitehorizont.apps.organization_collection_manager.lib.FieldMetadataExtended;
 import net.whitehorizont.apps.organization_collection_manager.lib.EnrichedNode;
 import net.whitehorizont.apps.organization_collection_manager.lib.IFieldDefinitionNode;
 import net.whitehorizont.apps.organization_collection_manager.lib.StringFactory;
@@ -32,15 +32,15 @@ public class OrganisationElement implements ICollectionElement<OrganisationEleme
   static final String ELEMENT_TITLE = "Organisation";
 
   // !!! METADATA !!!
-  private static final FieldMetadataWithValidators<String, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement>> NAME_METADATA = new FieldMetadataWithValidators.Metadata<String, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement>>()
+  private static final FieldMetadataExtended<String, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement>> NAME_METADATA = new FieldMetadataExtended.Metadata<String, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement>>()
           .setDisplayedName("name")
           .setRequired("Company name must be specified")
           .setValueBuilder(new StringFactory())
           .addValidator((value, _unused) -> new ValidationResult<>(value.length() >= 1, "String should not be empty"))
           .build();
 
-  private static final FieldMetadataWithValidators<UUID_ElementId, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement>> ID_METADATA = 
-      new FieldMetadataWithValidators.Metadata<UUID_ElementId, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement>>()
+  private static final FieldMetadataExtended<UUID_ElementId, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement>> ID_METADATA = 
+      new FieldMetadataExtended.Metadata<UUID_ElementId, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement>>()
           .setDisplayedName("ID")
           .setRequired("ID must be provided for collection element")
           .addValidator((value, collection) -> {
@@ -54,21 +54,21 @@ public class OrganisationElement implements ICollectionElement<OrganisationEleme
           })
           .build();
 
-  private static final FieldMetadataWithValidators<OrganisationType, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement>> TYPE_METADATA =
-      new FieldMetadataWithValidators.Metadata<OrganisationType, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement>>()
+  private static final FieldMetadataExtended<OrganisationType, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement>> TYPE_METADATA =
+      new FieldMetadataExtended.Metadata<OrganisationType, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement>>()
       .setDisplayedName("type")
       .setRequired("Type of organisation should be specified!")
       .setHint(OrganisationType.getHint())
       .build();
 
-  private static final FieldMetadataWithValidators<Double, ICollection<OrganisationElementPrototype, OrganisationElement>> ANNUAL_TURNOVER_METADATA =
-   new FieldMetadataWithValidators.Metadata<Double, ICollection<OrganisationElementPrototype, OrganisationElement>>()
+  private static final FieldMetadataExtended<Double, ICollection<OrganisationElementPrototype, OrganisationElement>> ANNUAL_TURNOVER_METADATA =
+   new FieldMetadataExtended.Metadata<Double, ICollection<OrganisationElementPrototype, OrganisationElement>>()
    .setDisplayedName("Annual Turnover")
    .setRequired("Annual Turnover must be provided")
    .addValidator((value, _unused) -> new ValidationResult<>(value > 0.0, "Annual Turnover should be strictly above zero"))
    .build();
 
-  public static FieldMetadataWithValidators<String, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement>> getNameMetadata() {
+  public static FieldMetadataExtended<String, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement>> getNameMetadata() {
     return NAME_METADATA;
   }
 
