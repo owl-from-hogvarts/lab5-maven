@@ -3,8 +3,11 @@ package net.whitehorizont.apps.organization_collection_manager.lib;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationError;
 
+@NonNullByDefault
 public class EnumFactory<E extends Enum<E>> implements IFromStringBuilder<E> {
 
   private final Class<E> enumClass;
@@ -15,8 +18,9 @@ public class EnumFactory<E extends Enum<E>> implements IFromStringBuilder<E> {
 
   @Override
   public E buildFromString(String string) throws ValidationError {
+    final var upperCaseString = string.toUpperCase();
     try {
-      return Enum.valueOf(enumClass, string);
+      return Enum.valueOf(enumClass, upperCaseString);
     } catch (IllegalArgumentException e) {
       throw new ValidationError(buildErrorMessage(string), e);
     }
