@@ -51,7 +51,6 @@ public class FieldMetadataExtended<Host, WritableHost extends Host, V, T> extend
 
     private List<Validator<V, T>> validators = new ArrayList<>();
   
-
     public Metadata<Host, WritableHost, V, T> setDisplayedName(String displayedName) {
       this.displayedName = displayedName;
       return this;
@@ -150,6 +149,10 @@ public class FieldMetadataExtended<Host, WritableHost extends Host, V, T> extend
     final var getter = this.getValueGetter();
     final var value = getter.apply(host);
     final var validators = this.getValidators();
+
+    // crunch; should be redone
+    final var nullCheck = this.getNullCheckValidator();
+    reportValidationError(nullCheck.validate(value));
 
     for (final var validator : validators) {
       final var validationResult = validator.validate(value, validationObject);
