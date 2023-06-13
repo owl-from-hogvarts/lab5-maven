@@ -20,7 +20,7 @@ import net.whitehorizont.apps.organization_collection_manager.core.storage.error
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationError;
 
 @NonNullByDefault
-public class CollectionAdapter<E extends ICollectionElement>
+public class CollectionAdapter<E extends ICollectionElement<E>>
     implements IFileAdapter<ICollection<E>> {
   private final XStream serializer = new XStream();
   private final IElementInfoProvider<E, RamCollection<E>> elementsInfo;

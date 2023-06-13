@@ -11,7 +11,7 @@ import net.whitehorizont.apps.organization_collection_manager.core.collection.ke
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationError;
 
 @NonNullByDefault
-public interface ICollection<E extends ICollectionElement> {
+public interface ICollection<E extends ICollectionElement<E>> {
 
   /**
    * Collection listens on returned sink to receive new elements

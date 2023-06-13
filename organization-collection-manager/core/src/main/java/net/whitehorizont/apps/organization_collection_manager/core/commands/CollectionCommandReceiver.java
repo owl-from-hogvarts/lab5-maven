@@ -12,7 +12,6 @@ import net.whitehorizont.apps.organization_collection_manager.core.collection.Du
 import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollection;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollectionElement;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.NoSuchElement;
-import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.BaseId;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.ElementKey;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.KeyGenerationError;
 import net.whitehorizont.apps.organization_collection_manager.lib.BasicFieldMetadata;
@@ -25,7 +24,7 @@ import net.whitehorizont.apps.organization_collection_manager.lib.validators.Val
  * It does absolutely nothing except just passing calls to underling collection
  */
 @NonNullByDefault
-public class CollectionCommandReceiver<E extends ICollectionElement> implements ICollection<E> {
+public class CollectionCommandReceiver<E extends ICollectionElement<E>> implements ICollection<E> {
   protected final ICollection<E> collection;
 
   public CollectionCommandReceiver(ICollection<E> collection) {

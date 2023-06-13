@@ -22,7 +22,7 @@ import net.whitehorizont.apps.organization_collection_manager.lib.validators.Val
  * Holds collection in memory, without auto saving to disk
  */
 @NonNullByDefault
-public class RamCollection<E extends ICollectionElement>
+public class RamCollection<E extends ICollectionElement<E>>
     implements ICollection<E> {
 
   private static final int MAX_BRUT_FORCE_RETRIES = 10;
