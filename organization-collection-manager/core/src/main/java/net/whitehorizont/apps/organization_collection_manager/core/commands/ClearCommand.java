@@ -6,9 +6,9 @@ import io.reactivex.rxjava3.core.Observable;
 
 @NonNullByDefault
 public class ClearCommand implements ICommand<Void> {
-  private final CollectionCommandReceiver<?, ?> collectionCommandReceiver;
+  private final CollectionCommandReceiver<?> collectionCommandReceiver;
 
-  public ClearCommand(CollectionCommandReceiver<?, ?> collectionCommandReceiver) {
+  public ClearCommand(CollectionCommandReceiver<?> collectionCommandReceiver) {
     this.collectionCommandReceiver = collectionCommandReceiver;
   }
 
