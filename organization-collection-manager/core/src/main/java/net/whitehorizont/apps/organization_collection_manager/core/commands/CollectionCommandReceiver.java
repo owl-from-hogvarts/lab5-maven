@@ -11,7 +11,6 @@ import net.whitehorizont.apps.organization_collection_manager.core.collection.Co
 import net.whitehorizont.apps.organization_collection_manager.core.collection.DuplicateElements;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollection;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollectionElement;
-import net.whitehorizont.apps.organization_collection_manager.core.collection.IElementPrototype;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.NoSuchElement;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.BaseId;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.ElementKey;
@@ -26,25 +25,17 @@ import net.whitehorizont.apps.organization_collection_manager.lib.validators.Val
  * It does absolutely nothing except just passing calls to underling collection
  */
 @NonNullByDefault
-public class CollectionCommandReceiver<P extends IElementPrototype<?>, E extends ICollectionElement<P>> implements ICollection<P, E> {
-  protected final ICollection<P, E> collection;
+public class CollectionCommandReceiver<E extends ICollectionElement> implements ICollection<E> {
+  protected final ICollection<E> collection;
 
-  public CollectionCommandReceiver(ICollection<P, E> collection) {
+  public CollectionCommandReceiver(ICollection<E> collection) {
     this.collection = collection;
   }
 
-  @Override
-  public void insert(P prototype) throws ValidationError, DuplicateElements, KeyGenerationError {
-    this.collection.insert(prototype);
-  }
 
   @Override
-  public void replace(ElementKey key, P prototype) throws ValidationError, NoSuchElement {
-    this.collection.replace(key, prototype);
-  }
-
-  public static interface IPrototypeCallback<P extends IElementPrototype<?>> {
-    P apply(P prototype) throws ValidationError;
+  public void replace(ElementKey key, E element) throws ValidationError, NoSuchElement {
+    this.collection.replace(key, element);
   }
 
   @Override
@@ -72,8 +63,8 @@ public class CollectionCommandReceiver<P extends IElementPrototype<?>, E extends
     return this.collection.getMetadataSnapshot();
   }
 
-  public TitledNode<ReadonlyField<?>> getMetadataTree() {
-    final var metadataTree = this.collection.getMetadataSnapshot().getTree();
+  public TitledNode<?, ReadonlyField<?>> getMetadataTree() {
+    final TitledNode<?, ReadonlyField<?>> metadataTree = this.collection.getMetadataSnapshot().getTree();
     final var metadataTopLevelFields = new ArrayList<>(metadataTree.getLeafs());
 
     final var countElements = this.collection.getEvery$().count().blockingGet();
@@ -91,15 +82,6 @@ public class CollectionCommandReceiver<P extends IElementPrototype<?>, E extends
     this.collection.clear();
   }
 
-  @Override
-  public P getElementPrototype() {
-    return this.collection.getElementPrototype();
-  }
-
-  @Override
-  public BaseId getElementIdFromString(String idString) throws ValidationError {
-    return this.collection.getElementIdFromString(idString);
-  }
 
   @Override
   public ElementKey getElementKeyFromString(String keyString) throws ValidationError {
@@ -107,13 +89,20 @@ public class CollectionCommandReceiver<P extends IElementPrototype<?>, E extends
   }
 
   @Override
-  public void insert(ElementKey key, P prototype) throws ValidationError, DuplicateElements {
-    this.collection.insert(key, prototype);
-  }
-
-  @Override
   public String getCollectionType() {
     return this.collection.getCollectionType();
+  }
+
+
+  @Override
+  public void insert(E element) throws ValidationError, DuplicateElements, KeyGenerationError {
+    this.collection.insert(element);
+  }
+
+
+  @Override
+  public void insert(ElementKey key, E element) throws ValidationError, DuplicateElements {
+    this.collection.insert(key, element);
   }
   
 }
