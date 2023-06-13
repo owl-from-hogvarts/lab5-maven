@@ -7,7 +7,7 @@ import net.whitehorizont.apps.organization_collection_manager.core.collection.IC
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.ElementKey;
 
 @NonNullByDefault
-public class InsertCommand<E extends ICollectionElement> implements ICommand<Void> {
+public class InsertCommand<E extends ICollectionElement<E>> implements ICommand<Void> {
   private final E element;
   private final CollectionCommandReceiver<E> collection;
   private final ElementKey key;

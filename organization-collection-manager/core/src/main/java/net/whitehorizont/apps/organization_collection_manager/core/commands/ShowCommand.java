@@ -9,15 +9,13 @@ import net.whitehorizont.apps.organization_collection_manager.core.collection.IC
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.ElementKey;
 
 @NonNullByDefault
-public class ShowCommand<E extends ICollectionElement<?>> implements ICommand<Entry<ElementKey, E>> {
+public class ShowCommand<E extends ICollectionElement<E>> implements ICommand<Entry<ElementKey, E>> {
 
-  private final CollectionCommandReceiver<?, E> collection;
-  
+  private final CollectionCommandReceiver<E> collection;
 
-  public ShowCommand(CollectionCommandReceiver<?, E> collection) {
+  public ShowCommand(CollectionCommandReceiver<E> collection) {
     this.collection = collection;
   }
-
 
   @Override
   public Observable<Entry<ElementKey, E>> execute() {

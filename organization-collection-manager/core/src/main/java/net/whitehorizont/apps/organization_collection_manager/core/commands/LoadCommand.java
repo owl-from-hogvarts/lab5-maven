@@ -7,12 +7,12 @@ import io.reactivex.rxjava3.core.Observable;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollectionElement;
 
 @NonNullByDefault
-public class LoadCommand<E extends ICollectionElement<?>> implements ICommand<E> {
+public class LoadCommand<E extends ICollectionElement<E>> implements ICommand<E> {
 
-  private final CollectionCommandReceiver<?, E> receiver;
+  private final CollectionCommandReceiver<E> receiver;
 
 
-  public LoadCommand(CollectionCommandReceiver<?, E> receiver) {
+  public LoadCommand(CollectionCommandReceiver<E> receiver) {
     this.receiver = receiver;
   }
 
