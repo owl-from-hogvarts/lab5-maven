@@ -22,8 +22,6 @@ import net.whitehorizont.apps.organization_collection_manager.core.storage.error
  * Storage is responsible for creating/initializing collections
  * 
  * @param <C> collection type
- * @param <K> key by which collection can be addressed
- * @param <M> collection metadata (pray on type inference)
  */
 @NonNullByDefault
 public interface IBaseStorage<C extends ICollection<?, ?>> {
