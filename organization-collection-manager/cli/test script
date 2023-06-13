@@ -1,7 +1,10 @@
 insert 1
 white horizont
 PUBLIC
+9999
 777
+777
+крутая
 save
 show
-execute-script test-recursion.script
+execute-script script-does-not-exsists.script
