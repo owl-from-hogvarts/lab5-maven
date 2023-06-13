@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
+import net.whitehorizont.apps.organization_collection_manager.lib.FieldMetadataExtended.Tag;
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationError;
 
 
@@ -25,5 +26,26 @@ public class MetadataComposite<Host, WritableHost extends Host, T> extends Title
       child.validate(host, validationObject);
     }
   }
+
+  public void fill(WritableHost to, Host from) {
+    for (final var leaf : getLeafs()) {
+      leaf.fill(to, from);
+    }
+
+    for (final var child : getChildren()) {
+      child.fill(to, from);
+    }
+  }
+
+  public void fill(WritableHost to, Host from, Tag tag) {
+    for (final var leaf : getLeafs()) {
+      leaf.fill(to, from);
+    }
+
+    for (final var child : getChildren()) {
+      child.fill(to, from);
+    }
+  }
+
 
 }

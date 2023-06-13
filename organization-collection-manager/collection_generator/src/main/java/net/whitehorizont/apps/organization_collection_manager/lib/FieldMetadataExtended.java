@@ -1,6 +1,7 @@
 package net.whitehorizont.apps.organization_collection_manager.lib;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.BiConsumer;
@@ -15,7 +16,7 @@ import net.whitehorizont.apps.organization_collection_manager.lib.validators.Val
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.Validator;
 
 @NonNullByDefault
-public class FieldMetadataExtended<Host, WritableHost extends Host, V, T> extends BasicFieldMetadata implements IValidatorsProvider<V, T>, ICanValidate<Host, T> {
+public class FieldMetadataExtended<Host, WritableHost extends Host, V, T> extends BasicFieldMetadata implements IValidatorsProvider<V, T>, ICanValidate<Host, T>, ICanFill<Host, WritableHost> {
   private final Metadata<Host, WritableHost, V, T> metadata;
 
   private FieldMetadataExtended(Metadata<Host, WritableHost, V, T> metadata) {
@@ -30,9 +31,15 @@ public class FieldMetadataExtended<Host, WritableHost extends Host, V, T> extend
     private Optional<IFromStringBuilder<V>> valueBuilder = Optional.empty();
     private BiConsumer<WritableHost, V> valueSetter;
     private Function<Host, V> valueGetter;
+    private EnumSet<Tag> tags = EnumSet.noneOf(Tag.class);
   
     public Metadata<Host, WritableHost, V, T> setValueGetter(Function<Host, V> valueGetter) {
       this.valueGetter = valueGetter;
+      return this;
+    }
+
+    public Metadata<Host, WritableHost, V, T> addTag(Tag tag) {
+      this.tags.add(tag);
       return this;
     }
 
@@ -164,5 +171,21 @@ public class FieldMetadataExtended<Host, WritableHost extends Host, V, T> extend
     if (!validationResult.getResult()) {
       throw new ValidationError(getDisplayedName() + ": " + validationResult.getDisplayedMessage());
     }
+  }
+
+  @Override
+  public void fill(WritableHost base, Host other) {
+    getValueSetter().accept(base, getValueGetter().apply(other));
+  }
+
+  @Override
+  public void fill(WritableHost base, Host other, Tag tag) {
+    if (this.metadata.tags.contains(tag)) {
+      fill(base, other);
+    }
+  }
+
+  public static enum Tag {
+    UPDATABLE,
   }
 }
