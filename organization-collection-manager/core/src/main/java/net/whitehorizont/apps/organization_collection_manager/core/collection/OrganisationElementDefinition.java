@@ -24,20 +24,20 @@ import net.whitehorizont.apps.organization_collection_manager.lib.ReadonlyField;
 import net.whitehorizont.apps.organization_collection_manager.lib.Node;
 
 @NonNullByDefault
-public class OrganisationElement implements ICollectionElement {
+public class OrganisationElementDefinition implements ICollectionElement {
   // DONE: make iterator for fields
   static final String ELEMENT_TITLE = "Organisation";
 
   // !!! METADATA !!!
-  private static final FieldMetadataExtended<String, ICollection<OrganisationElement>> NAME_METADATA = new FieldMetadataExtended.Metadata<String, ICollection<OrganisationElement>>()
+  private static final FieldMetadataExtended<String, ICollection<OrganisationElementDefinition>> NAME_METADATA = new FieldMetadataExtended.Metadata<String, ICollection<OrganisationElementDefinition>>()
           .setDisplayedName("name")
           .setRequired("Company name must be specified")
           .setValueBuilder(new StringFactory())
           .addValidator((value, _unused) -> new ValidationResult<>(value.length() >= 1, "String should not be empty"))
           .build();
 
-  private static final FieldMetadataExtended<UUID_ElementId, ICollection<OrganisationElement>> ID_METADATA = 
-      new FieldMetadataExtended.Metadata<UUID_ElementId, ICollection<OrganisationElement>>()
+  private static final FieldMetadataExtended<UUID_ElementId, ICollection<OrganisationElementDefinition>> ID_METADATA = 
+      new FieldMetadataExtended.Metadata<UUID_ElementId, ICollection<OrganisationElementDefinition>>()
           .setDisplayedName("ID")
           .setRequired("ID must be provided for collection element")
           .addValidator((value, collection) -> {
@@ -51,21 +51,21 @@ public class OrganisationElement implements ICollectionElement {
           })
           .build();
 
-  private static final FieldMetadataExtended<OrganisationType, ICollection<OrganisationElement>> TYPE_METADATA =
-      new FieldMetadataExtended.Metadata<OrganisationType, ICollection<OrganisationElement>>()
+  private static final FieldMetadataExtended<OrganisationType, ICollection<OrganisationElementDefinition>> TYPE_METADATA =
+      new FieldMetadataExtended.Metadata<OrganisationType, ICollection<OrganisationElementDefinition>>()
       .setDisplayedName("type")
       .setRequired("Type of organisation should be specified!")
       .setHint(OrganisationType.getHint())
       .build();
 
-  private static final FieldMetadataExtended<Double, ICollection< ANNUAL_TURNOVER_METADATA =
-   new FieldMetadataExtended.Metadata<Double, ICollection<()
-   .setDisplayedName("Annual Turnover")
-   .setRequired("Annual Turnover must be provided")
-   .addValidator((value, _unused) -> new ValidationResult<>(value > 0.0, "Annual Turnover should be strictly above zero"))
-   .build();
+  // private static final FieldMetadataExtended<Double, ICollection< ANNUAL_TURNOVER_METADATA =
+  //  new FieldMetadataExtended.Metadata<Double, ICollection<()
+  //  .setDisplayedName("Annual Turnover")
+  //  .setRequired("Annual Turnover must be provided")
+  //  .addValidator((value, _unused) -> new ValidationResult<>(value > 0.0, "Annual Turnover should be strictly above zero"))
+  //  .build();
 
-  public static FieldMetadataExtended<String, ICollection<OrganisationElement>> getNameMetadata() {
+  public static FieldMetadataExtended<String, ICollection<OrganisationElementDefinition>> getNameMetadata() {
     return NAME_METADATA;
   }
 
@@ -77,39 +77,39 @@ public class OrganisationElement implements ICollectionElement {
   
 
   // !!! FIELDS !!!
-  private final ValidatedFieldDefinition<String, ICollection<OrganisationElementPrototype, OrganisationElement>> name;
-  private final ValidatedFieldDefinition<UUID_ElementId, ICollection<OrganisationElementPrototype, OrganisationElement>> ID;
+  private final ValidatedFieldDefinition<String, ICollection<OrganisationElementPrototype, OrganisationElementDefinition>> name;
+  private final ValidatedFieldDefinition<UUID_ElementId, ICollection<OrganisationElementPrototype, OrganisationElementDefinition>> ID;
   private final CoordinatesDefinition coordinates;
-  private final ValidatedFieldDefinition<OrganisationType, ICollection<OrganisationElementPrototype, OrganisationElement>> type;
-  private final ValidatedFieldDefinition<Double, ICollection<OrganisationElementPrototype, OrganisationElement>> annualTurnover;
+  private final ValidatedFieldDefinition<OrganisationType, ICollection<OrganisationElementPrototype, OrganisationElementDefinition>> type;
+  private final ValidatedFieldDefinition<Double, ICollection<OrganisationElementPrototype, OrganisationElementDefinition>> annualTurnover;
 
   // !!! GETTERS !!!
-  public ValidatedFieldDefinition<String, ICollection<OrganisationElementPrototype, OrganisationElement>> getName() {
+  public ValidatedFieldDefinition<String, ICollection<OrganisationElementPrototype, OrganisationElementDefinition>> getName() {
     return name;
   }
 
-  public ValidatedFieldDefinition<UUID_ElementId, ICollection<OrganisationElementPrototype, OrganisationElement>> getID() {
+  public ValidatedFieldDefinition<UUID_ElementId, ICollection<OrganisationElementPrototype, OrganisationElementDefinition>> getID() {
     return ID;
   }
 
-  public ValidatedFieldDefinition<OrganisationType, ICollection<OrganisationElementPrototype, OrganisationElement>> getType() {
+  public ValidatedFieldDefinition<OrganisationType, ICollection<OrganisationElementPrototype, OrganisationElementDefinition>> getType() {
     return type;
   }
 
-  public ValidatedFieldDefinition<Double, ICollection<OrganisationElementPrototype, OrganisationElement>> getAnnualTurnover() {
+  public ValidatedFieldDefinition<Double, ICollection<OrganisationElementPrototype, OrganisationElementDefinition>> getAnnualTurnover() {
     return annualTurnover;
   }
 
   // !!! CONSTRUCTOR !!!
-  public OrganisationElement(ICollection<OrganisationElementPrototype, OrganisationElement> collection,
+  public OrganisationElementDefinition(ICollection<OrganisationElementPrototype, OrganisationElementDefinition> collection,
       OrganisationElementPrototype prototype)
       throws ValidationError {
-    this.name = new ValidatedFieldDefinition<String, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement>>(
-        OrganisationElement.NAME_METADATA,
+    this.name = new ValidatedFieldDefinition<String, ICollection<OrganisationElementDefinition.OrganisationElementPrototype, OrganisationElementDefinition>>(
+        OrganisationElementDefinition.NAME_METADATA,
         prototype.name.getValue(),
         collection);
 
-    this.ID = new ValidatedFieldDefinition<UUID_ElementId, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement>>(
+    this.ID = new ValidatedFieldDefinition<UUID_ElementId, ICollection<OrganisationElementDefinition.OrganisationElementPrototype, OrganisationElementDefinition>>(
         ID_METADATA, prototype.ID.getValue(),
         collection);
 
@@ -117,7 +117,7 @@ public class OrganisationElement implements ICollectionElement {
 
     this.coordinates = new CoordinatesDefinition(prototype.coordinates);
 
-    this.type = new ValidatedFieldDefinition<OrganisationType,ICollection<OrganisationElementPrototype,OrganisationElement>>(TYPE_METADATA, prototype.type.getValue(), collection);
+    this.type = new ValidatedFieldDefinition<OrganisationType,ICollection<OrganisationElementPrototype,OrganisationElementDefinition>>(TYPE_METADATA, prototype.type.getValue(), collection);
   }
 
   public static class OrganisationElementRawData {

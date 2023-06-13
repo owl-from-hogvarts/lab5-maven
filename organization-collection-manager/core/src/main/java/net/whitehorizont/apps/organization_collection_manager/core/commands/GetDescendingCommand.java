@@ -5,11 +5,11 @@ import java.util.Map.Entry;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import io.reactivex.rxjava3.core.Observable;
-import net.whitehorizont.apps.organization_collection_manager.core.collection.OrganisationElement;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.OrganisationElementDefinition;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.ElementKey;
 
 @NonNullByDefault
-public class GetDescendingCommand implements ICommand<Entry<ElementKey, OrganisationElement>> {
+public class GetDescendingCommand implements ICommand<Entry<ElementKey, OrganisationElementDefinition>> {
   private final OrganisationCollectionCommandReceiver collection;
   
 
@@ -18,7 +18,7 @@ public class GetDescendingCommand implements ICommand<Entry<ElementKey, Organisa
   }
 
   @Override
-  public Observable<Entry<ElementKey, OrganisationElement>> execute() {
+  public Observable<Entry<ElementKey, OrganisationElementDefinition>> execute() {
     return collection.getDescending$();
   }
   

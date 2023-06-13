@@ -8,11 +8,9 @@ import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Single;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollection;
-import net.whitehorizont.apps.organization_collection_manager.core.collection.IElementPrototype;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.NoSuchElement;
-import net.whitehorizont.apps.organization_collection_manager.core.collection.OrganisationElement;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.OrganisationElementDefinition;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.OrganisationType;
-import net.whitehorizont.apps.organization_collection_manager.core.collection.OrganisationElement.OrganisationElementPrototype;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.BaseId;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.ElementKey;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.UUID_ElementId;
@@ -22,9 +20,9 @@ import net.whitehorizont.apps.organization_collection_manager.lib.validators.Val
  * Specialized collection receiver for Organisation type of collection
  */
 @NonNullByDefault
-public class OrganisationCollectionCommandReceiver extends CollectionCommandReceiver<OrganisationElementPrototype, OrganisationElement> {
+public class OrganisationCollectionCommandReceiver extends CollectionCommandReceiver<OrganisationElementDefinition> {
 
-  public OrganisationCollectionCommandReceiver(ICollection<OrganisationElementPrototype, OrganisationElement> collection) {
+  public OrganisationCollectionCommandReceiver(ICollection<OrganisationElementDefinition> collection) {
     super(collection);
   }
 
@@ -52,7 +50,7 @@ public class OrganisationCollectionCommandReceiver extends CollectionCommandRece
   }
 
   public Single<Long> countByType(OrganisationType type) {
-    return this.collection.getEvery$().filter(element -> element.getType().getValue().equals(type)).count();
+    return this.collection.getEvery$().filter(element -> OrganisationElementDefinition.TYPE_METADATA.getValueGetter().apply(element) == type).count();
   }
 
   public void removeById(UUID_ElementId id) {
@@ -93,7 +91,7 @@ public class OrganisationCollectionCommandReceiver extends CollectionCommandRece
     }
   }
 
-  public Observable<Entry<ElementKey, OrganisationElement>> getStartsWith$(String startOfFullName) {
+  public Observable<Entry<ElementKey, OrganisationElementDefinition>> getStartsWith$(String startOfFullName) {
     return collection.getEveryWithKey$().filter(keyElement -> keyElement.getValue().getName().getValue().startsWith(startOfFullName));
   }
 
@@ -102,7 +100,7 @@ public class OrganisationCollectionCommandReceiver extends CollectionCommandRece
     ABOVE
   }
 
-  public Observable<Entry<ElementKey, OrganisationElement>> getDescending$() {
+  public Observable<Entry<ElementKey, OrganisationElementDefinition>> getDescending$() {
     return this.collection.getEveryWithKey$().sorted((a, b)-> {
       final var aElement = a.getValue();
       final var bElement = b.getValue();

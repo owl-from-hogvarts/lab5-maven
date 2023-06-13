@@ -24,9 +24,9 @@ import net.whitehorizont.apps.organization_collection_manager.cli.commands.Show;
 import net.whitehorizont.apps.organization_collection_manager.cli.commands.Update;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.CollectionManager;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollection;
-import net.whitehorizont.apps.organization_collection_manager.core.collection.OrganisationElement;
-import net.whitehorizont.apps.organization_collection_manager.core.collection.OrganisationElementFactory;
-import net.whitehorizont.apps.organization_collection_manager.core.collection.OrganisationElement.OrganisationElementPrototype;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.OrganisationElementDefinition;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.OrganisationElementDefinition;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.OrganisationElementDefinition.OrganisationElementPrototype;
 import net.whitehorizont.apps.organization_collection_manager.core.commands.OrganisationCollectionCommandReceiver;
 import net.whitehorizont.apps.organization_collection_manager.core.storage.FileStorage;
 import net.whitehorizont.apps.organization_collection_manager.core.storage.collection_adapter.CollectionAdapter;
@@ -66,7 +66,7 @@ public class App
         cli.start();
     }
 
-    public static FileStorage<ICollection<OrganisationElementPrototype, OrganisationElement>> setupStorage(String fileStoragePath) {
+    public static FileStorage<ICollection<OrganisationElementPrototype, OrganisationElementDefinition>> setupStorage(String fileStoragePath) {
         final var organisationElementFactory = new OrganisationElementFactory();
         final var xmlCollectionAdapter = new CollectionAdapter<>(organisationElementFactory);
         final var testStorage = new FileStorage<>(fileStoragePath, xmlCollectionAdapter);
