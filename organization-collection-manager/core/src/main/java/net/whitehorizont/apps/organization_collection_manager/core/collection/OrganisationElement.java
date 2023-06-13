@@ -6,15 +6,13 @@ import java.util.List;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.javatuples.Pair;
 
-import net.whitehorizont.apps.organization_collection_manager.core.collection.CoordinatesDefinition.CoordinatesPrototype;
-import net.whitehorizont.apps.organization_collection_manager.core.collection.CoordinatesDefinition.CoordinatesRawData;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.CoordinatesDefinition.Coordinates;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.UUID_ElementId;
 import net.whitehorizont.apps.organization_collection_manager.lib.DoubleFactory;
 import net.whitehorizont.apps.organization_collection_manager.lib.EnumFactory;
 import net.whitehorizont.apps.organization_collection_manager.lib.ValidatedFieldDefinition;
 import net.whitehorizont.apps.organization_collection_manager.lib.FieldMetadataExtended;
 import net.whitehorizont.apps.organization_collection_manager.lib.EnrichedNode;
-import net.whitehorizont.apps.organization_collection_manager.lib.IFieldDefinitionNode;
 import net.whitehorizont.apps.organization_collection_manager.lib.StringFactory;
 import net.whitehorizont.apps.organization_collection_manager.lib.TitledNode;
 import net.whitehorizont.apps.organization_collection_manager.lib.WritableFromStringFieldDefinition;
@@ -22,25 +20,24 @@ import net.whitehorizont.apps.organization_collection_manager.lib.WriteableField
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationError;
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationResult;
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.Validator;
-import net.whitehorizont.apps.organization_collection_manager.lib.IWriteableFieldDefinitionNode;
 import net.whitehorizont.apps.organization_collection_manager.lib.ReadonlyField;
 import net.whitehorizont.apps.organization_collection_manager.lib.Node;
 
 @NonNullByDefault
-public class OrganisationElement implements ICollectionElement<OrganisationElement.OrganisationElementPrototype> {
+public class OrganisationElement implements ICollectionElement {
   // DONE: make iterator for fields
   static final String ELEMENT_TITLE = "Organisation";
 
   // !!! METADATA !!!
-  private static final FieldMetadataExtended<String, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement>> NAME_METADATA = new FieldMetadataExtended.Metadata<String, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement>>()
+  private static final FieldMetadataExtended<String, ICollection<OrganisationElement>> NAME_METADATA = new FieldMetadataExtended.Metadata<String, ICollection<OrganisationElement>>()
           .setDisplayedName("name")
           .setRequired("Company name must be specified")
           .setValueBuilder(new StringFactory())
           .addValidator((value, _unused) -> new ValidationResult<>(value.length() >= 1, "String should not be empty"))
           .build();
 
-  private static final FieldMetadataExtended<UUID_ElementId, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement>> ID_METADATA = 
-      new FieldMetadataExtended.Metadata<UUID_ElementId, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement>>()
+  private static final FieldMetadataExtended<UUID_ElementId, ICollection<OrganisationElement>> ID_METADATA = 
+      new FieldMetadataExtended.Metadata<UUID_ElementId, ICollection<OrganisationElement>>()
           .setDisplayedName("ID")
           .setRequired("ID must be provided for collection element")
           .addValidator((value, collection) -> {
@@ -54,21 +51,21 @@ public class OrganisationElement implements ICollectionElement<OrganisationEleme
           })
           .build();
 
-  private static final FieldMetadataExtended<OrganisationType, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement>> TYPE_METADATA =
-      new FieldMetadataExtended.Metadata<OrganisationType, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement>>()
+  private static final FieldMetadataExtended<OrganisationType, ICollection<OrganisationElement>> TYPE_METADATA =
+      new FieldMetadataExtended.Metadata<OrganisationType, ICollection<OrganisationElement>>()
       .setDisplayedName("type")
       .setRequired("Type of organisation should be specified!")
       .setHint(OrganisationType.getHint())
       .build();
 
-  private static final FieldMetadataExtended<Double, ICollection<OrganisationElementPrototype, OrganisationElement>> ANNUAL_TURNOVER_METADATA =
-   new FieldMetadataExtended.Metadata<Double, ICollection<OrganisationElementPrototype, OrganisationElement>>()
+  private static final FieldMetadataExtended<Double, ICollection< ANNUAL_TURNOVER_METADATA =
+   new FieldMetadataExtended.Metadata<Double, ICollection<()
    .setDisplayedName("Annual Turnover")
    .setRequired("Annual Turnover must be provided")
    .addValidator((value, _unused) -> new ValidationResult<>(value > 0.0, "Annual Turnover should be strictly above zero"))
    .build();
 
-  public static FieldMetadataExtended<String, ICollection<OrganisationElement.OrganisationElementPrototype, OrganisationElement>> getNameMetadata() {
+  public static FieldMetadataExtended<String, ICollection<OrganisationElement>> getNameMetadata() {
     return NAME_METADATA;
   }
 
@@ -123,14 +120,10 @@ public class OrganisationElement implements ICollectionElement<OrganisationEleme
     this.type = new ValidatedFieldDefinition<OrganisationType,ICollection<OrganisationElementPrototype,OrganisationElement>>(TYPE_METADATA, prototype.type.getValue(), collection);
   }
 
-  // is itself only a data structure
-  // should be replaced with tree
-  // ! raw data is replaced with depleted tree (contains only values)
-  // new Node<RawField>({RAW_NAME, RAW_ID}, {RAW_COORDINATES})
   public static class OrganisationElementRawData {
-    private String name = "-()0=";
+    private String name;
     private UUID_ElementId ID = new UUID_ElementId(); // init with default value which is easily overridable
-    private CoordinatesRawData coordinates = new CoordinatesRawData();
+    private Coordinates coordinates;
     private OrganisationType type;
     private Double annualTurnover;
 
@@ -144,12 +137,12 @@ public class OrganisationElement implements ICollectionElement<OrganisationEleme
       return this;
     }
 
-    public OrganisationElementRawData ID(UUID_ElementId id) {
+    private OrganisationElementRawData ID(UUID_ElementId id) {
       this.ID = id;
       return this;
     }
 
-    private OrganisationElementRawData coordinates(CoordinatesRawData coordinates) {
+    private OrganisationElementRawData coordinates(Coordinates coordinates) {
       this.coordinates = coordinates;
       return this;
     }
@@ -157,105 +150,6 @@ public class OrganisationElement implements ICollectionElement<OrganisationEleme
     private OrganisationElementRawData type(OrganisationType type) {
       this.type = type;
       return this;
-    }
-  }
-
-
-
-  // !!! BUILD PROTOTYPE !!!
-  @Override
-  public OrganisationElementPrototype getPrototype() {
-    final var prototype = new OrganisationElementPrototype();
-    try {
-      prototype.ID.setValue(this.ID.getValue());
-      prototype.name.setValue(this.name.getValue());
-      prototype.coordinates = this.coordinates.getPrototype();
-      prototype.type.setValue(this.type.getValue());
-      prototype.annualTurnover.setValue(this.annualTurnover.getValue());
-
-      return prototype;
-    } catch (ValidationError e) {
-      // valid element is valid prototype
-      // if validation error happens -> error in program
-      assert false;
-      throw new RuntimeException();
-    }
-
-  }
-
-  // redundant. generated tree is checked against metadata
-  public static class OrganisationElementPrototype
-      implements IElementPrototype<OrganisationElement.OrganisationElementRawData> {
-
-    private final WriteableFieldDefinition<UUID_ElementId> ID;
-    private final WritableFromStringFieldDefinition<String> name;
-    private CoordinatesPrototype coordinates = new CoordinatesPrototype();
-    private final WritableFromStringFieldDefinition<OrganisationType> type;
-    private final WritableFromStringFieldDefinition<Double> annualTurnover;
-
-    private final List<WritableFromStringFieldDefinition<?>> inputFields = new ArrayList<>();
-
-    public OrganisationElementPrototype() {
-      try {
-        this.ID = new WriteableFieldDefinition<>(OrganisationElement.ID_METADATA, new UUID_ElementId());
-
-        this.name = new WritableFromStringFieldDefinition<String>(NAME_METADATA, new StringFactory(), "");
-        this.inputFields.add(name);
-
-        this.type = new WritableFromStringFieldDefinition<OrganisationType>(TYPE_METADATA, OrganisationType.COMMERCIAL ,new EnumFactory<>(OrganisationType.class));
-        this.inputFields.add(type);
-
-        this.annualTurnover = new WritableFromStringFieldDefinition<Double>(ANNUAL_TURNOVER_METADATA, 1.0, new DoubleFactory());
-        this.inputFields.add(annualTurnover);
-
-      } catch (ValidationError e) {
-        assert false; // default value is hardcoded. if error happens here, it is a bug
-        throw new RuntimeException();
-      }
-
-    }
-
-    // !!! GET RAW ELEMENT DATA !!!
-    @Override
-    public OrganisationElementRawData getRawElementData() {
-      return new OrganisationElementRawData()
-        .ID(this.ID.getValue())
-        .name(this.name.getValue())
-        .coordinates(coordinates.getRawElementData())
-        .type(this.type.getValue())
-        .annualTurnover(this.annualTurnover.getValue());
-    }
-
-    @Override
-    public List<WritableFromStringFieldDefinition<?>> getLeafs() {
-      return this.inputFields;
-    }
-
-    // !!! SET FROM RAW DATA !!!
-    @Override
-    public IElementPrototype<OrganisationElementRawData> setFromRawData(OrganisationElementRawData rawData)
-        throws ValidationError {
-
-      this.ID.setValue(rawData.ID);
-      this.name.setValueFromString(rawData.name);
-      this.coordinates.setFromRawData(rawData.coordinates);
-      this.type.setValue(rawData.type);
-      this.annualTurnover.setValue(rawData.annualTurnover);
-
-      return this;
-    }
-
-    @Override
-    public List<Node<WritableFromStringFieldDefinition<?>>> getChildren() {
-      final List<IWriteableFieldDefinitionNode> children = new ArrayList<>();
-      children.add(coordinates);
-
-      return children;
-    }
-
-    @Override
-    public String getDisplayedName() {
-      return ELEMENT_TITLE;
     }
   }
 
