@@ -5,7 +5,7 @@ import java.util.List;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 @NonNullByDefault
-public class Node<This extends Node<This, T>, T> {
+public class Node<This extends Node, T> {
   private final List<T> leafs;
   private final List<This> children;
 
