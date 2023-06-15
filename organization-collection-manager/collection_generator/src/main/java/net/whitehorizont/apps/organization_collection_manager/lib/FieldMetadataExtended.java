@@ -16,7 +16,7 @@ import net.whitehorizont.apps.organization_collection_manager.lib.validators.Val
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.Validator;
 
 @NonNullByDefault
-public class FieldMetadataExtended<Host, WritableHost extends Host, V, T> extends BasicFieldMetadata implements IValidatorsProvider<V, T>, ICanValidate<Host, T>, ICanFill<Host, WritableHost> {
+public class FieldMetadataExtended<Host, WritableHost extends Host, V, T> extends BasicFieldMetadata implements IValidatorsProvider<V, T>, ICanAcceptVisitor<Host> {
   private final Metadata<Host, WritableHost, V, T> metadata;
 
   private FieldMetadataExtended(Metadata<Host, WritableHost, V, T> metadata) {
@@ -152,28 +152,6 @@ public class FieldMetadataExtended<Host, WritableHost extends Host, V, T> extend
   }
 
   @Override
-  public void validate(Host host, T validationObject) throws ValidationError {
-    final var getter = this.getValueGetter();
-    final var value = getter.apply(host);
-    final var validators = this.getValidators();
-
-    // crunch; should be redone
-    final var nullCheck = this.getNullCheckValidator();
-    reportValidationError(nullCheck.validate(value));
-
-    for (final var validator : validators) {
-      final var validationResult = validator.validate(value, validationObject);
-      reportValidationError(validationResult);
-    }
-  }
-
-  private void reportValidationError(ValidationResult<Boolean> validationResult) throws ValidationError {
-    if (!validationResult.getResult()) {
-      throw new ValidationError(getDisplayedName() + ": " + validationResult.getDisplayedMessage());
-    }
-  }
-
-  @Override
   public void fill(WritableHost base, Host other) {
     getValueSetter().accept(base, getValueGetter().apply(other));
   }
@@ -187,5 +165,10 @@ public class FieldMetadataExtended<Host, WritableHost extends Host, V, T> extend
 
   public static enum Tag {
     UPDATABLE,
+  }
+
+  @Override
+  public void accept(Host host, IMetadataCompositeVisitor visitor) {
+    visitor.visit(this, host);
   }
 }

@@ -50,10 +50,10 @@ public class CoordinatesDefinition {
 
   }
 
-  public static <ParentHost> MetadataComposite<ParentHost, Coordinates, CoordinatesWriteable, ?> getTree(Function<ParentHost, Coordinates> coordinatesExtractor) {
+  public static <ParentHost> MetadataComposite<ParentHost, Coordinates, CoordinatesWriteable, Object> getTree(Function<ParentHost, CoordinatesWriteable> coordinatesExtractor) {
     final List<FieldMetadataExtended<Coordinates, CoordinatesWriteable, ?, Object>> leafs = new ArrayList<>();
     leafs.add(X_METADATA);
 
-    return new MetadataComposite<>(COORDINATES_TITLE, leafs, new ArrayList<>(), coordinatesExtractor);
+    return new MetadataComposite<ParentHost, Coordinates, CoordinatesWriteable, Object>(COORDINATES_TITLE, leafs, new ArrayList<>(), coordinatesExtractor);
   }
 }
