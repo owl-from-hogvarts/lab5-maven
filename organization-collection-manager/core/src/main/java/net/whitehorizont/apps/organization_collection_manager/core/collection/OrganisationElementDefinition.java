@@ -5,8 +5,10 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.CoordinatesDefinition.Coordinates;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.CoordinatesDefinition.CoordinatesWriteable;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.UUID_ElementId;
 import net.whitehorizont.apps.organization_collection_manager.lib.FieldMetadataExtended;
+import net.whitehorizont.apps.organization_collection_manager.lib.FieldMetadataExtendedWithRichValidators;
 import net.whitehorizont.apps.organization_collection_manager.lib.MetadataComposite;
 import net.whitehorizont.apps.organization_collection_manager.lib.StringFactory;
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationResult;
@@ -17,15 +19,15 @@ public class OrganisationElementDefinition {
   static final String ELEMENT_TITLE = "Organisation";
 
   // !!! METADATA !!!
-  public static final FieldMetadataExtended<OrganisationElement, OrganisationElementWritable, String, ICollection<OrganisationElement>> NAME_METADATA = new FieldMetadataExtended.Metadata<OrganisationElement, OrganisationElementWritable, String, ICollection<OrganisationElement>>()
+  public static final FieldMetadataExtended<OrganisationElement, OrganisationElementWritable, String> NAME_METADATA = FieldMetadataExtended.<OrganisationElement, OrganisationElementWritable, String>builder()
           .setDisplayedName("name")
           .setRequired("Company name must be specified")
           .setValueBuilder(new StringFactory())
-          .addValidator((value, _unused) -> new ValidationResult<>(value.length() >= 1, "String should not be empty"))
+          .addSimpleValidator((value) -> new ValidationResult<>(value.length() >= 1, "String should not be empty"))
           .build();
 
-  public static final FieldMetadataExtended<OrganisationElement, OrganisationElementWritable, UUID_ElementId, ICollection<OrganisationElement>> ID_METADATA = 
-      new FieldMetadataExtended.Metadata<OrganisationElement, OrganisationElementWritable, UUID_ElementId, ICollection<OrganisationElement>>()
+  public static final FieldMetadataExtendedWithRichValidators<OrganisationElement, OrganisationElementWritable, UUID_ElementId, ICollection<OrganisationElement>> ID_METADATA = 
+      new FieldMetadataExtendedWithRichValidators.MetadataWithValidators<OrganisationElement, OrganisationElementWritable, UUID_ElementId, ICollection<OrganisationElement>>()
           .setDisplayedName("ID")
           .setRequired("ID must be provided for collection element")
           .addValidator((value, collection) -> {
@@ -39,37 +41,41 @@ public class OrganisationElementDefinition {
           })
           .build();
 
-  public static final FieldMetadataExtended<OrganisationElement, OrganisationElementWritable, OrganisationType, ICollection<OrganisationElement>> TYPE_METADATA =
-      new FieldMetadataExtended.Metadata<OrganisationElement, OrganisationElementWritable, OrganisationType, ICollection<OrganisationElement>>()
+  public static final FieldMetadataExtended<OrganisationElement, OrganisationElementWritable, OrganisationType> TYPE_METADATA =
+      FieldMetadataExtended.<OrganisationElement, OrganisationElementWritable, OrganisationType>builder()
       .setDisplayedName("type")
       .setRequired("Type of organisation should be specified!")
       .setHint(OrganisationType.getHint())
       .build();
 
-  public static final FieldMetadataExtended<OrganisationElement, OrganisationElementWritable, Double, ICollection<OrganisationElement>> ANNUAL_TURNOVER_METADATA =
-   new FieldMetadataExtended.Metadata<OrganisationElement, OrganisationElementWritable, Double, ICollection<OrganisationElement>>()
+  public static final FieldMetadataExtended<OrganisationElement, OrganisationElementWritable, Double> ANNUAL_TURNOVER_METADATA =
+   FieldMetadataExtended.<OrganisationElement, OrganisationElementWritable, Double>builder()
    .setDisplayedName("Annual Turnover")
    .setRequired("Annual Turnover must be provided")
-   .addValidator((value, _unused) -> new ValidationResult<>(value > 0.0, "Annual Turnover should be strictly above zero"))
+   .addSimpleValidator(value -> new ValidationResult<>(value > 0.0, "Annual Turnover should be strictly above zero"))
    .build();
+  public void accept() {
+    
+  }
+  
 
-  public static MetadataComposite<OrganisationElement, OrganisationElementWritable, ?> getMetadata() {
-    final List<FieldMetadataExtended<OrganisationElement, OrganisationElementWritable, ?, ?>> leafs = new ArrayList<>();
+  public static MetadataComposite<?, OrganisationElement, OrganisationElementWritable, ?> getMetadata() {
+    final List<FieldMetadataExtended<OrganisationElement, OrganisationElementWritable, ?>> leafs = new ArrayList<>();
     leafs.add(ID_METADATA);
     leafs.add(NAME_METADATA);
     leafs.add(TYPE_METADATA);
     leafs.add(ANNUAL_TURNOVER_METADATA);
 
-    final var children = new ArrayList<>();
-    children.add(CoordinatesDefinition.getTree());
+    final List<MetadataComposite<OrganisationElement, ?, ?, ? super ICollection<OrganisationElement>>> children = new ArrayList<>();
+    children.add(CoordinatesDefinition.<OrganisationElement>getTree((organisation) -> organisation.coordinates));
 
-    return new MetadataComposite<>(ELEMENT_TITLE, leafs, children);
+    return new MetadataComposite<Object, OrganisationElement, OrganisationElementWritable, ICollection<OrganisationElement>>(ELEMENT_TITLE, leafs, children, null);
   }
   
   public static class OrganisationElement implements ICollectionElement<OrganisationElement> {
     protected String name;
     protected UUID_ElementId ID = new UUID_ElementId(); // init with default value which is easily overridable
-    protected Coordinates coordinates;
+    protected CoordinatesWriteable coordinates;
     protected OrganisationType type;
     protected Double annualTurnover;
     protected String getName() {
@@ -111,7 +117,7 @@ public class OrganisationElementDefinition {
       return this;
     }
 
-    private OrganisationElementWritable coordinates(Coordinates coordinates) {
+    private OrganisationElementWritable coordinates(CoordinatesWriteable coordinates) {
       this.coordinates = coordinates;
       return this;
     }

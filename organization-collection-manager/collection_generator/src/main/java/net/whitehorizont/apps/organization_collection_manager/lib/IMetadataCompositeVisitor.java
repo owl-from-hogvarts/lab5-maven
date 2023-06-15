@@ -6,5 +6,6 @@ import net.whitehorizont.apps.organization_collection_manager.lib.validators.Val
 
 @NonNullByDefault
 public interface IMetadataCompositeVisitor<T> {
-  <Host, WriteableHost extends Host, V> void visit(FieldMetadataExtended<Host, WriteableHost, V, T> fieldMetadata, Host host) throws ValidationError;
+  <Host, WriteableHost extends Host, V> void visit(FieldMetadataExtended<Host, WriteableHost, V> fieldMetadata, Host host) throws ValidationError;
+  <Host, WriteableHost extends Host, V> void visit(FieldMetadataExtendedWithRichValidators<Host, WriteableHost, V, T> fieldMetadata, Host host) throws ValidationError;
 }

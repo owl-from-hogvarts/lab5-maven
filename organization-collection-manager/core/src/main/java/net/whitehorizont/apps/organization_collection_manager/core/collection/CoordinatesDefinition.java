@@ -14,12 +14,14 @@ import net.whitehorizont.apps.organization_collection_manager.lib.validators.Val
 public class CoordinatesDefinition {
   private static final String COORDINATES_TITLE = "Coordinates";
   
-  private static final FieldMetadataExtended<Coordinates, CoordinatesWriteable, Integer, Object> X_METADATA = new FieldMetadataExtended.Metadata<Coordinates, CoordinatesWriteable, Integer, Object>().addValidator((value, _unused) -> {
+  private static final FieldMetadataExtended<Coordinates, CoordinatesWriteable, Integer> X_METADATA = FieldMetadataExtended.<Coordinates, CoordinatesWriteable, Integer>builder()
+  .addSimpleValidator(value -> {
     final int x = value.intValue();
     final var isValueOk = x > -802;
     final var result = new ValidationResult<>(isValueOk, "Value should be strictly above -802");
     return result;
-  }).setDisplayedName("X")
+  })
+  .setDisplayedName("X")
   .setValueBuilder(new IntegerFactory())
   .setValueSetter((host, value) -> host.setX(value))
   .setValueGetter((host) -> host.getX())
@@ -50,8 +52,8 @@ public class CoordinatesDefinition {
 
   }
 
-  public static <ParentHost> MetadataComposite<ParentHost, Coordinates, CoordinatesWriteable, Object> getTree(Function<ParentHost, CoordinatesWriteable> coordinatesExtractor) {
-    final List<FieldMetadataExtended<Coordinates, CoordinatesWriteable, ?, Object>> leafs = new ArrayList<>();
+  public static <ParentHost> MetadataComposite<ParentHost, Coordinates, CoordinatesWriteable, ? super Object> getTree(Function<ParentHost, CoordinatesWriteable> coordinatesExtractor) {
+    final List<FieldMetadataExtended<Coordinates, CoordinatesWriteable, ?>> leafs = new ArrayList<>();
     leafs.add(X_METADATA);
 
     return new MetadataComposite<ParentHost, Coordinates, CoordinatesWriteable, Object>(COORDINATES_TITLE, leafs, new ArrayList<>(), coordinatesExtractor);

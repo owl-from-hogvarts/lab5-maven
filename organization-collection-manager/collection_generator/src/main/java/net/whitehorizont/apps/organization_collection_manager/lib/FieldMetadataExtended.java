@@ -16,15 +16,19 @@ import net.whitehorizont.apps.organization_collection_manager.lib.validators.Val
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.Validator;
 
 @NonNullByDefault
-public class FieldMetadataExtended<Host, WritableHost extends Host, V, T> extends BasicFieldMetadata implements IValidatorsProvider<V, T>, ICanAcceptVisitor<Host> {
-  private final Metadata<Host, WritableHost, V, T> metadata;
+public class FieldMetadataExtended<Host, WritableHost extends Host, V> extends BasicFieldMetadata implements ICanAcceptVisitor<Host, Object> {
+  private final Metadata<?, Host, WritableHost, V> metadata;
 
-  private FieldMetadataExtended(Metadata<Host, WritableHost, V, T> metadata) {
+  protected FieldMetadataExtended(Metadata<?, Host, WritableHost, V> metadata) {
     super(metadata.displayedName);
     this.metadata = metadata.clone();
   }
 
-  public static class Metadata<Host, WritableHost extends Host, V, T> {
+  public static <Host, WritableHost extends Host, V> Metadata<?, Host, WritableHost, V> builder() {
+    return new Metadata<>();
+  }
+
+   public static class Metadata<This extends Metadata<This, Host, WritableHost, V>, Host, WritableHost extends Host, V> {
     private String displayedName = "";
     private String description = "";
     private Optional<String> hint = Optional.empty();
@@ -33,70 +37,75 @@ public class FieldMetadataExtended<Host, WritableHost extends Host, V, T> extend
     private Function<Host, V> valueGetter;
     private EnumSet<Tag> tags = EnumSet.noneOf(Tag.class);
   
-    public Metadata<Host, WritableHost, V, T> setValueGetter(Function<Host, V> valueGetter) {
+    @SuppressWarnings("unchecked")
+    private This self() {
+      return (This) this;
+    }
+
+    public This setValueGetter(Function<Host, V> valueGetter) {
       this.valueGetter = valueGetter;
-      return this;
+      return self();
     }
 
-    public Metadata<Host, WritableHost, V, T> addTag(Tag tag) {
+    public This addTag(Tag tag) {
       this.tags.add(tag);
-      return this;
+      return self();
     }
 
-    public Metadata<Host, WritableHost, V, T> setValueBuilder(IFromStringBuilder<V> valueBuilder) {
+    public This setValueBuilder(IFromStringBuilder<V> valueBuilder) {
       this.valueBuilder = Optional.of(valueBuilder);
-      return this;
+      return self();
     }
 
-    public Metadata<Host, WritableHost, V, T> setValueSetter(BiConsumer<WritableHost, V> valueSetter) {
+    public This setValueSetter(BiConsumer<WritableHost, V> valueSetter) {
       this.valueSetter = valueSetter;
-      return this;
+      return self();
     }
 
     private Optional<String> onNullMessage = Optional.of("Field should NOT be empty");
     private static final String OK_MESSAGE = "Everything ok!";
 
-    private List<Validator<V, T>> validators = new ArrayList<>();
+    private List<SimpleValidator<V>> simpleValidators = new ArrayList<>();
   
-    public Metadata<Host, WritableHost, V, T> setDisplayedName(String displayedName) {
+    public This setDisplayedName(String displayedName) {
       this.displayedName = displayedName;
-      return this;
+      return self();
     }
-    public Metadata<Host, WritableHost, V, T> setDescription(String description) {
+    public This setDescription(String description) {
       this.description = description;
-      return this;
+      return self();
     }
-    public Metadata<Host, WritableHost, V, T> setRequired(String onNullMessage) {
+    public This setRequired(String onNullMessage) {
       this.onNullMessage = Optional.of(onNullMessage);
-      return this;
+      return self();
     }
-    public Metadata<Host, WritableHost, V, T> setNullable() {
+    public This setNullable() {
       this.onNullMessage = Optional.empty();
-      return this;
+      return self();
     }
-    public Metadata<Host, WritableHost, V, T> addValidators(List<Validator<V, T>> validators) {
-      this.validators.addAll(validators);
-      return this;
+    public This addSimpleValidators(List<SimpleValidator<V>> validators) {
+      this.simpleValidators.addAll(validators);
+      return self();
     }
-    public Metadata<Host, WritableHost, V, T> addValidator(Validator<V, T> validator) {
-      this.validators.add(validator);
+    public This addSimpleValidator(SimpleValidator<V> validator) {
+      this.simpleValidators.add(validator);
       
-      return this;
+      return self();
     }
 
-    public Metadata<Host, WritableHost, V, T> setHint(String hint) {
+    public This setHint(String hint) {
       this.hint = Optional.of(hint);
-      return this;
+      return self();
     }
 
-    public FieldMetadataExtended<Host, WritableHost, V, T> build() {
-      return new FieldMetadataExtended<>(this);
+    public FieldMetadataExtended<Host, WritableHost, V> build() {
+      return new FieldMetadataExtended<Host, WritableHost, V>(this);
     }
 
     @Override
-    protected Metadata<Host, WritableHost, V, T> clone() {
+    protected This clone() {
       try {
-        return (Metadata<Host, WritableHost, V, T>) super.clone();
+        return (This) super.clone();
       } catch (CloneNotSupportedException _ignore) {
         // hope that will never happen
         assert false;
@@ -130,15 +139,14 @@ public class FieldMetadataExtended<Host, WritableHost extends Host, V, T> extend
   public Optional<String> getHint() {
     return metadata.hint;
   }
-  @Override
-  public List<Validator<V, T>> getValidators() { // ok at this point I don' know what happens. Java is just mad at me I guess
-    return metadata.validators;
+  public List<SimpleValidator<V>> getSimpleValidators() {
+    return metadata.simpleValidators;
   }
   /** Better check if field is nullable at first */
   public Optional<String> getOnNullMessage() {
     return metadata.onNullMessage;
   }
-  @Override
+
   public SimpleValidator<V> getNullCheckValidator() {
     return (value) -> {
       final String message = isNullable() ? Metadata.OK_MESSAGE : getOnNullMessage().get();
@@ -168,7 +176,7 @@ public class FieldMetadataExtended<Host, WritableHost extends Host, V, T> extend
   }
 
   @Override
-  public void accept(Host host, IMetadataCompositeVisitor visitor) {
+  public void accept(Host host, IMetadataCompositeVisitor<?> visitor) throws Exception {
     visitor.visit(this, host);
   }
 }
