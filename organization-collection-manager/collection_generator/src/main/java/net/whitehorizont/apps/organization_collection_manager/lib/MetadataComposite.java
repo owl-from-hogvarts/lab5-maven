@@ -34,7 +34,7 @@ public class MetadataComposite<ParentHost, Host, WritableHost extends Host, T> e
     node.accept(child, visitor);
   } 
 
-  private Host extractChildHost(ParentHost parentHost) {
+  public WritableHost extractChildHost(ParentHost parentHost) {
     return hostExtractor.apply(parentHost);
   }
 }
