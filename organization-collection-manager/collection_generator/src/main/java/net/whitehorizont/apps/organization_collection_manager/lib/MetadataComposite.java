@@ -5,6 +5,8 @@ import java.util.function.Function;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
+import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationError;
+
 @NonNullByDefault
 // we know type of node container i.e. TitledNode but now what is inside the container
 public class MetadataComposite<ParentHost, Host, WritableHost extends Host, T> extends TitledNode<MetadataComposite<Host, ?, ?, ? super T>, FieldMetadataExtended<Host, WritableHost, ?>> implements ICanAcceptVisitor<Host, T> {
@@ -19,7 +21,7 @@ public class MetadataComposite<ParentHost, Host, WritableHost extends Host, T> e
   // fuck that shit
   // without this method java can't track type of child host
   @Override
-  public void accept(Host host, IMetadataCompositeVisitor<? extends T> visitor) throws Exception {
+  public void accept(Host host, IMetadataCompositeVisitor<? extends T> visitor) throws ValidationError {
     for (final var leaf : getLeafs()) {
       leaf.accept(host, visitor);
     }
@@ -29,7 +31,7 @@ public class MetadataComposite<ParentHost, Host, WritableHost extends Host, T> e
     }
   }
 
-  private static <Host, Child, T> void acceptChild(Host host, MetadataComposite<Host, Child, ?, T> node, IMetadataCompositeVisitor<? extends T> visitor) throws Exception {
+  private static <Host, Child, T> void acceptChild(Host host, MetadataComposite<Host, Child, ?, T> node, IMetadataCompositeVisitor<? extends T> visitor) throws ValidationError {
     final var child = node.extractChildHost(host);
     node.accept(child, visitor);
   } 

@@ -16,6 +16,7 @@ import net.whitehorizont.apps.organization_collection_manager.core.collection.ke
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.ISerializableKey;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.KeyGenerationError;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.UUID_CollectionId;
+import net.whitehorizont.apps.organization_collection_manager.lib.MetadataComposite;
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationError;
 
 /**
@@ -30,17 +31,18 @@ public class RamCollection<E extends ICollectionElement<E>>
 
   private final Map<ElementKey, E> elements = new LinkedHashMap<>();
   private final CollectionMetadata metadata;
-  private final IElementInfoProvider<E, RamCollection<E>> validators;
+  private final MetadataComposite<?, E, ?, RamCollection<E>> elementMetadata;
+  private final ValidationVisitor<RamCollection<E>> validationVisitor = new ValidationVisitor<RamCollection<E>>(this);
 
   // takes such dataSink factory which accepts any parent class of collection
   // we undertake to provide class not higher than collection
-  public RamCollection(IElementInfoProvider<E, RamCollection<E>> validators, CollectionMetadata metadata) {
+  public RamCollection(MetadataComposite<?, E, ?, RamCollection<E>> elementMetadata, CollectionMetadata metadata) {
     this.metadata = metadata;
-    this.validators = validators;
+    this.elementMetadata = elementMetadata;
   }
 
-  public RamCollection(IElementInfoProvider<E, RamCollection<E>> validators) {
-    this(validators, new CollectionMetadata(new Builder(new UUID_CollectionId())));
+  public RamCollection(MetadataComposite<?, E, ?, RamCollection<E>> elementMetadata) {
+    this(elementMetadata, new CollectionMetadata(new Builder(new UUID_CollectionId())));
   }
 
   /**
@@ -64,7 +66,7 @@ public class RamCollection<E extends ICollectionElement<E>>
       throw new DuplicateElements(key);
     }
     // validate here
-    this.validators.validate(element, this);
+    this.elementMetadata.accept(element, validationVisitor);
     this.elements.put(key, element);
   }
 
@@ -160,6 +162,6 @@ public class RamCollection<E extends ICollectionElement<E>>
 
   @Override
   public String getCollectionType() {
-    return this.validators.getDisplayedName();
+    return this.elementMetadata.getDisplayedName();
   }
 }
