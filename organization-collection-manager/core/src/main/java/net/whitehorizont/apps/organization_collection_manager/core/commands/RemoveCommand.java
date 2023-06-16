@@ -12,6 +12,7 @@ public class RemoveCommand implements ICommand<Long> {
   private final Optional<UUID_ElementId> id;
   private final OrganisationCollectionCommandReceiver collection;
 
+  @SuppressWarnings("null")
   public RemoveCommand(OrganisationCollectionCommandReceiver collection, UUID_ElementId id) {
     this.id = Optional.of(id);
     this.collection = collection;
