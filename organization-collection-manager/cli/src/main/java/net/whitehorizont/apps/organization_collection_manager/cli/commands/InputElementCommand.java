@@ -2,25 +2,14 @@ package net.whitehorizont.apps.organization_collection_manager.cli.commands;
 
 import java.io.OutputStream;
 import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.jline.reader.LineReader;
 
 import net.whitehorizont.apps.organization_collection_manager.cli.CliDependencyManager;
 import net.whitehorizont.apps.organization_collection_manager.cli.Streams;
-import net.whitehorizont.apps.organization_collection_manager.core.collection.CollectionMetadata;
-import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollection;
-import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollectionManager;
-import net.whitehorizont.apps.organization_collection_manager.core.storage.errors.StorageInaccessibleError;
-import net.whitehorizont.apps.organization_collection_manager.lib.FieldMetadataWithValidators;
-import net.whitehorizont.apps.organization_collection_manager.lib.IWriteableFieldDefinitionNode;
-import net.whitehorizont.apps.organization_collection_manager.lib.Node;
-import net.whitehorizont.apps.organization_collection_manager.lib.RawField;
-import net.whitehorizont.apps.organization_collection_manager.lib.TitledNode;
-import net.whitehorizont.apps.organization_collection_manager.lib.WritableFromStringFieldDefinition;
+import net.whitehorizont.apps.organization_collection_manager.lib.FieldMetadataExtended;
+import net.whitehorizont.apps.organization_collection_manager.lib.MetadataComposite;
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationError;
 import net.whitehorizont.libs.file_system.StringHelper;
 
@@ -53,11 +42,11 @@ public class InputElementCommand extends BaseElementCommand {
   }
 
   
-  protected Node promptForFields(TitledNode<FieldMetadata<?, ?>> node, LineReader lineReader, Streams streams) throws ValidationError {
-    return promptForFields(node, lineReader, streams, 0);
+  protected <ParentHost, Host, WritableHost extends Host> Host promptForFields(MetadataComposite<?, Host, WritableHost, ?> node, WritableHost host, LineReader lineReader, Streams streams) throws ValidationError {
+    return promptForFields(node, host, lineReader, streams, 0);
   }
 
-  private Node promptForFields(TitledNode<FieldMetadata<?, ?>> node, LineReader lineReader, Streams streams,
+  private <ParentHost, Host, WritableHost extends Host> Host promptForFields(MetadataComposite<?, Host, WritableHost, ?> node, WritableHost host, LineReader lineReader, Streams streams,
       int nestLevel) throws ValidationError {
         // node contains metadata
         // if node has value builder, prompt user
@@ -81,8 +70,6 @@ public class InputElementCommand extends BaseElementCommand {
     final String title = isElement(nestLevel) ? prepareNodeTitle(nodeTitle).build() : buildChildNodeTitle(nodeTitle);
     out.println(title);
 
-    final var fields = new ArrayList<>(fieldsMetadata.size());
-
     for (final var metadata : fieldsMetadata) {
       int retriesLeft = this.retries.retries;
 
@@ -96,10 +83,7 @@ public class InputElementCommand extends BaseElementCommand {
         String userInput = readUserInput(lineReader, fieldPrompt);
 
         try {
-          final var valueBuilder = metadata.getValueBuilder().get();
-          new WritableFromStringFieldDefinition(metadata, valueBuilder, userInput).ge;
-          // FIXME: handle NPE
-          fields.add(new RawField<>(value));
+          setValue(metadata, userInput, host);
 
           // if successful, get out of here
           // on error next statement will be skipped
@@ -120,14 +104,22 @@ public class InputElementCommand extends BaseElementCommand {
       }
     }
 
-    final List<Node> children = new ArrayList<>();
-
     for (final var childMetadata : node.getChildren()) {
-      final var child = promptForFields(childMetadata, lineReader, streams, nestLevel + 1);
-      children.add(child);
+      doForChild(childMetadata, host, lineReader, streams, nestLevel);
     }
     
-    return new Node(fields.toArray(), children.toArray(new Node[]{}));
+    return host;
+  }
+
+  private static <WritableHost, V> void setValue(FieldMetadataExtended<?, WritableHost, V> metadata, @Nullable String input, WritableHost host) throws ValidationError {
+    final var valueBuilder = metadata.getValueBuilder().get();
+    // FIXME: handle NPE
+    metadata.getValueSetter().accept(host, valueBuilder.buildFromString(input));
+  }
+
+  private <ParentHost, Host, WritableHost extends Host> void doForChild(MetadataComposite<ParentHost, Host, WritableHost, ?> childMetadata, ParentHost host, LineReader lineReader, Streams streams, int nestLevel) throws ValidationError {
+      final var childHost = childMetadata.extractChildHost(host);
+      promptForFields(childMetadata, childHost, lineReader, streams, nestLevel + 1);
   }
 
   protected Streams prepareStreams(CliDependencyManager<?> dependencyManager) {
@@ -138,7 +130,7 @@ public class InputElementCommand extends BaseElementCommand {
     return streams;
   }
 
-  private static String preparePrompt(FieldMetadataWithValidators<?, ?> metadata, int nestLevel) {
+  private static String preparePrompt(FieldMetadataExtended<?, ?, ?> metadata, int nestLevel) {
         final String fieldPrompt = metadata.getDisplayedName() + FIELD_NAME_VALUE_SEPARATOR;
         final String fieldPromptPadded = StringHelper.padStart(fieldPrompt,
             computeNestedPadding(nestLevel, fieldPrompt),
@@ -147,7 +139,7 @@ public class InputElementCommand extends BaseElementCommand {
         return fieldPromptPadded;
   }
 
-  private static void printHint(FieldMetadataWithValidators<?, ?> metadata, int nestLevel, PrintStream out) {
+  private static void printHint(FieldMetadataExtended<?, ?, ?> metadata, int nestLevel, PrintStream out) {
     if (metadata.getHint().isPresent()) {
       final String hint = HINT_PREFIX + metadata.getHint().get();
       final String hintPadded = StringHelper.padStart(hint, computeNestedPadding(nestLevel, hint), PADDING_SYMBOL);

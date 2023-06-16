@@ -7,7 +7,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import io.reactivex.rxjava3.core.Observable;
 import net.whitehorizont.apps.organization_collection_manager.cli.CliDependencyManager;
-import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.UUID_ElementId;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.OrganisationElementDefinition;
 import net.whitehorizont.apps.organization_collection_manager.core.commands.OrganisationCollectionCommandReceiver;
 import net.whitehorizont.apps.organization_collection_manager.core.commands.RemoveCommand;
 
@@ -31,8 +31,8 @@ public class RemoveById implements ICliCommand<OrganisationCollectionCommandRece
         final var collection = dependencyManager.getCollectionReceiver();
         
         final String idString = arguments.pop().trim().strip();
-        // TODO: get rid of this cast
-        final var id = (UUID_ElementId) collection.getElementIdFromString(idString);
+        // DONE: get rid of UUID cast
+        final var id = OrganisationElementDefinition.ID_METADATA.getValueBuilder().get().buildFromString(idString);
 
         final var removeCommand = new RemoveCommand(collection, id);
         dependencyManager.getCommandQueue().push(removeCommand).blockingSubscribe();
