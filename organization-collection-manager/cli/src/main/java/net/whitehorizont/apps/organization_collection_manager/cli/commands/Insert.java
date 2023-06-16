@@ -8,7 +8,7 @@ import io.reactivex.rxjava3.core.Observable;
 import net.whitehorizont.apps.organization_collection_manager.cli.CliDependencyManager;
 import net.whitehorizont.apps.organization_collection_manager.cli.Streams;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollection;
-import net.whitehorizont.apps.organization_collection_manager.core.collection.IElementPrototype;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollectionElement;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.ElementKey;
 import net.whitehorizont.apps.organization_collection_manager.core.commands.CollectionCommandReceiver;
 import net.whitehorizont.apps.organization_collection_manager.core.commands.InsertCommand;
@@ -17,7 +17,7 @@ import net.whitehorizont.apps.organization_collection_manager.lib.validators.Val
 
 @NonNullByDefault
 public class Insert
-    extends InputElementCommand implements ICliCommand<CollectionCommandReceiver<?, ?>> {
+    extends InputElementCommand implements ICliCommand<CollectionCommandReceiver<?>> {
   
   public Insert(Retries retries) {
     super(retries);
@@ -42,15 +42,15 @@ public class Insert
     }
   }
 
-  private <P extends IElementPrototype<?>> InsertCommand<P> getInsertCommand(ElementKey key, ICollection<P, ?> collection, CliDependencyManager<?> dependencyManager) throws ValidationError {
-    final var prototype = collection.getElementPrototype();
+  private <E extends ICollectionElement<E>> InsertCommand<E> getInsertCommand(ElementKey key, ICollection<E> collection, CliDependencyManager<?> dependencyManager) throws ValidationError {
     final var lineReader = dependencyManager.getGenericLineReader();
     final Streams streams = prepareStreams(dependencyManager);
-  
-    promptForFields(prototype, lineReader, streams);
+    
+    final var host = dependencyManager.getWritableCollectionElement();
+    promptForFields(host, lineReader, streams);
     
     final var receiver = new CollectionCommandReceiver<>(collection);
-    return new InsertCommand<P>(key, prototype, receiver);
+    return new InsertCommand<P>(key, host, receiver);
   }
 
   @Override
