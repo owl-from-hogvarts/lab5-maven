@@ -56,6 +56,6 @@ public class CoordinatesDefinition {
     final List<FieldMetadataExtended<Coordinates, CoordinatesWriteable, ?>> leafs = new ArrayList<>();
     leafs.add(X_METADATA);
 
-    return new MetadataComposite<ParentHost, Coordinates, CoordinatesWriteable, Object>(COORDINATES_TITLE, leafs, new ArrayList<>(), coordinatesExtractor);
+    return new MetadataComposite<>(COORDINATES_TITLE, leafs, new ArrayList<>(), coordinatesExtractor);
   }
 }

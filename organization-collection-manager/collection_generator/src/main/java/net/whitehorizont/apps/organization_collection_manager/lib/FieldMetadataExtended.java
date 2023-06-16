@@ -14,7 +14,7 @@ import net.whitehorizont.apps.organization_collection_manager.lib.validators.Val
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationResult;
 
 @NonNullByDefault
-public class FieldMetadataExtended<Host, WritableHost extends Host, V> extends BasicFieldMetadata implements ICanAcceptVisitor<Host, Object> {
+public class FieldMetadataExtended<Host, WritableHost extends Host, V> extends BasicFieldMetadata implements ICanSimpleValidate<Host>, ICanFill<Host, WritableHost> {
   private final Metadata<?, Host, WritableHost, V> metadata;
 
   protected FieldMetadataExtended(Metadata<?, Host, WritableHost, V> metadata) {
@@ -161,12 +161,49 @@ public class FieldMetadataExtended<Host, WritableHost extends Host, V> extends B
     };
   }
 
+  @Override
+  public void fill(WritableHost base, Host other) {
+    getValueSetter().accept(base, getValueGetter().apply(other));
+  }
+
+  @Override
+  public void fill(WritableHost base, Host other, Tag tag) {
+    if (this.metadata.tags.contains(tag)) {
+      fill(base, other);
+    }
+  }
+
   public static enum Tag {
     UPDATABLE,
   }
 
   @Override
-  public void accept(Host host, IMetadataCompositeVisitor<?> visitor) throws ValidationError {
-    visitor.visit(this, host);
+  public void validate(Host host) throws ValidationError {
+    basicCheck(this, host);
+  }
+
+  protected static <Host, V> void basicCheck(FieldMetadataExtended<Host, ?, V> metadata, Host host) throws ValidationError {
+    final var value = getValue(metadata, host);
+
+    final var nullCheck = metadata.getNullCheckValidator();
+    reportValidationError(metadata, nullCheck.validate(value));
+
+    final var simpleValidators = metadata.getSimpleValidators();
+    for (final var validator : simpleValidators) {
+      final var validationResult = validator.validate(value);
+      reportValidationError(metadata, validationResult);
+    }
+  }
+
+  protected static <Host, V> V getValue(FieldMetadataExtended<Host, ?, V> metadata, Host host) {
+    final var getter = metadata.getValueGetter();
+    final var value = getter.apply(host);
+    return value;
+  }
+
+  protected static void reportValidationError(FieldMetadataExtended<?, ?, ?> metadata, ValidationResult<Boolean> validationResult) throws ValidationError {
+    if (!validationResult.getResult()) {
+      throw new ValidationError(metadata.getDisplayedName() + ": " + validationResult.getDisplayedMessage());
+    }
   }
 }

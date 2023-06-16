@@ -5,11 +5,11 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
-import net.whitehorizont.apps.organization_collection_manager.lib.validators.IValidatorsProvider;
+import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationError;
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.Validator;
 
 @NonNullByDefault
-public class FieldMetadataExtendedWithRichValidators<Host, WritableHost extends Host, V, T> extends FieldMetadataExtended<Host, WritableHost, V> implements  IValidatorsProvider<V, T> {
+public class FieldMetadataExtendedWithRichValidators<Host, WritableHost extends Host, V, T> extends FieldMetadataExtended<Host, WritableHost, V> implements  ICanValidate<Host, T> {
   private final List<Validator<V, T>> validators;
   
   public FieldMetadataExtendedWithRichValidators(MetadataWithValidators<Host, WritableHost, V, T> metadata) {
@@ -33,6 +33,23 @@ public class FieldMetadataExtendedWithRichValidators<Host, WritableHost extends 
 
   public List<Validator<V, T>> getValidators() {
     return validators;
+  }
+
+  private static <Host, V, T> void validate(FieldMetadataExtendedWithRichValidators<Host, ?, V, T> metadata, Host host, T validationObject) throws ValidationError {
+    final var value = getValue(metadata, host);
+    final var validators = metadata.getValidators();
+
+    basicCheck(metadata, host);
+
+    for (final var validator : validators) {
+      final var validationResult = validator.validate(value, validationObject);
+      reportValidationError(metadata, validationResult);
+    }
+  }
+
+  @Override
+  public void validate(Host host, T validationObject) throws ValidationError {
+    validate(this, host, validationObject);
   }
   
 }

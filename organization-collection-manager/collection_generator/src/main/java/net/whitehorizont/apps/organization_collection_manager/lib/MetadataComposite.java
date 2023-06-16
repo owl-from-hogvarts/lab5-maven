@@ -5,11 +5,13 @@ import java.util.function.Function;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
+import net.whitehorizont.apps.organization_collection_manager.lib.FieldMetadataExtended.Tag;
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationError;
+
 
 @NonNullByDefault
 // we know type of node container i.e. TitledNode but now what is inside the container
-public class MetadataComposite<ParentHost, Host, WritableHost extends Host, T> extends TitledNode<MetadataComposite<Host, ?, ?, ? super T>, FieldMetadataExtended<Host, WritableHost, ?>> implements ICanAcceptVisitor<Host, T> {
+public class MetadataComposite<ParentHost, Host, WritableHost extends Host, T> extends TitledNode<MetadataComposite<Host, ?, ?, ? super T>, FieldMetadataExtended<Host, WritableHost, ?>> implements ICanValidate<Host, T> {
   private final Function<ParentHost, WritableHost> hostExtractor;
 
   public MetadataComposite(String displayedName, List<FieldMetadataExtended<Host, WritableHost, ?>> leafs,
@@ -18,23 +20,43 @@ public class MetadataComposite<ParentHost, Host, WritableHost extends Host, T> e
     this.hostExtractor = hostExtractor;
   }
 
-  // fuck that shit
-  // without this method java can't track type of child host
   @Override
-  public void accept(Host host, IMetadataCompositeVisitor<? extends T> visitor) throws ValidationError {
+  public void validate(Host host, T validationObject) throws ValidationError {
     for (final var leaf : getLeafs()) {
-      leaf.accept(host, visitor);
+      leaf.validate(host, validationObject);
     }
 
     for (final var child : getChildren()) {
-      acceptChild(host, child, visitor);
+      validateChild(child, host, validationObject);
     }
   }
 
-  private static <Host, Child, T> void acceptChild(Host host, MetadataComposite<Host, Child, ?, T> node, IMetadataCompositeVisitor<? extends T> visitor) throws ValidationError {
+  // fuck that shit
+  // without this method java can't track type of child host
+  private static <Child, Host, T> void validateChild(MetadataComposite<Host, Child, ?, T> node, Host host, T validationObject) throws ValidationError {
     final var child = node.extractChildHost(host);
-    node.accept(child, visitor);
-  } 
+    node.validate(child, validationObject);
+  }
+
+  public void fill(WritableHost to, Host from) {
+    for (final var leaf : getLeafs()) {
+      leaf.fill(to, from);
+    }
+
+    for (final var child : getChildren()) {
+      child.fill(to, from);
+    }
+  }
+
+  public void fill(WritableHost to, Host from, Tag tag) {
+    for (final var leaf : getLeafs()) {
+      leaf.fill(to, from, tag);
+    }
+
+    for (final var child : getChildren()) {
+      child.fill(to, from, tag);
+    }
+  }
 
   public WritableHost extractChildHost(ParentHost parentHost) {
     return hostExtractor.apply(parentHost);

@@ -12,19 +12,19 @@ import net.whitehorizont.apps.organization_collection_manager.core.collection.Co
 import net.whitehorizont.apps.organization_collection_manager.core.collection.DuplicateElements;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollection;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollectionElement;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.IElementInfoProvider;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.CollectionMetadata.Builder;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.KeyGenerationError;
 import net.whitehorizont.apps.organization_collection_manager.core.storage.IFileAdapter;
 import net.whitehorizont.apps.organization_collection_manager.core.storage.errors.ResourceEmpty;
-import net.whitehorizont.apps.organization_collection_manager.lib.MetadataComposite;
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationError;
 
 @NonNullByDefault
 public class CollectionAdapter<E extends ICollectionElement<E>>
     implements IFileAdapter<ICollection<E>> {
   private final XStream serializer = new XStream();
-  private final MetadataComposite<?, E, ?, RamCollection<E>> elementsInfo;
-  public CollectionAdapter(MetadataComposite<?, E, ?, RamCollection<E>> elementsInfo) {
+  private final IElementInfoProvider<E, RamCollection<E>> elementsInfo;
+  public CollectionAdapter(IElementInfoProvider<E, RamCollection<E>> elementsInfo) {
     this.elementsInfo = elementsInfo;
   }
 
