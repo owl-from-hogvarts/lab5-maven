@@ -14,7 +14,7 @@ import net.whitehorizont.apps.organization_collection_manager.core.storage.error
 
 @NonNullByDefault
 public class Show extends BaseElementCommand 
-    implements ICliCommand<CollectionCommandReceiver<?, ?>> {
+    implements ICliCommand<CollectionCommandReceiver<?>> {
   private static final String DESCRIPTION = "print all collection elements";
 
   @Override
@@ -29,7 +29,7 @@ public class Show extends BaseElementCommand
 
   @Override
   public Observable<Void> run(
-      CliDependencyManager<? extends CollectionCommandReceiver<?, ?>> dependencyManager,
+      CliDependencyManager<? extends CollectionCommandReceiver<?>> dependencyManager,
       Stack<String> arguments)
       throws IOException, StorageInaccessibleError {
     return Observable.create(subscriber -> {

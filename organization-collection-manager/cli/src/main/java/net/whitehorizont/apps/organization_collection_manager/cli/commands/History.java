@@ -10,7 +10,7 @@ import net.whitehorizont.apps.organization_collection_manager.cli.CliDependencyM
 import net.whitehorizont.apps.organization_collection_manager.core.commands.CollectionCommandReceiver;
 
 @NonNullByDefault
-public class History implements ICliCommand<CollectionCommandReceiver<?, ?>> {
+public class History implements ICliCommand<CollectionCommandReceiver<?>> {
   private static final int COUNT_DISPLAY = 11;
   private static final String DESCRIPTION = "display last " + COUNT_DISPLAY + " commands";
 
@@ -25,7 +25,7 @@ public class History implements ICliCommand<CollectionCommandReceiver<?, ?>> {
   }
 
   @Override
-  public Observable<Void> run(CliDependencyManager<? extends CollectionCommandReceiver<?, ?>> dependencyManager,
+  public Observable<Void> run(CliDependencyManager<? extends CollectionCommandReceiver<?>> dependencyManager,
       Stack<String> arguments) throws Exception {
         final var history = dependencyManager.getCommandLineReader().getHistory();
         final var historyIterator = history.reverseIterator();

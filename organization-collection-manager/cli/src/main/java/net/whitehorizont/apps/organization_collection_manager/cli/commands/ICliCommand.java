@@ -10,7 +10,7 @@ import net.whitehorizont.apps.organization_collection_manager.cli.CliDependencyM
 import net.whitehorizont.apps.organization_collection_manager.core.commands.CollectionCommandReceiver;
 
 @NonNullByDefault
-public interface ICliCommand<CR extends CollectionCommandReceiver<?, ?>> {
+public interface ICliCommand<CR extends CollectionCommandReceiver<?>> {
   Optional<String> getArgument();
   String getCommandDescription();
 

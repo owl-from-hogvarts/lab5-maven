@@ -23,7 +23,7 @@ import net.whitehorizont.apps.organization_collection_manager.cli.errors.Unknown
 import net.whitehorizont.apps.organization_collection_manager.core.commands.CollectionCommandReceiver;
 
 @NonNullByDefault
-public class CLI<CR extends CollectionCommandReceiver<?, ?>> {
+public class CLI<CR extends CollectionCommandReceiver<?>> {
   private static final String DEFAULT_PROMPT = " > ";
   private static final String COMMAND_SEPARATOR = " ";
   private final LineReader reader;

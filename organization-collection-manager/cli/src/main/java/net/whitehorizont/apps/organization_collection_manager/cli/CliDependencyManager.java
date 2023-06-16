@@ -21,7 +21,7 @@ import net.whitehorizont.apps.organization_collection_manager.core.commands.Coll
 import net.whitehorizont.apps.organization_collection_manager.core.commands.CommandQueue;
 
 @NonNullByDefault
-public class CliDependencyManager<CR extends CollectionCommandReceiver<?, ?>> {
+public class CliDependencyManager<CR extends CollectionCommandReceiver<?>> {
   private final CR collectionReceiver;
   private final ICollectionManager<?> collectionManager;
   public ICollectionManager<?> getCollectionManager() {
@@ -112,7 +112,7 @@ public class CliDependencyManager<CR extends CollectionCommandReceiver<?, ?>> {
     }
   }
 
-  public static class Builder<CR extends CollectionCommandReceiver<?, ?>> {
+  public static class Builder<CR extends CollectionCommandReceiver<?>> {
     private ICollectionManager<?> collectionManager;
     private CR collectionReceiver;
     private Map<String, ICliCommand<? super CR>> commands;

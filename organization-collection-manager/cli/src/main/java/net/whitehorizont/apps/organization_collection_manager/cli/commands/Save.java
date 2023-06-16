@@ -14,7 +14,7 @@ import net.whitehorizont.apps.organization_collection_manager.core.commands.Save
 import net.whitehorizont.apps.organization_collection_manager.core.storage.errors.StorageInaccessibleError;
 
 @NonNullByDefault
-public class Save implements ICliCommand<CollectionCommandReceiver<?, ?>> {
+public class Save implements ICliCommand<CollectionCommandReceiver<?>> {
 
   private static final String DESCRIPTION = "saves collection to disk";
 

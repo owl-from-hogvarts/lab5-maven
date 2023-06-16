@@ -11,7 +11,7 @@ import net.whitehorizont.apps.organization_collection_manager.core.commands.Coll
 import net.whitehorizont.apps.organization_collection_manager.core.commands.InfoCommand;
 
 @NonNullByDefault
-public class Info extends BaseElementCommand implements ICliCommand<CollectionCommandReceiver<?, ?>> {
+public class Info extends BaseElementCommand implements ICliCommand<CollectionCommandReceiver<?>> {
   private static String INFO_DESCRIPTION = "show information about collection itself";
 
   @Override

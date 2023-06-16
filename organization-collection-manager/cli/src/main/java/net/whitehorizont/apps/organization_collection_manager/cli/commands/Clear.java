@@ -11,7 +11,7 @@ import net.whitehorizont.apps.organization_collection_manager.core.commands.Clea
 import net.whitehorizont.apps.organization_collection_manager.core.commands.CollectionCommandReceiver;
 
 @NonNullByDefault
-public class Clear implements ICliCommand<CollectionCommandReceiver<?, ?>> {
+public class Clear implements ICliCommand<CollectionCommandReceiver<?>> {
   private static final String DESCRIPTION = "delete all elements from collection";
 
   @Override
