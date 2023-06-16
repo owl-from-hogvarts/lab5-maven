@@ -9,11 +9,9 @@ import java.util.function.Function;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
-import net.whitehorizont.apps.organization_collection_manager.lib.validators.IValidatorsProvider;
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.SimpleValidator;
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationError;
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationResult;
-import net.whitehorizont.apps.organization_collection_manager.lib.validators.Validator;
 
 @NonNullByDefault
 public class FieldMetadataExtended<Host, WritableHost extends Host, V> extends BasicFieldMetadata implements ICanAcceptVisitor<Host, Object> {
@@ -125,6 +123,10 @@ public class FieldMetadataExtended<Host, WritableHost extends Host, V> extends B
   public Optional<IFromStringBuilder<V>> getValueBuilder() {
     return metadata.valueBuilder;
   }
+
+  public EnumSet<Tag> getTags() {
+    return metadata.tags;
+  }
   
   @Override
   public String getDisplayedName() {
@@ -159,24 +161,12 @@ public class FieldMetadataExtended<Host, WritableHost extends Host, V> extends B
     };
   }
 
-  @Override
-  public void fill(WritableHost base, Host other) {
-    getValueSetter().accept(base, getValueGetter().apply(other));
-  }
-
-  @Override
-  public void fill(WritableHost base, Host other, Tag tag) {
-    if (this.metadata.tags.contains(tag)) {
-      fill(base, other);
-    }
-  }
-
   public static enum Tag {
     UPDATABLE,
   }
 
   @Override
-  public void accept(Host host, IMetadataCompositeVisitor<?> visitor) throws Exception {
+  public void accept(Host host, IMetadataCompositeVisitor<?> visitor) throws ValidationError {
     visitor.visit(this, host);
   }
 }
