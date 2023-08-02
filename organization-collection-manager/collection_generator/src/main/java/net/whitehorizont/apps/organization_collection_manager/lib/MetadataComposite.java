@@ -10,6 +10,10 @@ import net.whitehorizont.apps.organization_collection_manager.lib.validators.Val
 
 
 /** 
+ * Provides set of operations performed on whole host object
+ * 
+ * This class encapsulates metadata tree traversal logic.
+ * 
  * @param <ParentHost> parent context object
  * @param <Host> current context object
  * @param <WritableHost> 
