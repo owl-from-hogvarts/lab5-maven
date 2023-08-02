@@ -66,7 +66,7 @@ public class App
     }
 
     public static FileStorage<ICollection<OrganisationElement>> setupStorage(String fileStoragePath) {
-        final var xmlCollectionAdapter = new CollectionAdapter<>(OrganisationElementDefinition.getMetadata());
+        final var xmlCollectionAdapter = new CollectionAdapter<OrganisationElement>(OrganisationElementDefinition.getMetadata());
         final var testStorage = new FileStorage<>(fileStoragePath, xmlCollectionAdapter);
         return testStorage;
     }

@@ -54,12 +54,9 @@ public class OrganisationElementDefinition {
    .setRequired("Annual Turnover must be provided")
    .addSimpleValidator(value -> new ValidationResult<>(value > 0.0, "Annual Turnover should be strictly above zero"))
    .build();
-  public void accept() {
-    
-  }
   
 
-  public static MetadataComposite<?, OrganisationElement, OrganisationElementWritable, ?> getMetadata() {
+  public static MetadataComposite<?, OrganisationElement, OrganisationElementWritable, ? super ICollection<OrganisationElement>> getMetadata() {
     final List<FieldMetadataExtended<OrganisationElement, OrganisationElementWritable, ?>> leafs = new ArrayList<>();
     leafs.add(ID_METADATA);
     leafs.add(NAME_METADATA);

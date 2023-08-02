@@ -16,7 +16,7 @@ import net.whitehorizont.apps.organization_collection_manager.core.collection.ke
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.ISerializableKey;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.KeyGenerationError;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.UUID_CollectionId;
-import net.whitehorizont.apps.organization_collection_manager.lib.MetadataComposite;
+import net.whitehorizont.apps.organization_collection_manager.lib.IElementInfoProvider;
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationError;
 
 /**
@@ -31,11 +31,11 @@ public class RamCollection<E extends ICollectionElement<E>>
 
   private final Map<ElementKey, E> elements = new LinkedHashMap<>();
   private final CollectionMetadata metadata;
-  private final IElementInfoProvider<E, RamCollection<E>> validators;
+  private final IElementInfoProvider<E, ? super RamCollection<E>> validators;
 
   // takes such dataSink factory which accepts any parent class of collection
   // we undertake to provide class not higher than collection
-  public RamCollection(IElementInfoProvider<E, RamCollection<E>> validators, CollectionMetadata metadata) {
+  public RamCollection(IElementInfoProvider<E, ? super RamCollection<E>> validators, CollectionMetadata metadata) {
     this.metadata = metadata;
     this.validators = validators;
   }
