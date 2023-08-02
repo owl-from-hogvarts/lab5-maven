@@ -20,7 +20,7 @@ import net.whitehorizont.libs.file_system.PathHelpers;
 
 @NonNullByDefault
 public class ExecuteScript<CR extends CollectionCommandReceiver<?>> implements ICliCommand<CR> {
-  public static final String EXECUTE_SCRIPT_COMMAND = "execute-script";
+  public static final String EXECUTE_SCRIPT_COMMAND = "execute_script";
   private static final String DESCRIPTION = "executes new line separated sequence of commands from file";
   private final Set<Path> runningScripts = new HashSet<>();
   private final Map<String, ICliCommand<? super CR>> executeScriptCommandSet;
