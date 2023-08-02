@@ -50,15 +50,15 @@ public abstract class BaseElementCommand {
     return decorator;
   }
 
-  protected static <Host, WritableHost extends Host> void printFields(MetadataComposite<?, Host, WritableHost, ?> node, WritableHost host, PrintStream out) {
+  protected static <Host, WritableHost extends Host> void printFields(MetadataComposite<?, Host, WritableHost, ?> node, Host host, PrintStream out) {
     printFields(node, host, Optional.empty(), out, INITIAL_NEST_LEVEL);
   }
 
-  protected static <Host, WritableHost extends Host> void printFields(MetadataComposite<?, Host, WritableHost, ?> node, WritableHost host, ISerializableKey key, PrintStream out) {
+  protected static <Host, WritableHost extends Host> void printFields(MetadataComposite<?, Host, WritableHost, ?> node, Host host, ISerializableKey key, PrintStream out) {
     printFields(node, host, Optional.of(key), out, INITIAL_NEST_LEVEL);
   }
 
-  private static <Host, WritableHost extends Host> void printFields(MetadataComposite<?, Host, WritableHost, ?> node, WritableHost host, Optional<ISerializableKey> key, PrintStream out, int nestLevel) {
+  private static <Host, WritableHost extends Host> void printFields(MetadataComposite<?, Host, WritableHost, ?> node, Host host, Optional<ISerializableKey> key, PrintStream out, int nestLevel) {
     final String nodeTitle = node.getDisplayedName();
     final var titleDecorated = prepareNodeTitle(nodeTitle);
     if (key.isPresent()) {

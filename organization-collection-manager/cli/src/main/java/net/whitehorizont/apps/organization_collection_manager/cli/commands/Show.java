@@ -8,14 +8,21 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import io.reactivex.rxjava3.core.Observable;
 import net.whitehorizont.apps.organization_collection_manager.cli.CliDependencyManager;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollectionElement;
 import net.whitehorizont.apps.organization_collection_manager.core.commands.CollectionCommandReceiver;
 import net.whitehorizont.apps.organization_collection_manager.core.commands.ShowCommand;
 import net.whitehorizont.apps.organization_collection_manager.core.storage.errors.StorageInaccessibleError;
+import net.whitehorizont.apps.organization_collection_manager.lib.MetadataComposite;
 
 @NonNullByDefault
-public class Show extends BaseElementCommand 
-    implements ICliCommand<CollectionCommandReceiver<?>> {
+public class Show<Host extends ICollectionElement<Host>> extends BaseElementCommand 
+    implements ICliCommand<CollectionCommandReceiver<Host>> {
   private static final String DESCRIPTION = "print all collection elements";
+  private final MetadataComposite<?, Host, ?, ?> metadata;
+
+  public Show(MetadataComposite<?, Host, ?, ?> metadata) {
+    this.metadata = metadata;
+  }
 
   @Override
   public Optional<String> getArgument() {
@@ -29,20 +36,19 @@ public class Show extends BaseElementCommand
 
   @Override
   public Observable<Void> run(
-      CliDependencyManager<? extends CollectionCommandReceiver<?>> dependencyManager,
+      CliDependencyManager<? extends CollectionCommandReceiver<Host>> dependencyManager,
       Stack<String> arguments)
       throws IOException, StorageInaccessibleError {
     return Observable.create(subscriber -> {
-      Observable.just(dependencyManager.getCollectionReceiver()).subscribe(receiver -> {
+      final var receiver = dependencyManager.getCollectionReceiver();
+
         final var show = new ShowCommand<>(receiver);
         final var out = dependencyManager.getStreams().out;
         dependencyManager.getCommandQueue().push(show).subscribe(keyElement -> {
           final var element = keyElement.getValue();
-          printFields(element.getTree(), keyElement.getKey(), out);
+          printFields(metadata, element, keyElement.getKey(), out);
         });
-
         subscriber.onComplete();
-      });
     });
   }
 }

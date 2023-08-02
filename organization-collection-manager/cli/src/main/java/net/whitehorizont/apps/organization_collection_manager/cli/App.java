@@ -90,7 +90,7 @@ public class App
 
     public static Map<String, ICliCommand<? super OrganisationCollectionCommandReceiver>> buildBaseCommandSet() {
         final var commands = new HashMap<String, ICliCommand<? super OrganisationCollectionCommandReceiver>>();
-        final var show = new Show();
+        final var show = new Show<>(OrganisationElementDefinition.getMetadata());
         commands.put("show", show);
         final var save = new Save();
         commands.put("save", save);
