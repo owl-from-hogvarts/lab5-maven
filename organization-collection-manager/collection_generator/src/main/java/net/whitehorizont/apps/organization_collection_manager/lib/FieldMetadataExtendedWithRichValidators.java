@@ -35,21 +35,17 @@ public class FieldMetadataExtendedWithRichValidators<Host, WritableHost extends 
     return validators;
   }
 
-  private static <Host, V, T> void validate(FieldMetadataExtendedWithRichValidators<Host, ?, V, T> metadata, Host host, T validationObject) throws ValidationError {
-    final var value = getValue(metadata, host);
-    final var validators = metadata.getValidators();
-
-    basicCheck(metadata, host);
+  @Override
+  public void validate(Host host, T validationObject) throws ValidationError {
+    super.validate(host);
+    
+    final var value = getValue(this, host);
+    final var validators = this.getValidators();
 
     for (final var validator : validators) {
       final var validationResult = validator.validate(value, validationObject);
-      reportValidationError(metadata, validationResult);
-    }
-  }
-
-  @Override
-  public void validate(Host host, T validationObject) throws ValidationError {
-    validate(this, host, validationObject);
+      reportValidationError(this, validationResult);
+    }  
   }
   
 }
