@@ -17,7 +17,7 @@ import net.whitehorizont.apps.organization_collection_manager.lib.MetadataCompos
 @NonNullByDefault
 public class Show<Host extends ICollectionElement<Host>> extends BaseElementCommand<Host>
     implements ICliCommand<CollectionCommandReceiver<Host>> {
-  public Show(MetadataComposite<?, Host, ?, ?> metadata) {
+  public Show(MetadataComposite<?, Host, ?> metadata) {
     super(metadata);
   }
 

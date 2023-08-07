@@ -56,17 +56,17 @@ public class OrganisationElementDefinition {
    .build();
   
 
-  public static MetadataComposite<?, OrganisationElement, OrganisationElementWritable, ? super ICollection<OrganisationElement>> getMetadata() {
+  public static MetadataComposite<?, OrganisationElement, OrganisationElementWritable> getMetadata() {
     final List<FieldMetadataExtended<OrganisationElement, OrganisationElementWritable, ?>> leafs = new ArrayList<>();
     leafs.add(ID_METADATA);
     leafs.add(NAME_METADATA);
     leafs.add(TYPE_METADATA);
     leafs.add(ANNUAL_TURNOVER_METADATA);
 
-    final List<MetadataComposite<OrganisationElement, ?, ?, ? super ICollection<OrganisationElement>>> children = new ArrayList<>();
+    final List<MetadataComposite<OrganisationElement, ?, ?>> children = new ArrayList<>();
     children.add(CoordinatesDefinition.<OrganisationElement>getTree((organisation) -> organisation.coordinates));
 
-    return new MetadataComposite<Object, OrganisationElement, OrganisationElementWritable, ICollection<OrganisationElement>>(ELEMENT_TITLE, leafs, children, null);
+    return new MetadataComposite<Object, OrganisationElement, OrganisationElementWritable>(ELEMENT_TITLE, leafs, children, null);
   }
   
   public static class OrganisationElement implements ICollectionElement<OrganisationElement> {

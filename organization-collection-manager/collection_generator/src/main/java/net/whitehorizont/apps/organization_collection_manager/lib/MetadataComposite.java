@@ -21,39 +21,31 @@ import net.whitehorizont.apps.organization_collection_manager.lib.validators.Val
  */
 @NonNullByDefault
 // we know type of node container i.e. TitledNode but now what is inside of it
-public class MetadataComposite<ParentHost, Host, WritableHost extends Host, T > extends TitledNode<MetadataComposite<Host, ?, ?, ? super T>, FieldMetadataExtended<Host, WritableHost, ?>> implements IElementInfoProvider<Host, T>, ICanFill<Host, WritableHost> {
+public class MetadataComposite<ParentHost, Host, WritableHost extends Host > extends TitledNode<MetadataComposite<Host, ?, ?>, FieldMetadataExtended<Host, WritableHost, ?>> implements IElementInfoProvider<Host>, ICanFill<Host, WritableHost> {
   private final Function<ParentHost, WritableHost> hostExtractor;
 
   public MetadataComposite(String displayedName, List<FieldMetadataExtended<Host, WritableHost, ?>> leafs,
-      List<MetadataComposite<Host, ?, ?, ? super T>> children, Function<ParentHost, WritableHost> hostExtractor) {
+      List<MetadataComposite<Host, ?, ?>> children, Function<ParentHost, WritableHost> hostExtractor) {
     super(displayedName, leafs, children);
     this.hostExtractor = hostExtractor;
   }
 
   @Override
-  public void validate(Host host, T validationObject) throws ValidationError {
+  public void validate(Host host) throws ValidationError {
     for (final var leaf : getLeafs()) {
       leaf.validate(host);
-      
-      // tried to overcome this crutch by using visitor pattern
-      // turns out it is impossible to apply visitor pattern here
-      // because there is a need to unwrap context object in type safe way
-      // which is too hard or even impossible in java
-      if (leaf instanceof FieldMetadataExtendedWithRichValidators) {
-        ((FieldMetadataExtendedWithRichValidators<Host, WritableHost, ?, T>) leaf).validate(host, validationObject);
-      }
     }
 
     for (final var child : getChildren()) {
-      validateChild(child, host, validationObject);
+      validateChild(child, host);
     }
   }
 
   // fuck that shit
   // without this method java can't track type of child host
-  private static <Child, Host, T> void validateChild(MetadataComposite<Host, Child, ?, T> node, Host host, T validationObject) throws ValidationError {
+  private static <Child, Host, T> void validateChild(MetadataComposite<Host, Child, ?> node, Host host) throws ValidationError {
     final var child = node.extractChildHost(host);
-    node.validate(child, validationObject);
+    node.validate(child);
   }
 
   public void fill(WritableHost to, Host from) {
@@ -66,7 +58,7 @@ public class MetadataComposite<ParentHost, Host, WritableHost extends Host, T > 
     }
   }
 
-  private static <ParentHost, Host, ChildHost extends Host> void fillChild(MetadataComposite<ParentHost, Host, ChildHost, ?> metadata, ParentHost to, ParentHost from) {
+  private static <ParentHost, Host, ChildHost extends Host> void fillChild(MetadataComposite<ParentHost, Host, ChildHost> metadata, ParentHost to, ParentHost from) {
     final var toChild = metadata.extractChildHost(to);
     final var fromChild = metadata.extractChildHost(from);
 
@@ -74,6 +66,7 @@ public class MetadataComposite<ParentHost, Host, WritableHost extends Host, T > 
 
   } 
 
+  @Override
   public void fill(WritableHost to, Host from, Tag tag) {
     for (final var leaf : getLeafs()) {
       leaf.fill(to, from, tag);
@@ -84,7 +77,7 @@ public class MetadataComposite<ParentHost, Host, WritableHost extends Host, T > 
     }
   }
 
-  private static <ParentHost, Host, ChildHost extends Host> void fillChild(MetadataComposite<ParentHost, Host, ChildHost, ?> metadata, ParentHost to, ParentHost from, Tag tag) {
+  private static <ParentHost, Host, ChildHost extends Host> void fillChild(MetadataComposite<ParentHost, Host, ChildHost> metadata, ParentHost to, ParentHost from, Tag tag) {
     final var toChild = metadata.extractChildHost(to);
     final var fromChild = metadata.extractChildHost(from);
 

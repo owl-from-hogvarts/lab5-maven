@@ -3,6 +3,9 @@ package net.whitehorizont.apps.organization_collection_manager.core.storage.coll
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import com.thoughtworks.xstream.XStream;
@@ -16,6 +19,7 @@ import net.whitehorizont.apps.organization_collection_manager.core.collection.Co
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.KeyGenerationError;
 import net.whitehorizont.apps.organization_collection_manager.core.storage.IFileAdapter;
 import net.whitehorizont.apps.organization_collection_manager.core.storage.errors.ResourceEmpty;
+import net.whitehorizont.apps.organization_collection_manager.lib.ICanRichValidate;
 import net.whitehorizont.apps.organization_collection_manager.lib.IElementInfoProvider;
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationError;
 
@@ -26,9 +30,15 @@ import net.whitehorizont.apps.organization_collection_manager.lib.validators.Val
 public class CollectionAdapter<E extends ICollectionElement<E>>
     implements IFileAdapter<ICollection<E>> {
   private final XStream serializer = new XStream();
-  private final IElementInfoProvider<E, ? super RamCollection<E>> elementsInfo;
-  public CollectionAdapter(IElementInfoProvider<E, ? super RamCollection<E>> elementsInfo) {
+  private final IElementInfoProvider<E> elementsInfo;
+  private final List<ICanRichValidate<E, ? super ICollection<E>>> validators;
+  public CollectionAdapter(IElementInfoProvider<E> elementsInfo) {
+    this(elementsInfo, new ArrayList<>());
+  }
+  
+  public CollectionAdapter(IElementInfoProvider<E> elementsInfo, List<ICanRichValidate<E, ? super ICollection<E>>> validators) {
     this.elementsInfo = elementsInfo;
+    this.validators = validators;
   }
 
   {
@@ -56,7 +66,7 @@ public class CollectionAdapter<E extends ICollectionElement<E>>
     final var storageXml = new StorageXml<>(collectionXml, storageMetadata);
 
     // hard code UTF-8 cause who the fuck except shitty windows uses other encoding for files?
-    // any element of array should never be null
+    // no array element should every be null
     @SuppressWarnings("null")
     final byte @NonNull[] serializedContent = serializer.toXML(storageXml).getBytes(DEFAULT_ENCODING);
     return serializedContent;
@@ -74,6 +84,11 @@ public class CollectionAdapter<E extends ICollectionElement<E>>
     
     final var collection = new RamCollection<E>(this.elementsInfo, collectionMetadata);
 
+    // TODO: move configuration to collection factory
+    for (final var validator : this.validators) {
+      collection.addValidator(validator);
+    }
+
     
     for (var elementXmlRepresentation : storageXmlRepresentation.collection.elements) {
       collection.insert(elementXmlRepresentation);
@@ -87,7 +102,7 @@ public class CollectionAdapter<E extends ICollectionElement<E>>
   public RamCollection<E> deserialize(byte[] fileContent) throws ValidationError, ResourceEmpty, KeyGenerationError, DuplicateElements {
     if (fileContent.length == 0) {
       // if something wrong with file, error any way
-      // this is responsibility of client code what to with errors
+      // this is responsibility of client code to decide what to do with errors
       // TODO: check for file signature (though xstream should throw validation error)
       throw new ResourceEmpty();
     }

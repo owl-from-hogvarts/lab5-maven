@@ -9,7 +9,7 @@ import net.whitehorizont.apps.organization_collection_manager.lib.validators.Val
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.Validator;
 
 @NonNullByDefault
-public class FieldMetadataExtendedWithRichValidators<Host, WritableHost extends Host, V, T> extends FieldMetadataExtended<Host, WritableHost, V> implements  ICanValidate<Host, T> {
+public class FieldMetadataExtendedWithRichValidators<Host, WritableHost extends Host, V, T> extends FieldMetadataExtended<Host, WritableHost, V> implements  ICanRichValidate<Host, T> {
   private final List<Validator<V, T>> validators;
   
   public FieldMetadataExtendedWithRichValidators(MetadataWithValidators<Host, WritableHost, V, T> metadata) {

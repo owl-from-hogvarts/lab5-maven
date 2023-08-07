@@ -16,6 +16,7 @@ import net.whitehorizont.apps.organization_collection_manager.core.collection.ke
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.ISerializableKey;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.KeyGenerationError;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.UUID_CollectionId;
+import net.whitehorizont.apps.organization_collection_manager.lib.ICanRichValidate;
 import net.whitehorizont.apps.organization_collection_manager.lib.IElementInfoProvider;
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationError;
 
@@ -31,21 +32,19 @@ public class RamCollection<E extends ICollectionElement<E>>
 
   private final Map<ElementKey, E> elements = new LinkedHashMap<>();
   private final CollectionMetadata metadata;
-  private final IElementInfoProvider<E, ? super RamCollection<E>> validators;
+  private final IElementInfoProvider<E> elementMetadata;
+  private final List<ICanRichValidate<E, ? super RamCollection<E>>> validators = new ArrayList<>();
 
-  // takes such dataSink factory which accepts any parent class of collection
-  // we undertake to provide class not higher than collection
-  public RamCollection(IElementInfoProvider<E, ? super RamCollection<E>> validators, CollectionMetadata metadata) {
+  public RamCollection(IElementInfoProvider<E> elementMetadata, CollectionMetadata metadata) {
     this.metadata = metadata;
-    this.validators = validators;
+    this.elementMetadata = elementMetadata;
   }
 
-  public RamCollection(IElementInfoProvider<E, RamCollection<E>> validators) {
-    this(validators, new CollectionMetadata(new Builder(new UUID_CollectionId())));
+  public RamCollection(IElementInfoProvider<E> elementMetadata) {
+    this(elementMetadata, new CollectionMetadata(new Builder(new UUID_CollectionId())));
   }
 
   /**
-   * Collection listens on returned sink to receive new elements
    * 
    * @throws ValidationError
    * @throws KeyGenerationError
@@ -64,9 +63,28 @@ public class RamCollection<E extends ICollectionElement<E>>
     if (containsKey(key)) {
       throw new DuplicateElements(key);
     }
-    // validate here
-    this.validators.validate(element, this);
+
+    this.validateElement(element);
     this.elements.put(key, element);
+  }
+
+  /**
+   * Registers validator for this collection
+   * 
+   * @param validator will be executed on each insert
+   */
+  public void addValidator(ICanRichValidate<E, ? super RamCollection<E>> validator) {
+    this.validators.add(validator);
+  }
+
+  private void validateElement(E element) throws ValidationError {
+    // execute simple validators attached via metadata
+    this.elementMetadata.validate(element);
+    
+    // validate with rich validators
+    for (final var validator : this.validators) {
+      validator.validate(element, this);
+    }
   }
 
   @Override
@@ -161,6 +179,6 @@ public class RamCollection<E extends ICollectionElement<E>>
 
   @Override
   public String getCollectionType() {
-    return this.validators.getDisplayedName();
+    return this.elementMetadata.getDisplayedName();
   }
 }

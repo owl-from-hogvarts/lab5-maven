@@ -21,9 +21,9 @@ public abstract class BaseElementCommand<Host> {
   protected static final int PADDING_MULTIPLIER = 2;
   protected static final int INITIAL_NEST_LEVEL = 0;
 
-  protected final MetadataComposite<?, Host, ?, ?> metadata;
+  protected final MetadataComposite<?, Host, ?> metadata;
 
-  public BaseElementCommand(MetadataComposite<?, Host, ?, ?> metadata) {
+  public BaseElementCommand(MetadataComposite<?, Host, ?> metadata) {
     this.metadata = metadata;
   }
 
@@ -64,7 +64,7 @@ public abstract class BaseElementCommand<Host> {
     printFields(metadata, host, Optional.of(key), out, INITIAL_NEST_LEVEL);
   }
 
-  private static <Host, WritableHost extends Host> void printFields(MetadataComposite<?, Host, WritableHost, ?> node, Host host, Optional<ISerializableKey> key, PrintStream out, int nestLevel) {
+  private static <Host, WritableHost extends Host> void printFields(MetadataComposite<?, Host, WritableHost> node, Host host, Optional<ISerializableKey> key, PrintStream out, int nestLevel) {
     final String nodeTitle = node.getDisplayedName();
     final var titleDecorated = prepareNodeTitle(nodeTitle);
     if (key.isPresent()) {
@@ -86,7 +86,7 @@ public abstract class BaseElementCommand<Host> {
     }
   }
 
-  private static <ParentHost, Host, WritableHost extends Host> void doForChild(MetadataComposite<ParentHost, Host, WritableHost, ?> childMetadata, ParentHost host, Optional<ISerializableKey> key, PrintStream out, int nestLevel) {
+  private static <ParentHost, Host, WritableHost extends Host> void doForChild(MetadataComposite<ParentHost, Host, WritableHost> childMetadata, ParentHost host, Optional<ISerializableKey> key, PrintStream out, int nestLevel) {
       final var childHost = childMetadata.extractChildHost(host);
       printFields(childMetadata, childHost, key, out, nestLevel + 1);
   }}

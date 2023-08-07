@@ -10,6 +10,10 @@ import net.whitehorizont.apps.organization_collection_manager.core.collection.ke
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.KeyGenerationError;
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationError;
 
+/**
+ * Ideally, implementations should register validators and validate elements!
+ * If there is any way to enforce validators, implement it pls 😉
+ */
 @NonNullByDefault
 public interface ICollection<E extends ICollectionElement<E>> {
 

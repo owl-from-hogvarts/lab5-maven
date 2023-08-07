@@ -52,7 +52,7 @@ public class CoordinatesDefinition {
 
   }
 
-  public static <ParentHost> MetadataComposite<ParentHost, Coordinates, CoordinatesWriteable, ? super Object> getTree(Function<ParentHost, CoordinatesWriteable> coordinatesExtractor) {
+  public static <ParentHost> MetadataComposite<ParentHost, Coordinates, CoordinatesWriteable> getTree(Function<ParentHost, CoordinatesWriteable> coordinatesExtractor) {
     final List<FieldMetadataExtended<Coordinates, CoordinatesWriteable, ?>> leafs = new ArrayList<>();
     leafs.add(X_METADATA);
 

@@ -42,11 +42,11 @@ public class InputElementCommand extends BaseElementCommand {
   }
 
   
-  protected <ParentHost, Host, WritableHost extends Host> Host promptForFields(MetadataComposite<?, Host, WritableHost, ?> node, WritableHost host, LineReader lineReader, Streams streams) throws ValidationError {
+  protected <ParentHost, Host, WritableHost extends Host> Host promptForFields(MetadataComposite<?, Host, WritableHost> node, WritableHost host, LineReader lineReader, Streams streams) throws ValidationError {
     return promptForFields(node, host, lineReader, streams, 0);
   }
 
-  private <ParentHost, Host, WritableHost extends Host> Host promptForFields(MetadataComposite<?, Host, WritableHost, ?> node, WritableHost host, LineReader lineReader, Streams streams,
+  private <ParentHost, Host, WritableHost extends Host> Host promptForFields(MetadataComposite<?, Host, WritableHost> node, WritableHost host, LineReader lineReader, Streams streams,
       int nestLevel) throws ValidationError {
         // node contains metadata
         // if node has value builder, prompt user
@@ -117,7 +117,7 @@ public class InputElementCommand extends BaseElementCommand {
     metadata.getValueSetter().accept(host, valueBuilder.buildFromString(input));
   }
 
-  private <ParentHost, Host, WritableHost extends Host> void doForChild(MetadataComposite<ParentHost, Host, WritableHost, ?> childMetadata, ParentHost host, LineReader lineReader, Streams streams, int nestLevel) throws ValidationError {
+  private <ParentHost, Host, WritableHost extends Host> void doForChild(MetadataComposite<ParentHost, Host, WritableHost> childMetadata, ParentHost host, LineReader lineReader, Streams streams, int nestLevel) throws ValidationError {
       final var childHost = childMetadata.extractChildHost(host);
       promptForFields(childMetadata, childHost, lineReader, streams, nestLevel + 1);
   }

@@ -14,7 +14,7 @@ import net.whitehorizont.apps.organization_collection_manager.lib.MetadataCompos
 
 @NonNullByDefault
 public class FilterStartsWith extends BaseElementCommand<OrganisationElement> implements ICliCommand<OrganisationCollectionCommandReceiver> {
-  public FilterStartsWith(MetadataComposite<?, OrganisationElement, ?, ?> metadata) {
+  public FilterStartsWith(MetadataComposite<?, OrganisationElement, ?> metadata) {
     super(metadata);
   }
 
