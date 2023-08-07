@@ -15,14 +15,13 @@ import net.whitehorizont.apps.organization_collection_manager.core.storage.error
 import net.whitehorizont.apps.organization_collection_manager.lib.MetadataComposite;
 
 @NonNullByDefault
-public class Show<Host extends ICollectionElement<Host>> extends BaseElementCommand 
+public class Show<Host extends ICollectionElement<Host>> extends BaseElementCommand<Host>
     implements ICliCommand<CollectionCommandReceiver<Host>> {
-  private static final String DESCRIPTION = "print all collection elements";
-  private final MetadataComposite<?, Host, ?, ?> metadata;
-
   public Show(MetadataComposite<?, Host, ?, ?> metadata) {
-    this.metadata = metadata;
+    super(metadata);
   }
+
+  private static final String DESCRIPTION = "print all collection elements";
 
   @Override
   public Optional<String> getArgument() {
@@ -46,7 +45,7 @@ public class Show<Host extends ICollectionElement<Host>> extends BaseElementComm
         final var out = dependencyManager.getStreams().out;
         dependencyManager.getCommandQueue().push(show).subscribe(keyElement -> {
           final var element = keyElement.getValue();
-          printFields(metadata, element, keyElement.getKey(), out);
+          printFields(element, keyElement.getKey(), out);
         });
         subscriber.onComplete();
     });

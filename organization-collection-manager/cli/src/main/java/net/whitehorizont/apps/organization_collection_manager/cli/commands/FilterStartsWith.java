@@ -7,11 +7,17 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import io.reactivex.rxjava3.core.Observable;
 import net.whitehorizont.apps.organization_collection_manager.cli.CliDependencyManager;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.OrganisationElementDefinition.OrganisationElement;
 import net.whitehorizont.apps.organization_collection_manager.core.commands.FilterStartsWithCommand;
 import net.whitehorizont.apps.organization_collection_manager.core.commands.OrganisationCollectionCommandReceiver;
+import net.whitehorizont.apps.organization_collection_manager.lib.MetadataComposite;
 
 @NonNullByDefault
-public class FilterStartsWith extends BaseElementCommand implements ICliCommand<OrganisationCollectionCommandReceiver> {
+public class FilterStartsWith extends BaseElementCommand<OrganisationElement> implements ICliCommand<OrganisationCollectionCommandReceiver> {
+  public FilterStartsWith(MetadataComposite<?, OrganisationElement, ?, ?> metadata) {
+    super(metadata);
+  }
+
   private static final String DESCRIPTION = "display organisations, which name starts with {prefix}";
 
   @Override
@@ -32,7 +38,7 @@ public class FilterStartsWith extends BaseElementCommand implements ICliCommand<
         final var filterCommand = new FilterStartsWithCommand(dependencyManager.getCollectionReceiver(), prefix);
         dependencyManager.getCommandQueue().push(filterCommand).blockingSubscribe(keyElement -> {
           final var element = keyElement.getValue();
-          printFields(element.getTree(), keyElement.getKey(), out);
+          printFields(element, keyElement.getKey(), out);
         });
 
         return Observable.empty();

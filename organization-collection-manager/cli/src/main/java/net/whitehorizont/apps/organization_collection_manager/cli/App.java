@@ -106,7 +106,7 @@ public class App
         commands.put("remove_lower", removeLower);
         final var RemoveGreater = new RemoveGreater();
         commands.put("remove_greater", RemoveGreater);
-        final var filterStartsWith = new FilterStartsWith();
+        final var filterStartsWith = new FilterStartsWith(OrganisationElementDefinition.getMetadata());
         commands.put("filter_starts_with_full_name", filterStartsWith);
         final var history = new History();
         commands.put("history", history);
