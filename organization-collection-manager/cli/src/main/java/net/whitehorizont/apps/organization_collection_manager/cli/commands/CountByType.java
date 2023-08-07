@@ -13,7 +13,7 @@ import net.whitehorizont.apps.organization_collection_manager.core.commands.Orga
 import net.whitehorizont.apps.organization_collection_manager.lib.EnumFactory;
 
 @NonNullByDefault
-public class CountByType extends BaseElementCommand implements ICliCommand<OrganisationCollectionCommandReceiver> {
+public class CountByType implements ICliCommand<OrganisationCollectionCommandReceiver> {
   private static final String DESCRIPTION = "Count element of collection which have type specified";
   private final EnumFactory<OrganisationType> enumFactory = new EnumFactory<>(OrganisationType.class);
 
