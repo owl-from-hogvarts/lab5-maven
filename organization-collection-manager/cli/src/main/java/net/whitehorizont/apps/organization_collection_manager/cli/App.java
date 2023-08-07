@@ -1,5 +1,6 @@
 package net.whitehorizont.apps.organization_collection_manager.cli;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,6 +30,8 @@ import net.whitehorizont.apps.organization_collection_manager.core.collection.Or
 import net.whitehorizont.apps.organization_collection_manager.core.commands.OrganisationCollectionCommandReceiver;
 import net.whitehorizont.apps.organization_collection_manager.core.storage.FileStorage;
 import net.whitehorizont.apps.organization_collection_manager.core.storage.collection_adapter.CollectionAdapter;
+import net.whitehorizont.apps.organization_collection_manager.lib.ICanRichValidate;
+import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationError;
 
 /**
  * Hello world!
@@ -66,6 +69,18 @@ public class App
     }
 
     public static FileStorage<ICollection<OrganisationElement>> setupStorage(String fileStoragePath) {
+        final var collectionValidators = new ArrayList<ICanRichValidate<OrganisationElement, ICollection<OrganisationElement>>>();
+        collectionValidators.add((element, collection) -> {
+            final var idGetter = OrganisationElementDefinition.ID_METADATA.getValueGetter();
+            final var duplicateIdElements$ = collection.getEvery$().filter(e -> idGetter.apply(e).equals(idGetter.apply(element)));
+            final var duplicateIdCount =  duplicateIdElements$.count().blockingGet();
+            if (duplicateIdCount > 0) {
+                throw new ValidationError("Duplicate ID's found! ID should be unique!");
+            }
+
+            // TODO: handle error, regenerate id
+        });
+        
         final var xmlCollectionAdapter = new CollectionAdapter<OrganisationElement>(OrganisationElementDefinition.getMetadata());
         final var testStorage = new FileStorage<>(fileStoragePath, xmlCollectionAdapter);
         return testStorage;
