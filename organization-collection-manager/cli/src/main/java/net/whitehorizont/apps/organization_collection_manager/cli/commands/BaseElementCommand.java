@@ -10,7 +10,7 @@ import net.whitehorizont.libs.file_system.DecoratedString;
 import net.whitehorizont.libs.file_system.StringHelper;
 
 @NonNullByDefault
-public abstract class BaseElementCommand {
+public abstract class BaseElementCommand<Host> {
   protected static final String FIELD_NAME_VALUE_SEPARATOR = ": ";
   protected static final String DEFAULT_DECORATOR = "-";
   protected static final int DECORATED_TITLE_WIDTH = 80;
@@ -20,6 +20,12 @@ public abstract class BaseElementCommand {
   protected static final String KEY_DECORATION = " >";
   protected static final int PADDING_MULTIPLIER = 2;
   protected static final int INITIAL_NEST_LEVEL = 0;
+
+  protected final MetadataComposite<?, Host, ?, ?> metadata;
+
+  public BaseElementCommand(MetadataComposite<?, Host, ?, ?> metadata) {
+    this.metadata = metadata;
+  }
 
   protected static DecoratedString prepareNodeTitle(String title) {
       final var titleDecorator = getDecorator();
@@ -50,12 +56,12 @@ public abstract class BaseElementCommand {
     return decorator;
   }
 
-  protected static <Host, WritableHost extends Host> void printFields(MetadataComposite<?, Host, WritableHost, ?> node, Host host, PrintStream out) {
-    printFields(node, host, Optional.empty(), out, INITIAL_NEST_LEVEL);
+  protected void printFields(Host host, PrintStream out) {
+    printFields(metadata, host, Optional.empty(), out, INITIAL_NEST_LEVEL);
   }
 
-  protected static <Host, WritableHost extends Host> void printFields(MetadataComposite<?, Host, WritableHost, ?> node, Host host, ISerializableKey key, PrintStream out) {
-    printFields(node, host, Optional.of(key), out, INITIAL_NEST_LEVEL);
+  protected void printFields(Host host, ISerializableKey key, PrintStream out) {
+    printFields(metadata, host, Optional.of(key), out, INITIAL_NEST_LEVEL);
   }
 
   private static <Host, WritableHost extends Host> void printFields(MetadataComposite<?, Host, WritableHost, ?> node, Host host, Optional<ISerializableKey> key, PrintStream out, int nestLevel) {
