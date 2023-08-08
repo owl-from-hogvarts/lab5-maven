@@ -7,14 +7,19 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import io.reactivex.rxjava3.core.Observable;
 import net.whitehorizont.apps.organization_collection_manager.cli.CliDependencyManager;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.OrganisationElementDefinition;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.OrganisationElementDefinition.OrganisationElement;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.OrganisationElementDefinition.OrganisationElementWritable;
 import net.whitehorizont.apps.organization_collection_manager.core.commands.OrganisationCollectionCommandReceiver;
 import net.whitehorizont.apps.organization_collection_manager.core.commands.UpdateCommand;
+import net.whitehorizont.apps.organization_collection_manager.lib.IWritableHostFactory;
+import net.whitehorizont.apps.organization_collection_manager.lib.MetadataComposite;
 
 @NonNullByDefault
 public class Update
- extends InputElementCommand implements ICliCommand<OrganisationCollectionCommandReceiver> {
-  public Update(Retries retries) {
-    super(retries);
+ extends InputElementCommand<OrganisationElement, OrganisationElementWritable> implements ICliCommand<OrganisationCollectionCommandReceiver> {
+  public Update(MetadataComposite<?, OrganisationElement, OrganisationElementWritable> metadata, IWritableHostFactory<OrganisationElementWritable> elementFactory, Retries retries) {
+    super(metadata, elementFactory, retries);
   }
 
   private static final String DESCRIPTION = "replace element with id by new one";
@@ -31,20 +36,18 @@ public class Update
   }
 
   @Override
-  public Observable<Void> run(CliDependencyManager<? extends OrganisationCollectionCommandReceiver> dependencyManager, Stack<String> arguments) throws Exception {
-    final var collection = dependencyManager.getCollectionReceiver();
-    
+  public Observable<Void> run(CliDependencyManager<? extends OrganisationCollectionCommandReceiver> dependencyManager, Stack<String> arguments) throws Exception {    
     final String idString = arguments.pop().trim().strip();
-    final var id = collection.getElementIdFromString(idString);
+    final var id = OrganisationElementDefinition.ID_METADATA.getValueBuilder().get().buildFromString(idString);
 
     final var lineReader = dependencyManager.getGenericLineReader();
-
+    final var host = getWritableCollectionElement();
+    
+    final var streams = prepareStreams(dependencyManager);
+    promptForFields(host, lineReader, streams);
+  
     final var receiver = dependencyManager.getCollectionReceiver();
-    final var updateCommand = new UpdateCommand(id, receiver, (oldPrototype) -> {
-      final var streams = prepareStreams(dependencyManager);
-      promptForFields(oldPrototype, lineReader, streams);
-      return oldPrototype;
-    });
+    final var updateCommand = new UpdateCommand(id, receiver, host);
 
 
     return dependencyManager.getCommandQueue().push(updateCommand);
@@ -54,5 +57,5 @@ public class Update
     // ask for new element via insert command
     // update new's element id with the old one
     // propose new element to collection
-  } 
+  }
 }

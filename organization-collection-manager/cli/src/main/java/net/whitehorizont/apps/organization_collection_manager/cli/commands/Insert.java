@@ -13,20 +13,22 @@ import net.whitehorizont.apps.organization_collection_manager.core.collection.ke
 import net.whitehorizont.apps.organization_collection_manager.core.commands.CollectionCommandReceiver;
 import net.whitehorizont.apps.organization_collection_manager.core.commands.InsertCommand;
 import net.whitehorizont.apps.organization_collection_manager.core.storage.errors.StorageInaccessibleError;
+import net.whitehorizont.apps.organization_collection_manager.lib.IWritableHostFactory;
+import net.whitehorizont.apps.organization_collection_manager.lib.MetadataComposite;
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationError;
 
 @NonNullByDefault
-public class Insert
-    extends InputElementCommand implements ICliCommand<CollectionCommandReceiver<?>> {
+public class Insert<Host extends ICollectionElement<Host>, WritableHost extends Host>
+    extends InputElementCommand<Host, WritableHost> implements ICliCommand<CollectionCommandReceiver<Host>> {
   
-  public Insert(Retries retries) {
-    super(retries);
+  public Insert(MetadataComposite<?, Host, WritableHost> metadata, IWritableHostFactory<WritableHost> elementFactory, Retries retries) {
+    super(metadata, elementFactory, retries);
   }
 
   private static final String DESCRIPTION = "insert element into collection";
 
   @Override
-  public Observable<Void> run(CliDependencyManager<?> dependencyManager, Stack<String> arguments)
+  public Observable<Void> run(CliDependencyManager<? extends CollectionCommandReceiver<Host>> dependencyManager, Stack<String> arguments)
       throws StorageInaccessibleError, ValidationError {
 
     final var collection = dependencyManager.getCollectionReceiver();
@@ -42,15 +44,15 @@ public class Insert
     }
   }
 
-  private <E extends ICollectionElement<E>> InsertCommand<E> getInsertCommand(ElementKey key, ICollection<E> collection, CliDependencyManager<?> dependencyManager) throws ValidationError {
+  private InsertCommand<Host> getInsertCommand(ElementKey key, ICollection<Host> collection, CliDependencyManager<?> dependencyManager) throws ValidationError {
     final var lineReader = dependencyManager.getGenericLineReader();
     final Streams streams = prepareStreams(dependencyManager);
     
-    final var host = dependencyManager.getWritableCollectionElement();
+    final var host = getWritableCollectionElement();
     promptForFields(host, lineReader, streams);
     
     final var receiver = new CollectionCommandReceiver<>(collection);
-    return new InsertCommand<P>(key, host, receiver);
+    return new InsertCommand<>(key, host, receiver);
   }
 
   @Override

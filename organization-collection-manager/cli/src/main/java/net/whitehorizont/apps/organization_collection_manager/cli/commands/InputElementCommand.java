@@ -8,20 +8,31 @@ import org.jline.reader.LineReader;
 
 import net.whitehorizont.apps.organization_collection_manager.cli.CliDependencyManager;
 import net.whitehorizont.apps.organization_collection_manager.cli.Streams;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollectionElement;
 import net.whitehorizont.apps.organization_collection_manager.lib.FieldMetadataExtended;
+import net.whitehorizont.apps.organization_collection_manager.lib.IWritableHostFactory;
 import net.whitehorizont.apps.organization_collection_manager.lib.MetadataComposite;
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationError;
 import net.whitehorizont.libs.file_system.StringHelper;
 
 @NonNullByDefault
-public class InputElementCommand extends BaseElementCommand {
+public class InputElementCommand<Host extends ICollectionElement<Host>, WritableHost extends Host> extends BaseElementCommand<Host> {
   private static final String HINT_PREFIX = "Hint for next field: ";
+  // FIXME: the property should be within parent class
+  private final MetadataComposite<?, Host, WritableHost> metadata;
+  private final IWritableHostFactory<WritableHost> elementFactory;
 
+  final protected WritableHost getWritableCollectionElement() {
+    return this.elementFactory.createWritable();
+  }
 
   private final Retries retries;
 
-  public InputElementCommand(Retries retries) {
+  public InputElementCommand(MetadataComposite<?, Host, WritableHost> metadata, IWritableHostFactory<WritableHost> elementFactory, Retries retries) {
+    super(metadata);
+    this.metadata = metadata;
     this.retries = retries;
+    this.elementFactory = elementFactory;
   }
 
   public static class Retries {
@@ -42,8 +53,8 @@ public class InputElementCommand extends BaseElementCommand {
   }
 
   
-  protected <ParentHost, Host, WritableHost extends Host> Host promptForFields(MetadataComposite<?, Host, WritableHost> node, WritableHost host, LineReader lineReader, Streams streams) throws ValidationError {
-    return promptForFields(node, host, lineReader, streams, 0);
+  protected Host promptForFields(WritableHost host, LineReader lineReader, Streams streams) throws ValidationError {
+    return promptForFields(this.metadata, host, lineReader, streams, 0);
   }
 
   private <ParentHost, Host, WritableHost extends Host> Host promptForFields(MetadataComposite<?, Host, WritableHost> node, WritableHost host, LineReader lineReader, Streams streams,
@@ -111,7 +122,7 @@ public class InputElementCommand extends BaseElementCommand {
     return host;
   }
 
-  private static <WritableHost, V> void setValue(FieldMetadataExtended<?, WritableHost, V> metadata, @Nullable String input, WritableHost host) throws ValidationError {
+  private static <Host, WritableHost extends Host, V> void setValue(FieldMetadataExtended<Host, WritableHost, V> metadata, @Nullable String input, WritableHost host) throws ValidationError {
     final var valueBuilder = metadata.getValueBuilder().get();
     // FIXME: handle NPE
     metadata.getValueSetter().accept(host, valueBuilder.buildFromString(input));

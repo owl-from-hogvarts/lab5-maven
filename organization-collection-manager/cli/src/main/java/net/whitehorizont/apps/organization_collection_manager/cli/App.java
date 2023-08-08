@@ -14,7 +14,6 @@ import net.whitehorizont.apps.organization_collection_manager.cli.commands.Filte
 import net.whitehorizont.apps.organization_collection_manager.cli.commands.Help;
 import net.whitehorizont.apps.organization_collection_manager.cli.commands.History;
 import net.whitehorizont.apps.organization_collection_manager.cli.commands.ICliCommand;
-import net.whitehorizont.apps.organization_collection_manager.cli.commands.Info;
 import net.whitehorizont.apps.organization_collection_manager.cli.commands.Insert;
 import net.whitehorizont.apps.organization_collection_manager.cli.commands.PrintDescending;
 import net.whitehorizont.apps.organization_collection_manager.cli.commands.RemoveById;
@@ -89,9 +88,9 @@ public class App
     public static Map<String, ICliCommand<? super OrganisationCollectionCommandReceiver>> buildMainCommandSet() {
         final var baseCommands = buildBaseCommandSet();
         final Insert.Retries retries = new Insert.Retries();
-        final var insert = new Insert(retries);
+        final var insert = new Insert<>(OrganisationElementDefinition.getMetadata(), new OrganisationElementDefinition.OrganisationElementFactory(), retries);
         baseCommands.put("insert", insert);
-        final var update = new Update(retries);
+        final var update = new Update(OrganisationElementDefinition.getMetadata(), new OrganisationElementDefinition.OrganisationElementFactory(), retries);
         baseCommands.put("update", update);
 
         final var executeScriptCommandSet = buildExecuteScriptCommandSet();
@@ -111,8 +110,8 @@ public class App
         commands.put("save", save);
         final var clear = new Clear();
         commands.put("clear", clear);
-        final var info = new Info();
-        commands.put("info", info);
+        // final var info = new Info();
+        // commands.put("info", info);
         final var count = new CountByType();
         commands.put("count_by_type", count);
         final var removeById = new RemoveById();
@@ -125,7 +124,7 @@ public class App
         commands.put("filter_starts_with_full_name", filterStartsWith);
         final var history = new History();
         commands.put("history", history);
-        final var printDescending = new PrintDescending();
+        final var printDescending = new PrintDescending(OrganisationElementDefinition.getMetadata());
         commands.put("print_descending", printDescending);
 
         return commands;
@@ -133,9 +132,9 @@ public class App
     public static Map<String, ICliCommand<? super OrganisationCollectionCommandReceiver>> buildExecuteScriptCommandSet() {
         final var commands = buildBaseCommandSet();
         final Insert.Retries retries = new Insert.Retries(1); // does not make sense to infinitely ask for right data from script
-        final var insert = new Insert(retries);
+        final var insert = new Insert<>(OrganisationElementDefinition.getMetadata(), new OrganisationElementDefinition.OrganisationElementFactory(), retries);
         commands.put("insert", insert);
-        final var update = new Update(retries);
+        final var update = new Update(OrganisationElementDefinition.getMetadata(), new OrganisationElementDefinition.OrganisationElementFactory(), retries);
         commands.put("update", update);
 
         return commands;
