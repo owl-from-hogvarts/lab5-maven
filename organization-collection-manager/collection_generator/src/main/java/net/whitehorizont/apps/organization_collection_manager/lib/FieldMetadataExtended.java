@@ -26,7 +26,7 @@ public class FieldMetadataExtended<Host, WritableHost extends Host, V> extends B
     return new Metadata<>();
   }
 
-   public static class Metadata<This extends Metadata<This, Host, WritableHost, V>, Host, WritableHost extends Host, V> {
+   public static class Metadata<This extends Metadata<This, Host, WritableHost, V>, Host, WritableHost extends Host, V> implements Cloneable {
     private String displayedName = "";
     private String description = "";
     private Optional<String> hint = Optional.empty();
