@@ -175,6 +175,10 @@ public class FieldMetadataExtended<Host, WritableHost extends Host, V> extends B
 
   public static enum Tag {
     UPDATABLE,
+    /**
+     * User won't be asked for input for field marked HIDDEN
+     */
+    HIDDEN
   }
 
   @Override

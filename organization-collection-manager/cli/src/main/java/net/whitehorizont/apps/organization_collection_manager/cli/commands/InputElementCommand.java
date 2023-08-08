@@ -12,6 +12,7 @@ import net.whitehorizont.apps.organization_collection_manager.core.collection.IC
 import net.whitehorizont.apps.organization_collection_manager.lib.FieldMetadataExtended;
 import net.whitehorizont.apps.organization_collection_manager.lib.IWritableHostFactory;
 import net.whitehorizont.apps.organization_collection_manager.lib.MetadataComposite;
+import net.whitehorizont.apps.organization_collection_manager.lib.FieldMetadataExtended.Tag;
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationError;
 import net.whitehorizont.libs.file_system.StringHelper;
 
@@ -82,6 +83,10 @@ public class InputElementCommand<Host extends ICollectionElement<Host>, Writable
     out.println(title);
 
     for (final var metadata : fieldsMetadata) {
+      if (metadata.getTags().contains(Tag.HIDDEN)) {
+        continue;
+      }
+      
       int retriesLeft = this.retries.retries;
 
       // repeat until succeed
