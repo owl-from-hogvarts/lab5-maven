@@ -7,10 +7,13 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.CoordinatesDefinition.Coordinates;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.CoordinatesDefinition.CoordinatesWriteable;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.UUID_ElementId;
+import net.whitehorizont.apps.organization_collection_manager.lib.DoubleFactory;
+import net.whitehorizont.apps.organization_collection_manager.lib.EnumFactory;
 import net.whitehorizont.apps.organization_collection_manager.lib.FieldMetadataExtended;
-import net.whitehorizont.apps.organization_collection_manager.lib.FieldMetadataExtendedWithRichValidators;
+import net.whitehorizont.apps.organization_collection_manager.lib.IWritableHostFactory;
 import net.whitehorizont.apps.organization_collection_manager.lib.MetadataComposite;
 import net.whitehorizont.apps.organization_collection_manager.lib.StringFactory;
+import net.whitehorizont.apps.organization_collection_manager.lib.FieldMetadataExtended.Tag;
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationResult;
 
 @NonNullByDefault
@@ -23,29 +26,29 @@ public class OrganisationElementDefinition {
           .setDisplayedName("name")
           .setRequired("Company name must be specified")
           .setValueBuilder(new StringFactory())
+          .setValueSetter((element, name) -> element.name(name))
+          .setValueGetter(element -> element.getName())
           .addSimpleValidator((value) -> new ValidationResult<>(value.length() >= 1, "String should not be empty"))
           .build();
 
-  public static final FieldMetadataExtendedWithRichValidators<OrganisationElement, OrganisationElementWritable, UUID_ElementId, ICollection<OrganisationElement>> ID_METADATA = 
-      new FieldMetadataExtendedWithRichValidators.MetadataWithValidators<OrganisationElement, OrganisationElementWritable, UUID_ElementId, ICollection<OrganisationElement>>()
+  public static final FieldMetadataExtended<OrganisationElement, OrganisationElementWritable, UUID_ElementId> ID_METADATA = 
+      FieldMetadataExtended.<OrganisationElement, OrganisationElementWritable, UUID_ElementId>builder()
           .setDisplayedName("ID")
           .setRequired("ID must be provided for collection element")
-          .addValidator((value, collection) -> {
-            // pray once more 🙏
-            final var hasDuplicateIds = collection.getEvery$().filter((element) -> {
-              return element.ID.equals(value);
-            }).count().map(count -> count > 0).blockingGet();
-
-            return new ValidationResult<Boolean>(!hasDuplicateIds, "Duplicate ID's found! ID should be unique!");
-            
-          })
+          .setValueSetter((element, ID) -> element.ID(ID))
+          .setValueGetter(element -> element.getID())
+          .addTag(Tag.HIDDEN)
+          .setValueBuilder((idString) -> new UUID_ElementId(idString))
           .build();
 
   public static final FieldMetadataExtended<OrganisationElement, OrganisationElementWritable, OrganisationType> TYPE_METADATA =
       FieldMetadataExtended.<OrganisationElement, OrganisationElementWritable, OrganisationType>builder()
       .setDisplayedName("type")
+      .setValueBuilder(new EnumFactory<>(OrganisationType.class))
       .setRequired("Type of organisation should be specified!")
       .setHint(OrganisationType.getHint())
+      .setValueGetter(element -> element.getType())
+      .setValueSetter((element, type) -> element.type(type))
       .build();
 
   public static final FieldMetadataExtended<OrganisationElement, OrganisationElementWritable, Double> ANNUAL_TURNOVER_METADATA =
@@ -53,6 +56,9 @@ public class OrganisationElementDefinition {
    .setDisplayedName("Annual Turnover")
    .setRequired("Annual Turnover must be provided")
    .addSimpleValidator(value -> new ValidationResult<>(value > 0.0, "Annual Turnover should be strictly above zero"))
+   .setValueGetter(element -> element.getAnnualTurnover())
+   .setValueSetter((element, annualTurnover) -> element.annualTurnover(annualTurnover))
+   .setValueBuilder(new DoubleFactory())
    .build();
   
 
@@ -68,11 +74,20 @@ public class OrganisationElementDefinition {
 
     return new MetadataComposite<Object, OrganisationElement, OrganisationElementWritable>(ELEMENT_TITLE, leafs, children, null);
   }
+
+  public static class OrganisationElementFactory implements IWritableHostFactory<OrganisationElementWritable> {
+
+    @Override
+    public OrganisationElementWritable createWritable() {
+      return new OrganisationElementWritable();
+    }
+
+  }
   
   public static class OrganisationElement implements ICollectionElement<OrganisationElement> {
     protected String name;
     protected UUID_ElementId ID = new UUID_ElementId(); // init with default value which is easily overridable
-    protected CoordinatesWriteable coordinates;
+    protected CoordinatesWriteable coordinates = new CoordinatesWriteable();
     protected OrganisationType type;
     protected Double annualTurnover;
     protected String getName() {
