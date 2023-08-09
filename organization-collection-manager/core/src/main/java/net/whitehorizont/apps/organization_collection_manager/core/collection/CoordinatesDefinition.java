@@ -13,28 +13,41 @@ import net.whitehorizont.apps.organization_collection_manager.lib.validators.Val
 @NonNullByDefault
 public class CoordinatesDefinition {
   private static final String COORDINATES_TITLE = "Coordinates";
-  
-  private static final FieldMetadataExtended<Coordinates, CoordinatesWriteable, Integer> X_METADATA = FieldMetadataExtended.<Coordinates, CoordinatesWriteable, Integer>builder()
-  .addSimpleValidator(value -> {
-    final int x = value.intValue();
-    final var isValueOk = x > -802;
-    final var result = new ValidationResult<>(isValueOk, "Value should be strictly above -802");
-    return result;
-  })
-  .setDisplayedName("X")
-  .setValueBuilder(new IntegerFactory())
-  .setValueSetter((host, value) -> host.setX(value))
-  .setValueGetter((host) -> host.getX())
-  .build();
 
+  private static final FieldMetadataExtended<Coordinates, CoordinatesWriteable, Integer> X_METADATA = FieldMetadataExtended
+      .<Coordinates, CoordinatesWriteable, Integer>builder()
+      .addSimpleValidator(value -> {
+        final int x = value.intValue();
+        final var isValueOk = x > -802;
+        final var result = new ValidationResult<>(isValueOk, "Value should be strictly above -802");
+        return result;
+      })
+      .setDisplayedName("X")
+      .setValueBuilder(new IntegerFactory())
+      .setValueSetter((host, value) -> host.setX(value))
+      .setValueGetter((host) -> host.getX())
+      .setRequired("X must be provided!")
+      .build();
+
+  private static final FieldMetadataExtended<Coordinates, CoordinatesWriteable, Long> Y_METADATA = FieldMetadataExtended
+      .<Coordinates, CoordinatesWriteable, Long>builder()
+      .setDisplayedName("Y")
+      .setValueBuilder(Long::decode)
+      .setValueSetter((host, value) -> host.setY(value))
+      .setValueGetter(host -> host.getY())
+      .setRequired("Y must be provided!")
+      .build();
 
   public static class Coordinates {
     protected int x;
+
     private int getX() {
       return x;
     }
-    protected int y;
-    private int getY() {
+
+    protected long y;
+
+    private long getY() {
       return y;
     }
   }
@@ -45,16 +58,18 @@ public class CoordinatesDefinition {
       return this;
     }
 
-    private CoordinatesWriteable setY(int y) {
+    private CoordinatesWriteable setY(long y) {
       this.y = y;
       return this;
     }
 
   }
 
-  public static <ParentHost> MetadataComposite<ParentHost, Coordinates, CoordinatesWriteable> getTree(Function<ParentHost, CoordinatesWriteable> coordinatesExtractor) {
+  public static <ParentHost> MetadataComposite<ParentHost, Coordinates, CoordinatesWriteable> getTree(
+      Function<ParentHost, CoordinatesWriteable> coordinatesExtractor) {
     final List<FieldMetadataExtended<Coordinates, CoordinatesWriteable, ?>> leafs = new ArrayList<>();
     leafs.add(X_METADATA);
+    leafs.add(Y_METADATA);
 
     return new MetadataComposite<>(COORDINATES_TITLE, leafs, new ArrayList<>(), coordinatesExtractor);
   }
