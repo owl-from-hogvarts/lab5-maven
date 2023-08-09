@@ -3,11 +3,10 @@ package net.whitehorizont.apps.organization_collection_manager.core.commands;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import io.reactivex.rxjava3.core.Observable;
-import net.whitehorizont.apps.organization_collection_manager.lib.ReadonlyField;
-import net.whitehorizont.apps.organization_collection_manager.lib.TitledNode;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.CollectionMetadataDefinition.CollectionMetadataComputed;
 
 @NonNullByDefault
-public class InfoCommand implements ICommand<TitledNode<?, ReadonlyField<?>>> {
+public class InfoCommand implements ICommand<CollectionMetadataComputed> {
 
   private final CollectionCommandReceiver<?> collection;
 
@@ -16,7 +15,7 @@ public class InfoCommand implements ICommand<TitledNode<?, ReadonlyField<?>>> {
   }
 
   @Override
-  public Observable<TitledNode<?, ReadonlyField<?>>> execute() {
+  public Observable<CollectionMetadataComputed> execute() {
     return Observable.just(collection.getMetadataTree());
   }
   

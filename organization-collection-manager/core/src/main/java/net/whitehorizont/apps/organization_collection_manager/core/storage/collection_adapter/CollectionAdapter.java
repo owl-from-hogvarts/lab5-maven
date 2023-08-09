@@ -11,11 +11,10 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import com.thoughtworks.xstream.XStream;
 import io.reactivex.rxjava3.annotations.NonNull;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.RamCollection;
-import net.whitehorizont.apps.organization_collection_manager.core.collection.CollectionMetadata;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.DuplicateElements;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollection;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollectionElement;
-import net.whitehorizont.apps.organization_collection_manager.core.collection.CollectionMetadata.Builder;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.CollectionMetadataDefinition.CollectionMetadata;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.KeyGenerationError;
 import net.whitehorizont.apps.organization_collection_manager.core.storage.IFileAdapter;
 import net.whitehorizont.apps.organization_collection_manager.core.storage.errors.ResourceEmpty;
@@ -51,7 +50,7 @@ public class CollectionAdapter<E extends ICollectionElement<E>>
   private CollectionXml<E, CollectionMetadata> prepareCollection(ICollection<E> collection) {    
     final var elements = collection.getEvery$()
         .toList().blockingGet();
-    return new CollectionXml<>(collection.getMetadataSnapshot(), elements);
+    return new CollectionXml<>(collection.getPersistentMetadata(), elements);
   }
 
   @Override
@@ -120,7 +119,7 @@ public class CollectionAdapter<E extends ICollectionElement<E>>
 
   @Override
   public RamCollection<E> deserializeSafe() {
-    final var emptyCollectionMetadata = new CollectionMetadata(new Builder());
+    final var emptyCollectionMetadata = new CollectionMetadata();
     return new RamCollection<>(elementsInfo, emptyCollectionMetadata);
   }
 }

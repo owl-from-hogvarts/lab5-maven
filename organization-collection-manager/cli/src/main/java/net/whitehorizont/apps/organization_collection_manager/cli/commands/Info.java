@@ -7,11 +7,17 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import io.reactivex.rxjava3.core.Observable;
 import net.whitehorizont.apps.organization_collection_manager.cli.CliDependencyManager;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.CollectionMetadataDefinition.CollectionMetadataComputed;
 import net.whitehorizont.apps.organization_collection_manager.core.commands.CollectionCommandReceiver;
 import net.whitehorizont.apps.organization_collection_manager.core.commands.InfoCommand;
+import net.whitehorizont.apps.organization_collection_manager.lib.MetadataComposite;
 
 @NonNullByDefault
-public class Info extends BaseElementCommand implements ICliCommand<CollectionCommandReceiver<?>> {
+public class Info extends BaseElementCommand<CollectionMetadataComputed> implements ICliCommand<CollectionCommandReceiver<?>> {
+  public Info(MetadataComposite<?, CollectionMetadataComputed, ?> metadata) {
+    super(metadata);
+  }
+
   private static String INFO_DESCRIPTION = "show information about collection itself";
 
   @Override

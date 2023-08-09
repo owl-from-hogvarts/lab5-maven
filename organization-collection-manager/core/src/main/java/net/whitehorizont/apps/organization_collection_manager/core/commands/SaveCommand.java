@@ -17,7 +17,7 @@ public class SaveCommand implements ICommand<Void> {
   public Observable<Void> execute() {
     return Observable.create(subscriber -> {
       collectionManagerReceiver.getCollection().subscribe(collection -> {
-        collectionManagerReceiver.save(collection.getMetadataSnapshot().getId());
+        collectionManagerReceiver.save(collection.getPersistentMetadata().getId());
         subscriber.onComplete();
       });
     });

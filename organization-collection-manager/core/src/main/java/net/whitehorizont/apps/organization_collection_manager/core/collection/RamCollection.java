@@ -11,7 +11,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.Observable;
-import net.whitehorizont.apps.organization_collection_manager.core.collection.CollectionMetadata.Builder;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.CollectionMetadataDefinition.CollectionMetadata;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.ElementKey;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.ISerializableKey;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.KeyGenerationError;
@@ -41,7 +41,7 @@ public class RamCollection<E extends ICollectionElement<E>>
   }
 
   public RamCollection(IElementInfoProvider<E> elementMetadata) {
-    this(elementMetadata, new CollectionMetadata(new Builder(new UUID_CollectionId())));
+    this(elementMetadata, new CollectionMetadata(new UUID_CollectionId()));
   }
 
   /**
@@ -112,9 +112,8 @@ public class RamCollection<E extends ICollectionElement<E>>
     return Observable.just(new ArrayList<>(elements.values()));
   }
 
-  // stores creation time
   @Override
-  public CollectionMetadata getMetadataSnapshot() {
+  public CollectionMetadata getPersistentMetadata() {
     return this.metadata;
   }
 

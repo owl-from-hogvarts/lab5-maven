@@ -6,6 +6,7 @@ import java.util.Map.Entry;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import io.reactivex.rxjava3.core.Observable;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.CollectionMetadataDefinition.CollectionMetadata;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.ElementKey;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.KeyGenerationError;
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationError;
@@ -51,7 +52,7 @@ public interface ICollection<E extends ICollectionElement<E>> {
   Observable<List<E>> getAll$();
 
   // stores creation time
-  CollectionMetadata getMetadataSnapshot();
+  CollectionMetadata getPersistentMetadata();
 
   void clear();
 

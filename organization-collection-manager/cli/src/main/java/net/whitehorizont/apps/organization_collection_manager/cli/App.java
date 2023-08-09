@@ -14,6 +14,7 @@ import net.whitehorizont.apps.organization_collection_manager.cli.commands.Filte
 import net.whitehorizont.apps.organization_collection_manager.cli.commands.Help;
 import net.whitehorizont.apps.organization_collection_manager.cli.commands.History;
 import net.whitehorizont.apps.organization_collection_manager.cli.commands.ICliCommand;
+import net.whitehorizont.apps.organization_collection_manager.cli.commands.Info;
 import net.whitehorizont.apps.organization_collection_manager.cli.commands.Insert;
 import net.whitehorizont.apps.organization_collection_manager.cli.commands.PrintDescending;
 import net.whitehorizont.apps.organization_collection_manager.cli.commands.RemoveById;
@@ -23,6 +24,7 @@ import net.whitehorizont.apps.organization_collection_manager.cli.commands.Save;
 import net.whitehorizont.apps.organization_collection_manager.cli.commands.Show;
 import net.whitehorizont.apps.organization_collection_manager.cli.commands.Update;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.CollectionManager;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.CollectionMetadataDefinition;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollection;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.OrganisationElementDefinition;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.OrganisationElementDefinition.OrganisationElement;
@@ -110,8 +112,8 @@ public class App
         commands.put("save", save);
         final var clear = new Clear();
         commands.put("clear", clear);
-        // final var info = new Info();
-        // commands.put("info", info);
+        final var info = new Info(CollectionMetadataDefinition.getMetadata());
+        commands.put("info", info);
         final var count = new CountByType();
         commands.put("count_by_type", count);
         final var removeById = new RemoveById();

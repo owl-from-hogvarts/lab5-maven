@@ -16,8 +16,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Single;
-import net.whitehorizont.apps.organization_collection_manager.core.collection.CollectionMetadata;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollection;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.CollectionMetadataDefinition.CollectionMetadata;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.BaseId;
 import net.whitehorizont.apps.organization_collection_manager.core.storage.errors.CollectionNotFound;
 import net.whitehorizont.apps.organization_collection_manager.core.storage.errors.ResourceEmpty;
@@ -148,16 +148,16 @@ public class FileStorage<C extends ICollection<?>>
 
   @Override
   public Observable<CollectionMetadata> loadMetadata() {
-    return this.load().map(collection -> collection.getMetadataSnapshot());
+    return this.load().map(collection -> collection.getPersistentMetadata());
   }
 
   @Override
   public Observable<CollectionMetadata> loadMetadata(BaseId key) {
-    return findCollectionById(key, this.load()).map(collection -> collection.getMetadataSnapshot());
+    return findCollectionById(key, this.load()).map(collection -> collection.getPersistentMetadata());
   }
 
   private Observable<C> findCollectionById(BaseId key, Observable<C> collections) {
-    return collections.filter((collection) -> collection.getMetadataSnapshot().getId().equals(key)).singleOrError()
+    return collections.filter((collection) -> collection.getPersistentMetadata().getId().equals(key)).singleOrError()
         .onErrorResumeNext(error -> {
           if (error instanceof NoSuchElementException) {
             return Single.error(new CollectionNotFound());

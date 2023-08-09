@@ -1,22 +1,19 @@
 package net.whitehorizont.apps.organization_collection_manager.core.commands;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import io.reactivex.rxjava3.core.Observable;
-import net.whitehorizont.apps.organization_collection_manager.core.collection.CollectionMetadata;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.DuplicateElements;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollection;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.ICollectionElement;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.NoSuchElement;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.CollectionMetadataDefinition.CollectionMetadata;
+import net.whitehorizont.apps.organization_collection_manager.core.collection.CollectionMetadataDefinition.CollectionMetadataComputed;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.ElementKey;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.KeyGenerationError;
-import net.whitehorizont.apps.organization_collection_manager.lib.BasicFieldMetadata;
-import net.whitehorizont.apps.organization_collection_manager.lib.ReadonlyField;
-import net.whitehorizont.apps.organization_collection_manager.lib.TitledNode;
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationError;
 
 /**
@@ -58,22 +55,23 @@ public class CollectionCommandReceiver<E extends ICollectionElement<E>> implemen
   }
 
   @Override
-  public CollectionMetadata getMetadataSnapshot() {
-    return this.collection.getMetadataSnapshot();
+  public CollectionMetadata getPersistentMetadata() {
+    return this.collection.getPersistentMetadata();
   }
 
-  public TitledNode<?, ReadonlyField<?>> getMetadataTree() {
-    final TitledNode<?, ReadonlyField<?>> metadataTree = this.collection.getMetadataSnapshot().getTree();
-    final var metadataTopLevelFields = new ArrayList<>(metadataTree.getLeafs());
+  public CollectionMetadataComputed getMetadataTree() {
+    // create
+    final CollectionMetadata persistentMetadata = this.collection.getPersistentMetadata();
+    final CollectionMetadataComputed metadata = persistentMetadata.createWritable();
 
-    final var countElements = this.collection.getEvery$().count().blockingGet();
-    metadataTopLevelFields.add(new ReadonlyField<>(new BasicFieldMetadata("Elements count"), countElements));
-    final var collectionType = this.collection.getCollectionType();
-    // DONE: request collection type from factory
-    metadataTopLevelFields.add(new ReadonlyField<>(new BasicFieldMetadata("Type of collection"), collectionType));
-    metadataTopLevelFields.add(new ReadonlyField<>(new BasicFieldMetadata("Etc. "), "etc."));
+    // modify
+    final long elementCount = this.collection.getEvery$().count().blockingGet();
+    metadata.setElementCount((int) elementCount);
 
-    return new TitledNode<>(metadataTree.getDisplayedName(), metadataTopLevelFields, metadataTree.getChildren());
+    metadata.setCollectionType(getCollectionType());
+
+    // return
+    return metadata;
   }
 
   @Override
