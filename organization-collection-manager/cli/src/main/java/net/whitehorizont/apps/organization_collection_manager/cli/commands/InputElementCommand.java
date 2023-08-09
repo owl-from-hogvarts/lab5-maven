@@ -83,7 +83,7 @@ public class InputElementCommand<Host extends ICollectionElement<Host>, Writable
     out.println(title);
 
     for (final var metadata : fieldsMetadata) {
-      if (metadata.getTags().contains(Tag.HIDDEN)) {
+      if (metadata.getTags().contains(Tag.SKIP_INTERACTIVE_INPUT)) {
         continue;
       }
       

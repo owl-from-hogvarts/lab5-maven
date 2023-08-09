@@ -46,8 +46,8 @@ public class OrganisationCollectionCommandReceiver extends CollectionCommandRece
         final var updatedPrototype = new OrganisationElementWritable();
         // fill updatedPrototype with values from base
         OrganisationElementDefinition.getMetadata().fill(updatedPrototype, base);
-        // update only fields with updatable tag
-        OrganisationElementDefinition.getMetadata().fill(updatedPrototype, prototype, Tag.UPDATABLE);
+        // update all fields except with PRESERVE tag
+        OrganisationElementDefinition.getMetadata().fill(updatedPrototype, prototype, Tag.PRESERVE);
         // do replace
         final var key = keyElement.getKey();
         this.collection.replace(key, updatedPrototype);

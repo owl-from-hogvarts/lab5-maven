@@ -168,17 +168,20 @@ public class FieldMetadataExtended<Host, WritableHost extends Host, V> extends B
 
   @Override
   public void fill(WritableHost base, Host other, Tag tag) {
-    if (this.metadata.tags.contains(tag)) {
+    if (!this.metadata.tags.contains(tag)) {
       fill(base, other);
     }
   }
 
   public static enum Tag {
-    UPDATABLE,
+    /**
+     * Original value of filed is preserved when doing fill operation
+     */
+    PRESERVE,
     /**
      * User won't be asked for input for field marked HIDDEN
      */
-    HIDDEN
+    SKIP_INTERACTIVE_INPUT
   }
 
   @Override

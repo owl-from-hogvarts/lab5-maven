@@ -66,6 +66,9 @@ public class MetadataComposite<ParentHost, Host, WritableHost extends Host > ext
 
   } 
 
+  /**
+   * fills fields of writable host with values from host, skipping fields with {@code tag}
+   */
   @Override
   public void fill(WritableHost to, Host from, Tag tag) {
     for (final var leaf : getLeafs()) {

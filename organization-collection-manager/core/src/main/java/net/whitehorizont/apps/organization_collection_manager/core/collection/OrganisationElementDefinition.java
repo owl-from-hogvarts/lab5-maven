@@ -37,7 +37,8 @@ public class OrganisationElementDefinition {
           .setRequired("ID must be provided for collection element")
           .setValueSetter((element, ID) -> element.ID(ID))
           .setValueGetter(element -> element.getID())
-          .addTag(Tag.HIDDEN)
+          .addTag(Tag.PRESERVE)
+          .addTag(Tag.SKIP_INTERACTIVE_INPUT)
           .setValueBuilder((idString) -> new UUID_ElementId(idString))
           .build();
 
