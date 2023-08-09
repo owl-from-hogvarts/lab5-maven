@@ -43,7 +43,7 @@ public class CollectionMetadataDefinition {
   public static class CollectionMetadata implements IWithId<UUID_CollectionId>, IWritableHostFactory<CollectionMetadataComputed> {
     // protected 'cause don't fuck around java generics
     protected UUID_CollectionId collectionId;
-    protected Instant creationTime;
+    protected Instant creationTime = Instant.now();
 
     private CollectionMetadata(CollectionMetadata metadata) {
       this(metadata.collectionId);
