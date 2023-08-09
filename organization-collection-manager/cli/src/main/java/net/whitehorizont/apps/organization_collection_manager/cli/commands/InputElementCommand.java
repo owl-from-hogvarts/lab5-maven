@@ -129,8 +129,11 @@ public class InputElementCommand<Host extends ICollectionElement<Host>, Writable
 
   private static <Host, WritableHost extends Host, V> void setValue(FieldMetadataExtended<Host, WritableHost, V> metadata, @Nullable String input, WritableHost host) throws ValidationError {
     final var valueBuilder = metadata.getValueBuilder().get();
-    // FIXME: handle NPE
-    metadata.getValueSetter().accept(host, valueBuilder.buildFromString(input));
+    // DONE: handle NPE
+    final var value = input != null ? valueBuilder.buildFromString(input) : null;
+
+    FieldMetadataExtended.basicCheck(metadata, value);
+    metadata.getValueSetter().accept(host, value);
   }
 
   private <ParentHost, Host, WritableHost extends Host> void doForChild(MetadataComposite<ParentHost, Host, WritableHost> childMetadata, ParentHost host, LineReader lineReader, Streams streams, int nestLevel) throws ValidationError {

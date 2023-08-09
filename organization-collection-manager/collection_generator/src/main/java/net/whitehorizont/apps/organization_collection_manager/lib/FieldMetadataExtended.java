@@ -186,12 +186,10 @@ public class FieldMetadataExtended<Host, WritableHost extends Host, V> extends B
 
   @Override
   public void validate(Host host) throws ValidationError {
-    basicCheck(this, host);
+    basicCheck(this, getValue(this, host));
   }
 
-  protected static <Host, V> void basicCheck(FieldMetadataExtended<Host, ?, V> metadata, Host host) throws ValidationError {
-    final var value = getValue(metadata, host);
-
+  public static <Host, V> void basicCheck(FieldMetadataExtended<Host, ?, V> metadata, V value) throws ValidationError {
     final var nullCheck = metadata.getNullCheckValidator();
     reportValidationError(metadata, nullCheck.validate(value));
 
