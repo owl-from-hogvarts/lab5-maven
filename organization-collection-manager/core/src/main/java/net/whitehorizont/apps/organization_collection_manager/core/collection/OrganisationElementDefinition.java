@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+
+import net.whitehorizont.apps.organization_collection_manager.core.collection.AddressDefinition.AddressWritable;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.CoordinatesDefinition.Coordinates;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.CoordinatesDefinition.CoordinatesWriteable;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.UUID_ElementId;
@@ -72,6 +74,7 @@ public class OrganisationElementDefinition {
 
     final List<MetadataComposite<OrganisationElement, ?, ?>> children = new ArrayList<>();
     children.add(CoordinatesDefinition.<OrganisationElement>getTree((organisation) -> organisation.coordinates));
+    children.add(AddressDefinition.getMetadata(organisation -> organisation.address));
 
     return new MetadataComposite<Object, OrganisationElement, OrganisationElementWritable>(ELEMENT_TITLE, leafs,
         children, null);
@@ -92,6 +95,7 @@ public class OrganisationElementDefinition {
     protected CoordinatesWriteable coordinates = new CoordinatesWriteable();
     protected OrganisationType type;
     protected Double annualTurnover;
+    protected AddressWritable address = new AddressWritable();
 
     protected String getName() {
       return name;
