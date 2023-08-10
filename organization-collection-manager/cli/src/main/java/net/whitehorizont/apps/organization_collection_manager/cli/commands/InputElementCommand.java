@@ -79,8 +79,9 @@ public class InputElementCommand<Host extends ICollectionElement<Host>, Writable
     final var err = streams.err;
 
     final String nodeTitle = node.getDisplayedName();
-    final String title = isElement(nestLevel) ? prepareNodeTitle(nodeTitle).build() : buildChildNodeTitle(nodeTitle);
-    out.println(title);
+    if (isElement(nestLevel)) {
+      out.println(prepareNodeTitle(nodeTitle).build());
+    }
 
     for (final var metadata : fieldsMetadata) {
       if (metadata.getTags().contains(Tag.SKIP_INTERACTIVE_INPUT)) {
@@ -138,6 +139,7 @@ public class InputElementCommand<Host extends ICollectionElement<Host>, Writable
 
   private <ParentHost, Host, WritableHost extends Host> void doForChild(MetadataComposite<ParentHost, Host, WritableHost> childMetadata, ParentHost host, LineReader lineReader, Streams streams, int nestLevel) throws ValidationError {
       final var childHost = childMetadata.extractChildHost(host);
+      streams.out.println(buildChildNodeTitle(childMetadata.getDisplayedName(), nestLevel));
       promptForFields(childMetadata, childHost, lineReader, streams, nestLevel + 1);
   }
 

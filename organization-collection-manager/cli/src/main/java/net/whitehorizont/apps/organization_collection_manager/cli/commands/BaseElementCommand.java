@@ -32,8 +32,8 @@ public abstract class BaseElementCommand<Host> {
       return titleDecorator.setMiddle(title);
   }
 
-  protected static String buildChildNodeTitle(String title) {
-    return title + FIELD_NAME_VALUE_SEPARATOR;
+  protected static String buildChildNodeTitle(String title, int nestLevel) {
+    return StringHelper.padStart(title, computeNestedPadding(nestLevel, title), PADDING_SYMBOL) + FIELD_NAME_VALUE_SEPARATOR;
   }
 
   protected static int computeNestedPadding(int nestLevel, String string) {
@@ -70,7 +70,10 @@ public abstract class BaseElementCommand<Host> {
     if (key.isPresent()) {
       titleDecorated.setLeft(key.get().serialize());
     }
-    out.println(isElement(nestLevel) ? titleDecorated.build() : buildChildNodeTitle(nodeTitle));
+
+    if (isElement(nestLevel)) {
+      out.println(titleDecorated.build());
+    }
 
     final var fields = node.getLeafs();
     for (final var field : fields) {
@@ -82,11 +85,12 @@ public abstract class BaseElementCommand<Host> {
     }
 
     for (final var child : node.getChildren()) {
-      doForChild(child, host, key, out, nestLevel + 1);
+      doForChild(child, host, key, out, nestLevel);
     }
   }
-
+  
   private static <ParentHost, Host, WritableHost extends Host> void doForChild(MetadataComposite<ParentHost, Host, WritableHost> childMetadata, ParentHost host, Optional<ISerializableKey> key, PrintStream out, int nestLevel) {
-      final var childHost = childMetadata.extractChildHost(host);
-      printFields(childMetadata, childHost, key, out, nestLevel + 1);
+    final var childHost = childMetadata.extractChildHost(host);
+    out.println(buildChildNodeTitle(childMetadata.getDisplayedName(), nestLevel));
+    printFields(childMetadata, childHost, key, out, nestLevel + 1);
   }}
