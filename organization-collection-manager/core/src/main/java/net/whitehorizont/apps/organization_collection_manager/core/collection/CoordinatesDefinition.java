@@ -23,7 +23,7 @@ public class CoordinatesDefinition {
         return result;
       })
       .setDisplayedName("X")
-      .setValueBuilder(new IntegerFactory())
+      .setValueBuilder(new IntegerFactory<>(Integer.class))
       .setValueSetter((host, value) -> host.setX(value))
       .setValueGetter((host) -> host.getX())
       .setRequired("X must be provided!")
@@ -32,7 +32,8 @@ public class CoordinatesDefinition {
   private static final FieldMetadataExtended<Coordinates, CoordinatesWriteable, Long> Y_METADATA = FieldMetadataExtended
       .<Coordinates, CoordinatesWriteable, Long>builder()
       .setDisplayedName("Y")
-      .setValueBuilder(Long::decode)
+      .addSimpleValidator(value -> new ValidationResult<>(value <= 688, "Value should be lower or equal to 688"))
+      .setValueBuilder(new IntegerFactory<>(Long.class))
       .setValueSetter((host, value) -> host.setY(value))
       .setValueGetter(host -> host.getY())
       .setRequired("Y must be provided!")

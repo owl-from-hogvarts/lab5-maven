@@ -11,7 +11,7 @@ import net.whitehorizont.apps.organization_collection_manager.lib.validators.Val
 @NonNullByDefault
 public class ElementKey extends BaseId implements Comparable<ElementKey> {
   private static int current = 0;
-  private static IFromStringBuilder<Integer> intParser = new IntegerFactory();
+  private static IFromStringBuilder<Integer> intParser = new IntegerFactory<>(Integer.class);
   
   private final int key;
 
