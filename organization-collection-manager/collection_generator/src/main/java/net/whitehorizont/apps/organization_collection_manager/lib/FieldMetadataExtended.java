@@ -8,6 +8,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.SimpleValidator;
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationError;
@@ -73,8 +74,8 @@ public class FieldMetadataExtended<Host, WritableHost extends Host, V> extends B
       this.description = description;
       return self();
     }
-    public This setRequired(String onNullMessage) {
-      this.onNullMessage = Optional.of(onNullMessage);
+    public This setRequired(@Nullable String onNullMessage) {
+      this.onNullMessage = Optional.ofNullable(onNullMessage);
       return self();
     }
     public This setNullable() {
