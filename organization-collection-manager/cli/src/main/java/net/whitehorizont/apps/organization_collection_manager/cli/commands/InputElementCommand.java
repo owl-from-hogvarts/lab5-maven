@@ -154,7 +154,7 @@ public class InputElementCommand<Host extends ICollectionElement<Host>, Writable
   private static String preparePrompt(FieldMetadataExtended<?, ?, ?> metadata, int nestLevel) {
         final String fieldPrompt = metadata.getDisplayedName() + FIELD_NAME_VALUE_SEPARATOR;
         final String fieldPromptPadded = StringHelper.padStart(fieldPrompt,
-            computeNestedPadding(nestLevel, fieldPrompt),
+            computePaddedStringLength(nestLevel, fieldPrompt),
             PADDING_SYMBOL);
 
         return fieldPromptPadded;
@@ -163,7 +163,7 @@ public class InputElementCommand<Host extends ICollectionElement<Host>, Writable
   private static void printHint(FieldMetadataExtended<?, ?, ?> metadata, int nestLevel, PrintStream out) {
     if (metadata.getHint().isPresent()) {
       final String hint = HINT_PREFIX + metadata.getHint().get();
-      final String hintPadded = StringHelper.padStart(hint, computeNestedPadding(nestLevel, hint), PADDING_SYMBOL);
+      final String hintPadded = StringHelper.padStart(hint, computePaddedStringLength(nestLevel, hint), PADDING_SYMBOL);
 
       out.println(hintPadded);
     }

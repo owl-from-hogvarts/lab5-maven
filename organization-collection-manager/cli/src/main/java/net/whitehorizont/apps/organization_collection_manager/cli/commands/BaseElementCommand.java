@@ -33,10 +33,10 @@ public abstract class BaseElementCommand<Host> {
   }
 
   protected static String buildChildNodeTitle(String title, int nestLevel) {
-    return StringHelper.padStart(title, computeNestedPadding(nestLevel, title), PADDING_SYMBOL) + FIELD_NAME_VALUE_SEPARATOR;
+    return StringHelper.padStart(title, computePaddedStringLength(nestLevel, title), PADDING_SYMBOL) + FIELD_NAME_VALUE_SEPARATOR;
   }
 
-  protected static int computeNestedPadding(int nestLevel, String string) {
+  protected static int computePaddedStringLength(int nestLevel, String string) {
     final int paddingSize = nestLevel * PADDING_MULTIPLIER;
     final int paddedStringLength = paddingSize + string.length();
 
@@ -80,7 +80,7 @@ public abstract class BaseElementCommand<Host> {
       final var valueGetter = field.getValueGetter();
       final var value = valueGetter.apply(host) != null ? valueGetter.apply(host).toString() : "null";
       final String fieldNameValue = field.getDisplayedName() + FIELD_NAME_VALUE_SEPARATOR + value;
-      final String paddedFieldNameValue = StringHelper.padStart(fieldNameValue, computeNestedPadding(nestLevel, fieldNameValue), PADDING_SYMBOL);
+      final String paddedFieldNameValue = StringHelper.padStart(fieldNameValue, computePaddedStringLength(nestLevel, fieldNameValue), PADDING_SYMBOL);
       out.println(paddedFieldNameValue);
     }
 
@@ -93,4 +93,5 @@ public abstract class BaseElementCommand<Host> {
     final var childHost = childMetadata.extractChildHost(host);
     out.println(buildChildNodeTitle(childMetadata.getDisplayedName(), nestLevel));
     printFields(childMetadata, childHost, key, out, nestLevel + 1);
-  }}
+  }
+}
