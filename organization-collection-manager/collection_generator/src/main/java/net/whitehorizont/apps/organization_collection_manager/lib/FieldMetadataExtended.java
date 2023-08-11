@@ -10,6 +10,7 @@ import java.util.function.Function;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
+import net.whitehorizont.apps.organization_collection_manager.lib.factories.IFromStringBuilder;
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.SimpleValidator;
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationError;
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationResult;

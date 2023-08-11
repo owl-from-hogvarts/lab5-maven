@@ -10,7 +10,7 @@ import net.whitehorizont.apps.organization_collection_manager.cli.CliDependencyM
 import net.whitehorizont.apps.organization_collection_manager.core.collection.OrganisationType;
 import net.whitehorizont.apps.organization_collection_manager.core.commands.CountCommand;
 import net.whitehorizont.apps.organization_collection_manager.core.commands.OrganisationCollectionCommandReceiver;
-import net.whitehorizont.apps.organization_collection_manager.lib.EnumFactory;
+import net.whitehorizont.apps.organization_collection_manager.lib.factories.EnumFactory;
 
 @NonNullByDefault
 public class CountByType implements ICliCommand<OrganisationCollectionCommandReceiver> {

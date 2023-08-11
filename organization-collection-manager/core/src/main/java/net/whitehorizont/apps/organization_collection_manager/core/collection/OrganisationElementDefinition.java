@@ -9,13 +9,13 @@ import net.whitehorizont.apps.organization_collection_manager.core.collection.Ad
 import net.whitehorizont.apps.organization_collection_manager.core.collection.CoordinatesDefinition.Coordinates;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.CoordinatesDefinition.CoordinatesWriteable;
 import net.whitehorizont.apps.organization_collection_manager.core.collection.keys.UUID_ElementId;
-import net.whitehorizont.apps.organization_collection_manager.lib.DoubleFactory;
-import net.whitehorizont.apps.organization_collection_manager.lib.EnumFactory;
 import net.whitehorizont.apps.organization_collection_manager.lib.FieldMetadataExtended;
 import net.whitehorizont.apps.organization_collection_manager.lib.IWritableHostFactory;
 import net.whitehorizont.apps.organization_collection_manager.lib.MetadataComposite;
-import net.whitehorizont.apps.organization_collection_manager.lib.StringFactory;
 import net.whitehorizont.apps.organization_collection_manager.lib.FieldMetadataExtended.Tag;
+import net.whitehorizont.apps.organization_collection_manager.lib.factories.DoubleFactory;
+import net.whitehorizont.apps.organization_collection_manager.lib.factories.EnumFactory;
+import net.whitehorizont.apps.organization_collection_manager.lib.factories.StringFactory;
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationResult;
 
 @NonNullByDefault

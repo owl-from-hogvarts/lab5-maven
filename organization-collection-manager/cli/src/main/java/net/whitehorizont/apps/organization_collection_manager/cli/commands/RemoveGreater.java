@@ -10,8 +10,8 @@ import net.whitehorizont.apps.organization_collection_manager.cli.CliDependencyM
 import net.whitehorizont.apps.organization_collection_manager.core.commands.OrganisationCollectionCommandReceiver;
 import net.whitehorizont.apps.organization_collection_manager.core.commands.RemoveByRevenueCommand;
 import net.whitehorizont.apps.organization_collection_manager.core.commands.OrganisationCollectionCommandReceiver.RemovalCriteria;
-import net.whitehorizont.apps.organization_collection_manager.lib.DoubleFactory;
-import net.whitehorizont.apps.organization_collection_manager.lib.IFromStringBuilder;
+import net.whitehorizont.apps.organization_collection_manager.lib.factories.DoubleFactory;
+import net.whitehorizont.apps.organization_collection_manager.lib.factories.IFromStringBuilder;
 
 @NonNullByDefault
 public class RemoveGreater implements ICliCommand<OrganisationCollectionCommandReceiver> {

@@ -4,8 +4,8 @@ import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
-import net.whitehorizont.apps.organization_collection_manager.lib.IFromStringBuilder;
-import net.whitehorizont.apps.organization_collection_manager.lib.IntegerFactory;
+import net.whitehorizont.apps.organization_collection_manager.lib.factories.IFromStringBuilder;
+import net.whitehorizont.apps.organization_collection_manager.lib.factories.IntegerFactory;
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationError;
 
 @NonNullByDefault

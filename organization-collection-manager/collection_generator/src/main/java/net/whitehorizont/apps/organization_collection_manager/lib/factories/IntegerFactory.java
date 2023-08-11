@@ -1,4 +1,4 @@
-package net.whitehorizont.apps.organization_collection_manager.lib;
+package net.whitehorizont.apps.organization_collection_manager.lib.factories;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
@@ -7,6 +7,7 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
+import net.whitehorizont.apps.organization_collection_manager.lib.IDisplayable;
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationError;
 
 @NonNullByDefault

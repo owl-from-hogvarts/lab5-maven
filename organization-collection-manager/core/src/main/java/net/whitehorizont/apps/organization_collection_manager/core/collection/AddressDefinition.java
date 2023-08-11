@@ -10,7 +10,7 @@ import net.whitehorizont.apps.organization_collection_manager.core.collection.Lo
 import net.whitehorizont.apps.organization_collection_manager.core.collection.LocationDefinition.LocationWritable;
 import net.whitehorizont.apps.organization_collection_manager.lib.FieldMetadataExtended;
 import net.whitehorizont.apps.organization_collection_manager.lib.MetadataComposite;
-import net.whitehorizont.apps.organization_collection_manager.lib.StringFactory;
+import net.whitehorizont.apps.organization_collection_manager.lib.factories.StringFactory;
 
 @NonNullByDefault
 public class AddressDefinition {

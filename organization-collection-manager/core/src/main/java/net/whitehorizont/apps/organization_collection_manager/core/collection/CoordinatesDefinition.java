@@ -6,8 +6,8 @@ import java.util.function.Function;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import net.whitehorizont.apps.organization_collection_manager.lib.FieldMetadataExtended;
-import net.whitehorizont.apps.organization_collection_manager.lib.IntegerFactory;
 import net.whitehorizont.apps.organization_collection_manager.lib.MetadataComposite;
+import net.whitehorizont.apps.organization_collection_manager.lib.factories.IntegerFactory;
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationResult;
 
 @NonNullByDefault
