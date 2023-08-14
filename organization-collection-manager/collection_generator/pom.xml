@@ -9,7 +9,7 @@
     <version>1.0-SNAPSHOT</version>
   </parent>
 
-  <groupId>net.whitehorizont.apps.organization_collection_manager</groupId>
+  <groupId>net.whitehorizont.apps.collection_manager</groupId>
   <artifactId>collection_generator</artifactId>
   <version>1.0-SNAPSHOT</version>
 

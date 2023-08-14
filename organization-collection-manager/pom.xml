@@ -12,6 +12,7 @@
     <module>cli</module>
     <module>collection_generator</module>
     <module>file_system</module>
+    <module>common</module>
   </modules>
   <dependencies>
     <dependency>
