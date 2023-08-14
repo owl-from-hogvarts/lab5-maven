@@ -7,9 +7,10 @@ import net.whitehorizont.apps.collection_manager.core.collection.CollectionMetad
 
 @NonNullByDefault
 public class InfoCommand implements ICommand<CollectionMetadataComputed, ICollectionCommandReceiver<?>> {
+
   @Override
-  public Observable<CollectionMetadataComputed> execute() {
-    return Observable.just(collection.getMetadataTree());
+  public Observable<CollectionMetadataComputed> execute(ICollectionCommandReceiver<?> receiver) {
+    return Observable.just(receiver.getMetadataTree());
   }
   
 }

@@ -35,7 +35,9 @@ public class Exit implements ICliCommand<CollectionCommandReceiver<?>> {
     output.flush();
 
     final var exit = new ExitCommand();
-    return dependencyManager.getCommandQueue().push(exit);
+    dependencyManager.getCommandQueue().push(exit).blockingSubscribe();
+    System.exit(0);
+
   }
   
 }

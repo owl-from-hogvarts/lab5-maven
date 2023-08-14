@@ -1,4 +1,4 @@
-package net.whitehorizont.apps.collection_manager.organisation.commands;
+package net.whitehorizont.apps.collection_manager.core.commands;
 
 import java.util.Map.Entry;
 
@@ -12,7 +12,7 @@ import net.whitehorizont.apps.collection_manager.core.collection.interfaces.ICol
 import net.whitehorizont.apps.collection_manager.core.collection.keys.BaseId;
 import net.whitehorizont.apps.collection_manager.core.collection.keys.ElementKey;
 import net.whitehorizont.apps.collection_manager.core.collection.keys.UUID_ElementId;
-import net.whitehorizont.apps.collection_manager.core.commands.CollectionCommandReceiver;
+import net.whitehorizont.apps.collection_manager.core.commands.ICollectionCommandReceiver;
 import net.whitehorizont.apps.collection_manager.organisation.definitions.OrganisationElementDefinition;
 import net.whitehorizont.apps.collection_manager.organisation.definitions.OrganisationType;
 import net.whitehorizont.apps.collection_manager.organisation.definitions.OrganisationElementDefinition.OrganisationElement;
@@ -24,12 +24,14 @@ import net.whitehorizont.apps.organization_collection_manager.lib.validators.Val
  * Specialized collection receiver for Organisation type of collection
  */
 @NonNullByDefault
-public class OrganisationCollectionCommandReceiver extends CollectionCommandReceiver<OrganisationElement> {
+public class OrganisationCollectionCommandReceiver implements ICollectionCommandReceiver<OrganisationElement>, IOrganisationCollectionCommandReceiver {
+  final ICollection<OrganisationElement> collection;
 
   public OrganisationCollectionCommandReceiver(ICollection<OrganisationElement> collection) {
-    super(collection);
+    this.collection = collection;
   }
 
+  @Override
   public Observable<Void> replaceById(BaseId id, OrganisationElementWritable prototype) {
     final var entries = this.collection.getEveryWithKey$()
         .filter(keyElement -> OrganisationElementDefinition.ID_METADATA.getValueGetter().apply(keyElement.getValue())
@@ -59,11 +61,13 @@ public class OrganisationCollectionCommandReceiver extends CollectionCommandRece
     });
   }
 
+  @Override
   public Single<Long> countByType(OrganisationType type) {
     return this.collection.getEvery$()
         .filter(element -> OrganisationElementDefinition.TYPE_METADATA.getValueGetter().apply(element) == type).count();
   }
 
+  @Override
   public void removeById(UUID_ElementId id) {
     this.collection.getEveryWithKey$()
         .filter(keyElement -> OrganisationElementDefinition.ID_METADATA.getValueGetter()
@@ -74,6 +78,7 @@ public class OrganisationCollectionCommandReceiver extends CollectionCommandRece
         .blockingSubscribe(key -> this.collection.delete(key));
   }
 
+  @Override
   public void removeByRevenue(RemovalCriteria removalCriteria, double targetValue) {
     final var keysToDelete = this.getEveryWithKey$().filter(keyElement -> {
       final @NonNull var currentAnnualTurnover = OrganisationElementDefinition.ANNUAL_TURNOVER_METADATA.getValueGetter()
@@ -99,16 +104,13 @@ public class OrganisationCollectionCommandReceiver extends CollectionCommandRece
     }
   }
 
+  @Override
   public Observable<Entry<ElementKey, OrganisationElement>> getStartsWith$(String startOfFullName) {
     return collection.getEveryWithKey$().filter(keyElement -> OrganisationElementDefinition.NAME_METADATA
         .getValueGetter().apply(keyElement.getValue()).startsWith(startOfFullName));
   }
 
-  public enum RemovalCriteria {
-    BELOW,
-    ABOVE
-  }
-
+  @Override
   public Observable<Entry<ElementKey, OrganisationElement>> getDescending$() {
     return this.collection.getEveryWithKey$().sorted((a, b) -> {
       final var aElement = a.getValue();

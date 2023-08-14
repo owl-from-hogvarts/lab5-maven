@@ -6,14 +6,12 @@ import java.util.Map.Entry;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import io.reactivex.rxjava3.core.Observable;
-import net.whitehorizont.apps.collection_manager.core.collection.DuplicateElements;
 import net.whitehorizont.apps.collection_manager.core.collection.CollectionMetadataDefinition.CollectionMetadata;
 import net.whitehorizont.apps.collection_manager.core.collection.CollectionMetadataDefinition.CollectionMetadataComputed;
 import net.whitehorizont.apps.collection_manager.core.collection.errors.NoSuchElement;
 import net.whitehorizont.apps.collection_manager.core.collection.interfaces.ICollection;
 import net.whitehorizont.apps.collection_manager.core.collection.interfaces.ICollectionElement;
 import net.whitehorizont.apps.collection_manager.core.collection.keys.ElementKey;
-import net.whitehorizont.apps.collection_manager.core.collection.keys.KeyGenerationError;
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationError;
 
 @NonNullByDefault
@@ -39,8 +37,8 @@ public interface ICollectionCommandReceiver<E extends ICollectionElement<E>> ext
 
   String getCollectionType();
 
-  void insert(E element) throws ValidationError, DuplicateElements, KeyGenerationError;
+  void insert(E element) throws Exception;
 
-  void insert(ElementKey key, E element) throws ValidationError, DuplicateElements;
+  void insert(ElementKey key, E element) throws Exception;
 
 }

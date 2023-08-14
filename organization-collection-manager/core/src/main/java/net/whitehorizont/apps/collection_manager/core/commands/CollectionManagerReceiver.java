@@ -6,11 +6,12 @@ import io.reactivex.rxjava3.core.Observable;
 import net.whitehorizont.apps.collection_manager.core.collection.ICollectionManager;
 import net.whitehorizont.apps.collection_manager.core.collection.interfaces.ICollection;
 import net.whitehorizont.apps.collection_manager.core.collection.keys.BaseId;
+import net.whitehorizont.apps.collection_manager.core.commands.ICollectionManagerReceiver;
 import net.whitehorizont.apps.collection_manager.core.storage.errors.CollectionNotFound;
 import net.whitehorizont.apps.collection_manager.core.storage.errors.StorageInaccessibleError;
 
 @NonNullByDefault
-public class CollectionManagerReceiver<C extends ICollection<?>> implements ICollectionManager<C> {
+public class CollectionManagerReceiver<C extends ICollection<?>> implements ICollectionManagerReceiver<C> {
 
   private final ICollectionManager<C> collectionManager;
 

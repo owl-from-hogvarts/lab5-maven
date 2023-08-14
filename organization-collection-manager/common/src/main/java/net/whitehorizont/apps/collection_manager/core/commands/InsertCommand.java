@@ -5,23 +5,23 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import io.reactivex.rxjava3.core.Observable;
 import net.whitehorizont.apps.collection_manager.core.collection.interfaces.ICollectionElement;
 import net.whitehorizont.apps.collection_manager.core.collection.keys.ElementKey;
+import net.whitehorizont.apps.collection_manager.core.dependencies.IProvideCollectionReceiver;
 
 @NonNullByDefault
-public class InsertCommand<E extends ICollectionElement<E>> implements ICommand<Void> {
+public class InsertCommand<C extends ICollectionCommandReceiver<E>, E extends ICollectionElement<E>> implements ICommand<Void, IProvideCollectionReceiver<C>> {
   private final E element;
-  private final CollectionCommandReceiver<E> collection;
   private final ElementKey key;
 
-  public InsertCommand(ElementKey key, E element, CollectionCommandReceiver<E> collectionReceiver) {
+  public InsertCommand(ElementKey key, E element) {
     this.element = element;
-    this.collection = collectionReceiver;
     this.key = key;
   }
 
   @Override
-  public Observable<Void> execute() {
+  public Observable<Void> execute(IProvideCollectionReceiver<C> dependencyProvider) {
+    final C collection = dependencyProvider.getCollectionReceiver();
+    
     return Observable.create(subscriber -> {
-      final var collection = this.collection;
       collection.insert(key, element);
       subscriber.onComplete();
     });

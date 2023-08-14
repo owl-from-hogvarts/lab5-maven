@@ -2,27 +2,16 @@ package net.whitehorizont.apps.collection_manager.core.commands;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
-import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.Observable;
 import net.whitehorizont.apps.collection_manager.core.collection.interfaces.ICollectionElement;
+import net.whitehorizont.apps.collection_manager.core.dependencies.IProvideCollectionReceiver;
 
 @NonNullByDefault
-public class LoadCommand<E extends ICollectionElement<E>> implements ICommand<E> {
-
-  private final CollectionCommandReceiver<E> receiver;
-
-
-  public LoadCommand(CollectionCommandReceiver<E> receiver) {
-    this.receiver = receiver;
-  }
-
+public class LoadCommand<C extends ICollectionCommandReceiver<E>, E extends ICollectionElement<E>> implements ICommand<E, IProvideCollectionReceiver<C>> {
 
   @Override
-  public Observable<@NonNull E> execute() {
-    return receiver.getEvery$();
-
+  public Observable<E> execute(IProvideCollectionReceiver<C> dependencyProvider) {
+    return dependencyProvider.getCollectionReceiver().getEvery$();
   }
-  // create instance of FileStorage
-  // place it into collection manager
   
 }

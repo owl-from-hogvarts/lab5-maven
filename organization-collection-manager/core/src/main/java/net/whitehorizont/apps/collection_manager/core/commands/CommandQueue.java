@@ -10,17 +10,20 @@ import io.reactivex.rxjava3.subjects.PublishSubject;
 import io.reactivex.rxjava3.subjects.Subject;
 
 @NonNullByDefault
-public class CommandQueue {
+public class CommandQueue<DependencyManager> {
   private final Subject<ConnectableObservable<?>> commands = PublishSubject.create();
+  private final DependencyManager dependencyManager;
 
-  public CommandQueue() {
+
+  public CommandQueue(DependencyManager dependencyManager) {
     commands.subscribe(this::executeNext);
+    this.dependencyManager = dependencyManager;
   }
 
-  public <@NonNull T> Observable<T> push(ICommand<T> command) {
+  public <@NonNull T> Observable<T> push(ICommand<T, DependencyManager> command) {
     return Observable.create((subscriber) -> {
 
-      final var execution$ = command.execute().publish();
+      final var execution$ = command.execute(dependencyManager).publish();
       // this does not immediately start execution of observable
       // to start actual execution call connect
       execution$.subscribe(subscriber::onNext, subscriber::onError, subscriber::onComplete);

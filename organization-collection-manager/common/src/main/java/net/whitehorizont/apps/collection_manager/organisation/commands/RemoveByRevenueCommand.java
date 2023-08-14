@@ -4,26 +4,25 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import io.reactivex.rxjava3.core.Observable;
 import net.whitehorizont.apps.collection_manager.core.commands.ICommand;
-import net.whitehorizont.apps.collection_manager.organisation.commands.OrganisationCollectionCommandReceiver.RemovalCriteria;
+import net.whitehorizont.apps.collection_manager.core.dependencies.IProvideCollectionReceiver;
+import net.whitehorizont.apps.collection_manager.organisation.commands.IOrganisationCollectionCommandReceiver.RemovalCriteria;
 
 @NonNullByDefault
-public class RemoveByRevenueCommand implements ICommand<Void> {
-  private final OrganisationCollectionCommandReceiver collection;
+public class RemoveByRevenueCommand
+    implements ICommand<Void, IProvideCollectionReceiver<IOrganisationCollectionCommandReceiver>> {
   private final RemovalCriteria removalCriteria;
   private final double targetValue;
 
-  public RemoveByRevenueCommand(OrganisationCollectionCommandReceiver collection, RemovalCriteria removalCriteria, double targetValue) {
-    this.collection = collection;
+  public RemoveByRevenueCommand(RemovalCriteria removalCriteria, double targetValue) {
     this.removalCriteria = removalCriteria;
     this.targetValue = targetValue;
   }
 
   @Override
-  public Observable<Void> execute() {
-    collection.removeByRevenue(removalCriteria, targetValue);
+  public Observable<Void> execute(
+      IProvideCollectionReceiver<IOrganisationCollectionCommandReceiver> dependencyProvider) {
+    dependencyProvider.getCollectionReceiver().removeByRevenue(removalCriteria, targetValue);
     return Observable.empty();
   }
 
-
-  
 }

@@ -3,14 +3,15 @@ package net.whitehorizont.apps.collection_manager.core.commands;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import io.reactivex.rxjava3.core.Observable;
+import net.whitehorizont.apps.collection_manager.core.dependencies.IProvideCollectionReceiver;
 
 @NonNullByDefault
-public class ClearCommand implements ICommand<Void, ICollectionCommandReceiver<?>> {
+public class ClearCommand implements ICommand<Void, IProvideCollectionReceiver<?>> {
 
   @Override
-  public Observable<Void> execute(ICollectionCommandReceiver<?> receiver) {
+  public Observable<Void> execute(IProvideCollectionReceiver<?> dependencyProvider) {
     return Observable.create(subscriber -> {
-      receiver.clear();
+      dependencyProvider.getCollectionReceiver().clear();
       subscriber.onComplete();
     });
   }
