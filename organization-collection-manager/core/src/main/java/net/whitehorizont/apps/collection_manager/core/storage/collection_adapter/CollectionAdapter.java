@@ -10,11 +10,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import com.thoughtworks.xstream.XStream;
 import io.reactivex.rxjava3.annotations.NonNull;
-import net.whitehorizont.apps.collection_manager.core.collection.DuplicateElements;
-import net.whitehorizont.apps.collection_manager.core.collection.ICollection;
-import net.whitehorizont.apps.collection_manager.core.collection.ICollectionElement;
 import net.whitehorizont.apps.collection_manager.core.collection.RamCollection;
 import net.whitehorizont.apps.collection_manager.core.collection.CollectionMetadataDefinition.CollectionMetadata;
+import net.whitehorizont.apps.collection_manager.core.collection.errors.DuplicateElements;
+import net.whitehorizont.apps.collection_manager.core.collection.interfaces.ICollection;
+import net.whitehorizont.apps.collection_manager.core.collection.interfaces.ICollectionElement;
 import net.whitehorizont.apps.collection_manager.core.collection.keys.KeyGenerationError;
 import net.whitehorizont.apps.collection_manager.core.storage.IFileAdapter;
 import net.whitehorizont.apps.collection_manager.core.storage.errors.ResourceEmpty;

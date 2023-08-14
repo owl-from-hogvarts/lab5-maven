@@ -16,7 +16,7 @@ import net.whitehorizont.apps.collection_manager.cli.commands.ICliCommand;
 import net.whitehorizont.apps.collection_manager.cli.errors.IGlobalErrorHandler;
 import net.whitehorizont.apps.collection_manager.cli.errors.IInterruptHandler;
 import net.whitehorizont.apps.collection_manager.cli.errors.TerminalUnavailable;
-import net.whitehorizont.apps.collection_manager.core.collection.ICollectionManager;
+import net.whitehorizont.apps.collection_manager.core.collection.interfaces.ICollectionManager;
 import net.whitehorizont.apps.collection_manager.core.commands.CollectionCommandReceiver;
 import net.whitehorizont.apps.collection_manager.core.commands.CommandQueue;
 

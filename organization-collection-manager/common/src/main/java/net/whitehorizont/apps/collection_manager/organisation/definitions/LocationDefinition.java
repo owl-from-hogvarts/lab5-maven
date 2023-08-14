@@ -4,11 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 import net.whitehorizont.apps.organization_collection_manager.lib.FieldMetadataExtended;
 import net.whitehorizont.apps.organization_collection_manager.lib.MetadataComposite;
 import net.whitehorizont.apps.organization_collection_manager.lib.factories.IntegerFactory;
 import net.whitehorizont.apps.organization_collection_manager.lib.factories.StringFactory;
 
+@NonNullByDefault
 public class LocationDefinition {
   private static final String TITLE = "Location";
   

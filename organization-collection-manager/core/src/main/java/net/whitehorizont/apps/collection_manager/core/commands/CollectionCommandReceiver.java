@@ -6,9 +6,9 @@ import java.util.Map.Entry;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import io.reactivex.rxjava3.core.Observable;
-import net.whitehorizont.apps.collection_manager.core.collection.DuplicateElements;
 import net.whitehorizont.apps.collection_manager.core.collection.CollectionMetadataDefinition.CollectionMetadata;
 import net.whitehorizont.apps.collection_manager.core.collection.CollectionMetadataDefinition.CollectionMetadataComputed;
+import net.whitehorizont.apps.collection_manager.core.collection.errors.DuplicateElements;
 import net.whitehorizont.apps.collection_manager.core.collection.errors.NoSuchElement;
 import net.whitehorizont.apps.collection_manager.core.collection.interfaces.ICollection;
 import net.whitehorizont.apps.collection_manager.core.collection.interfaces.ICollectionElement;

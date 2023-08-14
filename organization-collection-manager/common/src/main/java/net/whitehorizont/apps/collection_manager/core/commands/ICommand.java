@@ -2,6 +2,7 @@ package net.whitehorizont.apps.collection_manager.core.commands;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.Observable;
 
 /**
@@ -16,5 +17,5 @@ import io.reactivex.rxjava3.core.Observable;
 @NonNullByDefault
 public interface ICommand<Return, DependencyProvider> {
   /** Always ensure that observable completes */
-  Observable<Return> execute(DependencyProvider dependencyProvider);
+  Observable<@NonNull Return> execute(DependencyProvider dependencyProvider);
 }

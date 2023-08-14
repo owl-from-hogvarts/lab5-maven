@@ -143,11 +143,6 @@ public class OrganisationElementDefinition {
       return this;
     }
 
-    private OrganisationElementWritable coordinates(CoordinatesWriteable coordinates) {
-      this.coordinates = coordinates;
-      return this;
-    }
-
     private OrganisationElementWritable type(OrganisationType type) {
       this.type = type;
       return this;

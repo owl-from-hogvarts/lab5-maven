@@ -7,6 +7,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import io.reactivex.rxjava3.core.Observable;
 import net.whitehorizont.apps.collection_manager.core.collection.CollectionMetadataDefinition.CollectionMetadata;
+import net.whitehorizont.apps.collection_manager.core.collection.errors.DuplicateElements;
 import net.whitehorizont.apps.collection_manager.core.collection.errors.NoSuchElement;
 import net.whitehorizont.apps.collection_manager.core.collection.keys.ElementKey;
 import net.whitehorizont.apps.collection_manager.core.collection.keys.KeyGenerationError;
@@ -28,8 +29,8 @@ public interface ICollection<E extends ICollectionElement<E>> {
    * @throws KeyGenerationError
    * @throws NoSuchElement
    */
-  void insert(E element) throws Exception;
-  void insert(ElementKey key, E element) throws Exception;
+  void insert(E element) throws ValidationError, DuplicateElements, KeyGenerationError;
+  void insert(ElementKey key, E element) throws ValidationError, DuplicateElements;
 
   /**
    * ! Only single element should be supplied !

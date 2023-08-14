@@ -1,10 +1,11 @@
-package net.whitehorizont.apps.collection_manager.core.collection;
+package net.whitehorizont.apps.collection_manager.core.collection.interfaces;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import io.reactivex.rxjava3.core.Observable;
-import net.whitehorizont.apps.collection_manager.core.collection.interfaces.ICollection;
 import net.whitehorizont.apps.collection_manager.core.collection.keys.BaseId;
+import net.whitehorizont.apps.collection_manager.core.storage.errors.CollectionNotFound;
+import net.whitehorizont.apps.collection_manager.core.storage.errors.StorageInaccessibleError;
 
 // ! CollectionManager does NOT create collections by itself. 
 // !It should choose storage and pass collection creation request to it
@@ -21,7 +22,7 @@ public interface ICollectionManager<C extends ICollection<?>> {
    * @return
    * @throws StorageInaccessibleError
    */
-  Observable<C> getCollection() throws Exception;
+  Observable<C> getCollection() throws StorageInaccessibleError;
 
   // no safe counterpart 'cause save should accept only known 
   // collections that is associated with certain store
@@ -31,6 +32,6 @@ public interface ICollectionManager<C extends ICollection<?>> {
    * @throws CollectionNotFound
    * @throws StorageInaccessibleError
    */
-  void save(BaseId collectionId) throws Exception;
+  void save(BaseId collectionId) throws CollectionNotFound, StorageInaccessibleError;
 
 }

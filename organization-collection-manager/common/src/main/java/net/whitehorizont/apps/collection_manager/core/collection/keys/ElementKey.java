@@ -3,6 +3,7 @@ package net.whitehorizont.apps.collection_manager.core.collection.keys;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 import net.whitehorizont.apps.organization_collection_manager.lib.factories.IFromStringBuilder;
 import net.whitehorizont.apps.organization_collection_manager.lib.factories.IntegerFactory;
@@ -59,7 +60,7 @@ public class ElementKey extends BaseId implements Comparable<ElementKey> {
   }
 
   @Override
-  public boolean equals(Object obj) {
+  public boolean equals(@Nullable Object obj) {
     if (this == obj)
       return true;
     if (obj == null)

@@ -12,7 +12,7 @@ import net.whitehorizont.apps.collection_manager.core.collection.interfaces.ICol
 import net.whitehorizont.apps.collection_manager.core.collection.keys.BaseId;
 import net.whitehorizont.apps.collection_manager.core.collection.keys.ElementKey;
 import net.whitehorizont.apps.collection_manager.core.collection.keys.UUID_ElementId;
-import net.whitehorizont.apps.collection_manager.core.commands.ICollectionCommandReceiver;
+import net.whitehorizont.apps.collection_manager.organisation.commands.IOrganisationCollectionCommandReceiver;
 import net.whitehorizont.apps.collection_manager.organisation.definitions.OrganisationElementDefinition;
 import net.whitehorizont.apps.collection_manager.organisation.definitions.OrganisationType;
 import net.whitehorizont.apps.collection_manager.organisation.definitions.OrganisationElementDefinition.OrganisationElement;
@@ -24,10 +24,11 @@ import net.whitehorizont.apps.organization_collection_manager.lib.validators.Val
  * Specialized collection receiver for Organisation type of collection
  */
 @NonNullByDefault
-public class OrganisationCollectionCommandReceiver implements ICollectionCommandReceiver<OrganisationElement>, IOrganisationCollectionCommandReceiver {
+public class OrganisationCollectionCommandReceiver extends CollectionCommandReceiver<OrganisationElement> implements IOrganisationCollectionCommandReceiver {
   final ICollection<OrganisationElement> collection;
 
   public OrganisationCollectionCommandReceiver(ICollection<OrganisationElement> collection) {
+    super(collection);
     this.collection = collection;
   }
 

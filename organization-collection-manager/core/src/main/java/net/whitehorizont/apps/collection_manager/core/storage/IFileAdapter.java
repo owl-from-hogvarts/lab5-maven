@@ -2,10 +2,10 @@ package net.whitehorizont.apps.collection_manager.core.storage;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
-import net.whitehorizont.apps.collection_manager.core.collection.DuplicateElements;
-import net.whitehorizont.apps.collection_manager.core.collection.ICollection;
-import net.whitehorizont.apps.collection_manager.core.collection.NoSuchElement;
 import net.whitehorizont.apps.collection_manager.core.collection.CollectionMetadataDefinition.CollectionMetadata;
+import net.whitehorizont.apps.collection_manager.core.collection.errors.DuplicateElements;
+import net.whitehorizont.apps.collection_manager.core.collection.errors.NoSuchElement;
+import net.whitehorizont.apps.collection_manager.core.collection.interfaces.ICollection;
 import net.whitehorizont.apps.collection_manager.core.collection.keys.KeyGenerationError;
 import net.whitehorizont.apps.collection_manager.core.storage.errors.DeserializationError;
 import net.whitehorizont.apps.collection_manager.core.storage.errors.ResourceEmpty;
