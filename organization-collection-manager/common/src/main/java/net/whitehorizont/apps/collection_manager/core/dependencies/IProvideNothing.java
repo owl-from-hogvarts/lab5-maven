@@ -6,6 +6,6 @@ package net.whitehorizont.apps.collection_manager.core.dependencies;
  * 
  * Java uses nominal typing, so dependency manager is obligated to implement this
  */
-public interface INothingProvider {
+public interface IProvideNothing {
   
 }

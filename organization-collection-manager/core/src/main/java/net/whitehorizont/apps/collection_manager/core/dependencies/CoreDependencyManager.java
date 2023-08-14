@@ -8,7 +8,7 @@ import net.whitehorizont.apps.collection_manager.core.commands.ICollectionComman
 import net.whitehorizont.apps.collection_manager.core.commands.ICollectionManagerReceiver;
 
 @NonNullByDefault
-public class CoreDependencyManager<CR extends ICollectionCommandReceiver<E>, E extends ICollectionElement<E>> implements IProvideCollectionReceiver<CR>,INothingProvider, IProvideCollectionManagerReceiver<ICollection<E>> {
+public class CoreDependencyManager<CR extends ICollectionCommandReceiver<E>, E extends ICollectionElement<E>> implements IProvideCollectionReceiver<CR>,IProvideNothing, IProvideCollectionManagerReceiver<ICollection<E>> {
   final CR collectionReceiver;
   final ICollectionManagerReceiver<ICollection<E>> collectionManagerReceiver;
   
