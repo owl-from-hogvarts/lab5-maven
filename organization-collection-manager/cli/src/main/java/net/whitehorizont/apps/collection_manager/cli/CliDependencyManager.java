@@ -16,19 +16,12 @@ import net.whitehorizont.apps.collection_manager.cli.commands.ICliCommand;
 import net.whitehorizont.apps.collection_manager.cli.errors.IGlobalErrorHandler;
 import net.whitehorizont.apps.collection_manager.cli.errors.IInterruptHandler;
 import net.whitehorizont.apps.collection_manager.cli.errors.TerminalUnavailable;
-import net.whitehorizont.apps.collection_manager.core.collection.interfaces.ICollectionManager;
-import net.whitehorizont.apps.collection_manager.core.commands.CollectionCommandReceiver;
-import net.whitehorizont.apps.collection_manager.core.commands.CommandQueue;
+import net.whitehorizont.apps.collection_manager.core.commands.interfaces.ICommandQueue;
 
 @NonNullByDefault
-public class CliDependencyManager<CR extends CollectionCommandReceiver<?>> {
-  private final CR collectionReceiver;
-  private final ICollectionManager<?> collectionManager;
-  public ICollectionManager<?> getCollectionManager() {
-    return collectionManager;
-  }
+public class CliDependencyManager<DP> {
 
-  private final Map<String, ICliCommand<? super CR>> commands;
+  private final Map<String, ICliCommand<? super DP>> commands;
   private final LineReader commandLineReader;
   private final LineReader genericLineReader;
   private final boolean displayPrompts;
@@ -46,7 +39,7 @@ public class CliDependencyManager<CR extends CollectionCommandReceiver<?>> {
   }
 
   private final Streams streams;
-  private final CommandQueue commandQueue = new CommandQueue();
+  private final ICommandQueue<DP> commandQueue;
   private final Optional<IInterruptHandler> onInterrupt;
   private final IGlobalErrorHandler globalErrorHandler;
 
@@ -58,15 +51,11 @@ public class CliDependencyManager<CR extends CollectionCommandReceiver<?>> {
     return onInterrupt;
   }
 
-  public CR getCollectionReceiver() {
-    return collectionReceiver;
-  }
-
-  public Map<String, ICliCommand<? super CR>> getCommands() {
+  public Map<String, ICliCommand<? super DP>> getCommands() {
     return this.commands;
   }
 
-  public CommandQueue getCommandQueue() {
+  public ICommandQueue<DP> getCommandQueue() {
     return this.commandQueue;
   }
 
@@ -82,15 +71,14 @@ public class CliDependencyManager<CR extends CollectionCommandReceiver<?>> {
     return this.streams;
   }
 
-  public CliDependencyManager(Builder<CR> builder)
+  public CliDependencyManager(Builder<DP> builder)
       throws TerminalUnavailable {
-    this.collectionManager = builder.collectionManager;
-    this.collectionReceiver = builder.collectionReceiver;
     this.commands = builder.commands;
     this.streams = builder.streams;
     this.onInterrupt = Optional.ofNullable(builder.onInterruptHandler);
     this.globalErrorHandler = builder.globalErrorHandler;
     this.displayPrompts = builder.displayPrompts;
+    this.commandQueue = builder.commandQueue;
 
     try {
       final PrintStream voidStream = new PrintStream(OutputStream.nullOutputStream());
@@ -112,24 +100,22 @@ public class CliDependencyManager<CR extends CollectionCommandReceiver<?>> {
     }
   }
 
-  public static class Builder<CR extends CollectionCommandReceiver<?>> {
-    private ICollectionManager<?> collectionManager;
-    private CR collectionReceiver;
-    private Map<String, ICliCommand<? super CR>> commands;
+  public static class Builder<DP> {
+    private Map<String, ICliCommand<? super DP>> commands;
     private Streams streams;
     private @Nullable IInterruptHandler onInterruptHandler;
     private boolean isSystemTerminal = true;
     private @Nullable IGlobalErrorHandler globalErrorHandler;
     private boolean displayPrompts = true;
+    private ICommandQueue<DP> commandQueue;
 
-
-    public Builder<CR> setDisplayPrompts(boolean displayPrompts) {
-      this.displayPrompts = displayPrompts;
+    public Builder<DP> setCommandQueue(ICommandQueue<DP> commandQueue) {
+      this.commandQueue = commandQueue;
       return this;
     }
 
-    public Builder<CR> setCollectionManager(ICollectionManager<?> collectionManager) {
-      this.collectionManager = collectionManager;
+    public Builder<DP> setDisplayPrompts(boolean displayPrompts) {
+      this.displayPrompts = displayPrompts;
       return this;
     }
     /**
@@ -139,27 +125,23 @@ public class CliDependencyManager<CR extends CollectionCommandReceiver<?>> {
      * @param globalErrorHandler
      * @return
      */
-    public Builder<CR> setGlobalErrorHandler(IGlobalErrorHandler globalErrorHandler) {
+    public Builder<DP> setGlobalErrorHandler(IGlobalErrorHandler globalErrorHandler) {
       this.globalErrorHandler = globalErrorHandler;
       return this;
     }
-    public Builder<CR> setSystemTerminal(boolean isSystemTerminal) {
+    public Builder<DP> setSystemTerminal(boolean isSystemTerminal) {
       this.isSystemTerminal = isSystemTerminal;
       return this;
     }
-    public Builder<CR> setOnInterruptHandler(IInterruptHandler onInterruptHandler) {
+    public Builder<DP> setOnInterruptHandler(IInterruptHandler onInterruptHandler) {
       this.onInterruptHandler = onInterruptHandler;
       return this;
     }
-    public Builder<CR> setCollectionReceiver(CR collectionManager) {
-      this.collectionReceiver = collectionManager;
-      return this;
-    }
-    public Builder<CR> setCommands(Map<String, ICliCommand<? super CR>> commands) {
+    public Builder<DP> setCommands(Map<String, ICliCommand<? super DP>> commands) {
       this.commands = commands;
       return this;
     }
-    public Builder<CR> setStreams(Streams streams) {
+    public Builder<DP> setStreams(Streams streams) {
       this.streams = streams;
       return this;
     }

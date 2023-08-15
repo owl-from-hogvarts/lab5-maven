@@ -11,7 +11,7 @@ import net.whitehorizont.apps.collection_manager.core.dependencies.IProvideColle
 import net.whitehorizont.apps.collection_manager.organisation.definitions.OrganisationElementDefinition.OrganisationElement;
 
 @NonNullByDefault
-public class FilterStartsWithCommand implements ICommand<Entry<ElementKey, OrganisationElement>, IProvideCollectionReceiver<IOrganisationCollectionCommandReceiver>> {
+public class FilterStartsWithCommand implements ICommand<Entry<ElementKey, OrganisationElement>, IProvideCollectionReceiver<? extends IOrganisationCollectionCommandReceiver>> {
   private final String prefix;
 
   public FilterStartsWithCommand(String prefix) {
@@ -20,7 +20,7 @@ public class FilterStartsWithCommand implements ICommand<Entry<ElementKey, Organ
 
   @Override
   public Observable<Entry<ElementKey, OrganisationElement>> execute(
-      IProvideCollectionReceiver<IOrganisationCollectionCommandReceiver> dependencyProvider) {
+      IProvideCollectionReceiver<? extends IOrganisationCollectionCommandReceiver> dependencyProvider) {
     return dependencyProvider.getCollectionReceiver().getStartsWith$(prefix);
   }
   

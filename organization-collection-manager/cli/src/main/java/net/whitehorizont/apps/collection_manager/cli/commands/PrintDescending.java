@@ -7,13 +7,14 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import io.reactivex.rxjava3.core.Observable;
 import net.whitehorizont.apps.collection_manager.cli.CliDependencyManager;
-import net.whitehorizont.apps.collection_manager.commands.GetDescendingCommand;
-import net.whitehorizont.apps.collection_manager.commands.OrganisationCollectionCommandReceiver;
-import net.whitehorizont.apps.collection_manager.core.collection.OrganisationElementDefinition.OrganisationElement;
+import net.whitehorizont.apps.collection_manager.core.dependencies.IProvideCollectionReceiver;
+import net.whitehorizont.apps.collection_manager.organisation.commands.GetDescendingCommand;
+import net.whitehorizont.apps.collection_manager.organisation.commands.IOrganisationCollectionCommandReceiver;
+import net.whitehorizont.apps.collection_manager.organisation.definitions.OrganisationElementDefinition.OrganisationElement;
 import net.whitehorizont.apps.organization_collection_manager.lib.MetadataComposite;
 
 @NonNullByDefault
-public class PrintDescending extends BaseElementCommand<OrganisationElement> implements ICliCommand<OrganisationCollectionCommandReceiver> {
+public class PrintDescending extends BaseElementCommand<OrganisationElement> implements ICliCommand<IProvideCollectionReceiver<? extends IOrganisationCollectionCommandReceiver>> {
   public PrintDescending(MetadataComposite<?, OrganisationElement, ?> metadata) {
     super(metadata);
   }
@@ -31,10 +32,9 @@ public class PrintDescending extends BaseElementCommand<OrganisationElement> imp
   }
 
   @Override
-  public Observable<Void> run(CliDependencyManager<? extends OrganisationCollectionCommandReceiver> dependencyManager,
+  public Observable<Void> run(CliDependencyManager<? extends IProvideCollectionReceiver<? extends IOrganisationCollectionCommandReceiver>> dependencyManager,
       Stack<String> arguments) throws Exception {
-        final var collection = dependencyManager.getCollectionReceiver();
-        final var command = new GetDescendingCommand(collection);
+        final var command = new GetDescendingCommand();
         final var out = dependencyManager.getStreams().out;
         dependencyManager.getCommandQueue().push(command).blockingSubscribe(keyElement -> {
           final var element = keyElement.getValue();

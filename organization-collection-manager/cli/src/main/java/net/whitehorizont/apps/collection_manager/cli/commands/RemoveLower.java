@@ -7,14 +7,15 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import io.reactivex.rxjava3.core.Observable;
 import net.whitehorizont.apps.collection_manager.cli.CliDependencyManager;
-import net.whitehorizont.apps.collection_manager.commands.OrganisationCollectionCommandReceiver;
-import net.whitehorizont.apps.collection_manager.commands.RemoveByRevenueCommand;
-import net.whitehorizont.apps.collection_manager.commands.OrganisationCollectionCommandReceiver.RemovalCriteria;
+import net.whitehorizont.apps.collection_manager.core.dependencies.IProvideCollectionReceiver;
+import net.whitehorizont.apps.collection_manager.organisation.commands.IOrganisationCollectionCommandReceiver.RemovalCriteria;
+import net.whitehorizont.apps.collection_manager.organisation.commands.IOrganisationCollectionCommandReceiver;
+import net.whitehorizont.apps.collection_manager.organisation.commands.RemoveByRevenueCommand;
 import net.whitehorizont.apps.organization_collection_manager.lib.factories.DoubleFactory;
 import net.whitehorizont.apps.organization_collection_manager.lib.factories.IFromStringBuilder;
 
 @NonNullByDefault
-public class RemoveLower implements ICliCommand<OrganisationCollectionCommandReceiver> {
+public class RemoveLower implements ICliCommand<IProvideCollectionReceiver<? extends IOrganisationCollectionCommandReceiver>> {
 
   private static final String DESCRIPTION = "removes organisations from collection, which has annual turnover bellow specified";
   private static final IFromStringBuilder<Double> doubleParser = new DoubleFactory();
@@ -30,13 +31,11 @@ public class RemoveLower implements ICliCommand<OrganisationCollectionCommandRec
   }
 
   @Override
-  public Observable<Void> run(CliDependencyManager<? extends OrganisationCollectionCommandReceiver> dependencyManager,
+  public Observable<Void> run(CliDependencyManager<? extends IProvideCollectionReceiver<? extends IOrganisationCollectionCommandReceiver>> dependencyManager,
       Stack<String> arguments) throws Exception {
-        final var collection = dependencyManager.getCollectionReceiver();
-
         final String targetTurnoverString = arguments.pop().trim().strip();
         final double targetTurnover = doubleParser.buildFromString(targetTurnoverString);
-        final var removeLowerCommand = new RemoveByRevenueCommand(collection, RemovalCriteria.BELOW, targetTurnover);
+        final var removeLowerCommand = new RemoveByRevenueCommand(RemovalCriteria.BELOW, targetTurnover);
         return dependencyManager.getCommandQueue().push(removeLowerCommand);
       }
   

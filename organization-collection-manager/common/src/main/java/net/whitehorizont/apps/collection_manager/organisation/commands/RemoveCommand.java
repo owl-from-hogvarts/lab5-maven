@@ -10,17 +10,17 @@ import net.whitehorizont.apps.collection_manager.core.commands.interfaces.IComma
 import net.whitehorizont.apps.collection_manager.core.dependencies.IProvideCollectionReceiver;
 
 @NonNullByDefault
-public class RemoveCommand implements ICommand<Long, IProvideCollectionReceiver<IOrganisationCollectionCommandReceiver>> {
+public class RemoveCommand implements ICommand<Long, IProvideCollectionReceiver<? extends IOrganisationCollectionCommandReceiver>> {
   private final Optional<UUID_ElementId> id;
 
   @SuppressWarnings("null")
-  public RemoveCommand(IOrganisationCollectionCommandReceiver collection, UUID_ElementId id) {
+  public RemoveCommand(UUID_ElementId id) {
     this.id = Optional.of(id);
   }
 
   @Override
   public Observable<Long> execute(
-      IProvideCollectionReceiver<IOrganisationCollectionCommandReceiver> dependencyProvider) {
+      IProvideCollectionReceiver<? extends IOrganisationCollectionCommandReceiver> dependencyProvider) {
     dependencyProvider.getCollectionReceiver().removeById(id.get());
     return Observable.empty();
   }

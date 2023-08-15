@@ -23,7 +23,7 @@ public class CommandQueue<DependencyManager> implements ICommandQueue<Dependency
   }
 
   @Override
-  public <@NonNull T> Observable<T> push(ICommand<T, DependencyManager> command) {
+  public <@NonNull T> Observable<T> push(ICommand<T, ? super DependencyManager> command) {
     return Observable.create((subscriber) -> {
 
       final var execution$ = command.execute(dependencyManager).publish();

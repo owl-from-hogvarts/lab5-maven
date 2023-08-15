@@ -11,10 +11,10 @@ import net.whitehorizont.apps.collection_manager.core.dependencies.IProvideColle
 import net.whitehorizont.apps.collection_manager.organisation.definitions.OrganisationElementDefinition.OrganisationElement;
 
 @NonNullByDefault
-public class GetDescendingCommand implements ICommand<Entry<ElementKey, OrganisationElement>, IProvideCollectionReceiver<IOrganisationCollectionCommandReceiver>> {  
+public class GetDescendingCommand implements ICommand<Entry<ElementKey, OrganisationElement>, IProvideCollectionReceiver<? extends IOrganisationCollectionCommandReceiver>> {  
   @Override
   public Observable<Entry<ElementKey, OrganisationElement>> execute(
-      IProvideCollectionReceiver<IOrganisationCollectionCommandReceiver> dependencyProvider) {
+      IProvideCollectionReceiver<? extends IOrganisationCollectionCommandReceiver> dependencyProvider) {
     return dependencyProvider.getCollectionReceiver().getDescending$();
   }
   

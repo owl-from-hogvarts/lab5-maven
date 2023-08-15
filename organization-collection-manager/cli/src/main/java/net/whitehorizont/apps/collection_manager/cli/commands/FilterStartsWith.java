@@ -7,13 +7,14 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import io.reactivex.rxjava3.core.Observable;
 import net.whitehorizont.apps.collection_manager.cli.CliDependencyManager;
-import net.whitehorizont.apps.collection_manager.commands.FilterStartsWithCommand;
-import net.whitehorizont.apps.collection_manager.commands.OrganisationCollectionCommandReceiver;
-import net.whitehorizont.apps.collection_manager.core.collection.OrganisationElementDefinition.OrganisationElement;
+import net.whitehorizont.apps.collection_manager.core.dependencies.IProvideCollectionReceiver;
+import net.whitehorizont.apps.collection_manager.organisation.commands.FilterStartsWithCommand;
+import net.whitehorizont.apps.collection_manager.organisation.commands.IOrganisationCollectionCommandReceiver;
+import net.whitehorizont.apps.collection_manager.organisation.definitions.OrganisationElementDefinition.OrganisationElement;
 import net.whitehorizont.apps.organization_collection_manager.lib.MetadataComposite;
 
 @NonNullByDefault
-public class FilterStartsWith extends BaseElementCommand<OrganisationElement> implements ICliCommand<OrganisationCollectionCommandReceiver> {
+public class FilterStartsWith extends BaseElementCommand<OrganisationElement> implements ICliCommand<IProvideCollectionReceiver<? extends IOrganisationCollectionCommandReceiver>> {
   public FilterStartsWith(MetadataComposite<?, OrganisationElement, ?> metadata) {
     super(metadata);
   }
@@ -31,11 +32,11 @@ public class FilterStartsWith extends BaseElementCommand<OrganisationElement> im
   }
 
   @Override
-  public Observable<Void> run(CliDependencyManager<? extends OrganisationCollectionCommandReceiver> dependencyManager,
+  public Observable<Void> run(CliDependencyManager<? extends IProvideCollectionReceiver<? extends IOrganisationCollectionCommandReceiver>> dependencyManager,
       Stack<String> arguments) throws Exception {
         final String prefix = arguments.pop().trim().strip();
         final var out = dependencyManager.getStreams().out;
-        final var filterCommand = new FilterStartsWithCommand(dependencyManager.getCollectionReceiver(), prefix);
+        final var filterCommand = new FilterStartsWithCommand(prefix);
         dependencyManager.getCommandQueue().push(filterCommand).blockingSubscribe(keyElement -> {
           final var element = keyElement.getValue();
           printFields(element, keyElement.getKey(), out);

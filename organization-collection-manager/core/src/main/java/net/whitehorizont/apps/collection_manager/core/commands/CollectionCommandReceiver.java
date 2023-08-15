@@ -103,5 +103,10 @@ public class CollectionCommandReceiver<E extends ICollectionElement<E>> implemen
   public void insert(ElementKey key, E element) throws ValidationError, DuplicateElements {
     this.collection.insert(key, element);
   }
+
+  public void insert(String key, E element) throws ValidationError, DuplicateElements {
+    final ElementKey keyParsed = collection.getElementKeyFromString(key);
+    this.collection.insert(keyParsed, element);
+  }
   
 }

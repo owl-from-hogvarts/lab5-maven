@@ -21,15 +21,14 @@ import net.whitehorizont.apps.collection_manager.cli.errors.IGlobalErrorHandler;
 import net.whitehorizont.apps.collection_manager.cli.errors.IInterruptHandler;
 import net.whitehorizont.apps.collection_manager.cli.errors.IncorrectNumberOfArguments;
 import net.whitehorizont.apps.collection_manager.cli.errors.UnknownCommand;
-import net.whitehorizont.apps.collection_manager.core.commands.CollectionCommandReceiver;
 
 @NonNullByDefault
-public class CLI<CR extends CollectionCommandReceiver<?>> {
+public class CLI<DP> {
   private static final String DEFAULT_PROMPT = " > ";
   private static final String COMMAND_SEPARATOR = " ";
   private final LineReader reader;
-  private final Map<String, ICliCommand<? super CR>> commands;
-  private final CliDependencyManager<CR> dependencyManager;
+  private final Map<String, ICliCommand<? super DP>> commands;
+  private final CliDependencyManager<DP> dependencyManager;
   private final IInterruptHandler interruptHandler;
   private final IGlobalErrorHandler globalErrorHandler;
 
@@ -58,7 +57,7 @@ public class CLI<CR extends CollectionCommandReceiver<?>> {
     }
   }
 
-  public CLI(CliDependencyManager<CR> dependencyManager)
+  public CLI(CliDependencyManager<DP> dependencyManager)
       throws IOException {
     this.dependencyManager = dependencyManager;
     this.reader = dependencyManager.getCommandLineReader();

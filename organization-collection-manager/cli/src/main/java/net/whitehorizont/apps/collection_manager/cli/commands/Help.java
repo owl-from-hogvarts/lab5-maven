@@ -11,11 +11,11 @@ import org.javatuples.Pair;
 
 import io.reactivex.rxjava3.core.Observable;
 import net.whitehorizont.apps.collection_manager.cli.CliDependencyManager;
-import net.whitehorizont.apps.collection_manager.core.commands.CollectionCommandReceiver;
+import net.whitehorizont.apps.collection_manager.core.dependencies.IProvideNothing;
 import net.whitehorizont.libs.file_system.StringHelper;
 
 @NonNullByDefault
-public class Help implements ICliCommand<CollectionCommandReceiver<?>> {
+public class Help implements ICliCommand<IProvideNothing> {
 
   private static final String DESCRIPTION = "prints this help message";
   private static final int INDENT_SIZE = 2;
@@ -36,7 +36,7 @@ public class Help implements ICliCommand<CollectionCommandReceiver<?>> {
   }
 
   @Override
-  public Observable<Void> run(CliDependencyManager<?> dependencyManager, Stack<String> arguments) {
+  public Observable<Void> run(CliDependencyManager<? extends IProvideNothing> dependencyManager, Stack<String> arguments) {
     return Observable.create(subscriber -> {
       final var commandDescriptions = new ArrayList<Pair<String, String>>();
       final Map<String, ? extends ICliCommand<?>> commands = dependencyManager

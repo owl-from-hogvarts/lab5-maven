@@ -8,7 +8,7 @@ import org.jline.reader.LineReader;
 
 import net.whitehorizont.apps.collection_manager.cli.CliDependencyManager;
 import net.whitehorizont.apps.collection_manager.cli.Streams;
-import net.whitehorizont.apps.collection_manager.core.collection.ICollectionElement;
+import net.whitehorizont.apps.collection_manager.core.collection.interfaces.ICollectionElement;
 import net.whitehorizont.apps.organization_collection_manager.lib.FieldMetadataExtended;
 import net.whitehorizont.apps.organization_collection_manager.lib.IWritableHostFactory;
 import net.whitehorizont.apps.organization_collection_manager.lib.MetadataComposite;

@@ -13,7 +13,7 @@ public class UpdateCommand implements ICommand<Void, IProvideCollectionReceiver<
   private final BaseId id;
   private final OrganisationElementWritable element;
 
-  public UpdateCommand(BaseId id, IOrganisationCollectionCommandReceiver collection, OrganisationElementWritable element) {
+  public UpdateCommand(BaseId id, OrganisationElementWritable element) {
     this.id = id;
     this.element = element;
     

@@ -15,17 +15,16 @@ import net.whitehorizont.apps.collection_manager.cli.CLI;
 import net.whitehorizont.apps.collection_manager.cli.CliDependencyManager;
 import net.whitehorizont.apps.collection_manager.cli.Streams;
 import net.whitehorizont.apps.collection_manager.cli.errors.RecursionDetected;
-import net.whitehorizont.apps.collection_manager.core.commands.CollectionCommandReceiver;
 import net.whitehorizont.libs.file_system.PathHelpers;
 
 @NonNullByDefault
-public class ExecuteScript<CR extends CollectionCommandReceiver<?>> implements ICliCommand<CR> {
+public class ExecuteScript<DP> implements ICliCommand<DP> {
   public static final String EXECUTE_SCRIPT_COMMAND = "execute_script";
   private static final String DESCRIPTION = "executes new line separated sequence of commands from file";
   private final Set<Path> runningScripts = new HashSet<>();
-  private final Map<String, ICliCommand<? super CR>> executeScriptCommandSet;
+  private final Map<String, ICliCommand<? super DP>> executeScriptCommandSet;
 
-  public ExecuteScript(Map<String, ICliCommand<? super CR>> executeScriptCommandSet) {
+  public ExecuteScript(Map<String, ICliCommand<? super DP>> executeScriptCommandSet) {
     this.executeScriptCommandSet = executeScriptCommandSet;
   }
 
@@ -40,7 +39,7 @@ public class ExecuteScript<CR extends CollectionCommandReceiver<?>> implements I
   }
 
   @Override
-  public Observable<Void> run(CliDependencyManager<? extends CR> dependencyManager, Stack<String> arguments)
+  public Observable<Void> run(CliDependencyManager<? extends DP> dependencyManager, Stack<String> arguments)
       throws Exception {
     return Observable.create((subscriber) -> {
       // turn argument into resolved path
@@ -59,7 +58,7 @@ public class ExecuteScript<CR extends CollectionCommandReceiver<?>> implements I
       final var scriptStreams = new Streams(fileInput, dependencyManager.getStreams().out, dependencyManager.getStreams().err);
       // leave err untouched since we wan't to report errors into console
       // construct new cli instance with new stream configuration      
-      final var executeScriptDependenciesConfig = new CliDependencyManager.Builder<CR>()
+      final var executeScriptDependenciesConfig = new CliDependencyManager.Builder<DP>()
           .setStreams(scriptStreams)
           .setCollectionReceiver(dependencyManager.getCollectionReceiver())
           .setCommands(executeScriptCommandSet)

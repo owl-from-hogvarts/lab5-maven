@@ -8,7 +8,7 @@ import net.whitehorizont.apps.collection_manager.core.dependencies.IProvideColle
 import net.whitehorizont.apps.collection_manager.organisation.definitions.OrganisationType;
 
 @NonNullByDefault
-public class CountCommand implements ICommand<Long, IProvideCollectionReceiver<IOrganisationCollectionCommandReceiver>> {
+public class CountCommand implements ICommand<Long, IProvideCollectionReceiver<? extends IOrganisationCollectionCommandReceiver>> {
   private final OrganisationType type;
 
   public CountCommand(OrganisationType type) {
@@ -17,7 +17,7 @@ public class CountCommand implements ICommand<Long, IProvideCollectionReceiver<I
 
   @Override
   public Observable<Long> execute(
-      IProvideCollectionReceiver<IOrganisationCollectionCommandReceiver> dependencyProvider) {
+      IProvideCollectionReceiver<? extends IOrganisationCollectionCommandReceiver> dependencyProvider) {
     return dependencyProvider.getCollectionReceiver().countByType(type).toObservable();
   }
   

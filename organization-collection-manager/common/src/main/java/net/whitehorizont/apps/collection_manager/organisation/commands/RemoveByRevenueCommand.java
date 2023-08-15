@@ -9,7 +9,7 @@ import net.whitehorizont.apps.collection_manager.organisation.commands.IOrganisa
 
 @NonNullByDefault
 public class RemoveByRevenueCommand
-    implements ICommand<Void, IProvideCollectionReceiver<IOrganisationCollectionCommandReceiver>> {
+    implements ICommand<Void, IProvideCollectionReceiver<? extends IOrganisationCollectionCommandReceiver>> {
   private final RemovalCriteria removalCriteria;
   private final double targetValue;
 
@@ -20,7 +20,7 @@ public class RemoveByRevenueCommand
 
   @Override
   public Observable<Void> execute(
-      IProvideCollectionReceiver<IOrganisationCollectionCommandReceiver> dependencyProvider) {
+      IProvideCollectionReceiver<? extends IOrganisationCollectionCommandReceiver> dependencyProvider) {
     dependencyProvider.getCollectionReceiver().removeByRevenue(removalCriteria, targetValue);
     return Observable.empty();
   }

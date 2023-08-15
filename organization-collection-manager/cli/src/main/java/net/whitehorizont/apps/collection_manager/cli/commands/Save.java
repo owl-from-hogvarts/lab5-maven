@@ -8,8 +8,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import io.reactivex.rxjava3.core.Observable;
 import net.whitehorizont.apps.collection_manager.cli.CliDependencyManager;
-import net.whitehorizont.apps.collection_manager.core.commands.CollectionCommandReceiver;
-import net.whitehorizont.apps.collection_manager.core.commands.CollectionManagerReceiver;
 import net.whitehorizont.apps.collection_manager.core.commands.SaveCommand;
 import net.whitehorizont.apps.collection_manager.core.storage.errors.StorageInaccessibleError;
 

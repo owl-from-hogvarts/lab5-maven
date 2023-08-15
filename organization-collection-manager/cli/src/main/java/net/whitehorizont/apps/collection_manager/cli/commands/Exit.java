@@ -7,11 +7,10 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import io.reactivex.rxjava3.core.Observable;
 import net.whitehorizont.apps.collection_manager.cli.CliDependencyManager;
-import net.whitehorizont.apps.collection_manager.core.commands.CollectionCommandReceiver;
-import net.whitehorizont.apps.collection_manager.core.commands.ExitCommand;
+import net.whitehorizont.apps.collection_manager.core.dependencies.IProvideNothing;
 
 @NonNullByDefault
-public class Exit implements ICliCommand<CollectionCommandReceiver<?>> {
+public class Exit implements ICliCommand<IProvideNothing> {
   public static final String EXIT_COMMAND = "exit";
   private static final String DESCRIPTION = "exit without saving";
   private static final String EXIT_MESSAGE = "Exiting without saving!";
@@ -28,16 +27,17 @@ public class Exit implements ICliCommand<CollectionCommandReceiver<?>> {
   }
 
   @Override
-  public Observable<Void> run(CliDependencyManager<?> dependencyManager, Stack<String> arguments) {
+  public Observable<Void> run(CliDependencyManager<? extends IProvideNothing> dependencyManager, Stack<String> arguments) {
     final var lineReader = dependencyManager.getCommandLineReader();
     final var output = lineReader.getTerminal().writer();
     output.println(EXIT_MESSAGE);
     output.flush();
 
-    final var exit = new ExitCommand();
-    dependencyManager.getCommandQueue().push(exit).blockingSubscribe();
+    // final var exit = new ExitCommand();
+    // dependencyManager.getCommandQueue().push(exit).blockingSubscribe();
+    // lol who cares 😉
     System.exit(0);
-
+    return Observable.empty();
   }
   
 }

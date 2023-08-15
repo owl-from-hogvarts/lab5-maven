@@ -4,7 +4,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import io.reactivex.rxjava3.core.Observable;
 import net.whitehorizont.apps.collection_manager.core.collection.interfaces.ICollectionElement;
-import net.whitehorizont.apps.collection_manager.core.collection.keys.ElementKey;
 import net.whitehorizont.apps.collection_manager.core.commands.interfaces.ICollectionCommandReceiver;
 import net.whitehorizont.apps.collection_manager.core.commands.interfaces.ICommand;
 import net.whitehorizont.apps.collection_manager.core.dependencies.IProvideCollectionReceiver;
@@ -12,9 +11,9 @@ import net.whitehorizont.apps.collection_manager.core.dependencies.IProvideColle
 @NonNullByDefault
 public class InsertCommand<C extends ICollectionCommandReceiver<E>, E extends ICollectionElement<E>> implements ICommand<Void, IProvideCollectionReceiver<C>> {
   private final E element;
-  private final ElementKey key;
+  private final String key;
 
-  public InsertCommand(ElementKey key, E element) {
+  public InsertCommand(String key, E element) {
     this.element = element;
     this.key = key;
   }

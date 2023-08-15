@@ -7,10 +7,10 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import io.reactivex.rxjava3.core.Observable;
 import net.whitehorizont.apps.collection_manager.cli.CliDependencyManager;
-import net.whitehorizont.apps.collection_manager.core.commands.CollectionCommandReceiver;
+import net.whitehorizont.apps.collection_manager.core.dependencies.IProvideNothing;
 
 @NonNullByDefault
-public class History implements ICliCommand<CollectionCommandReceiver<?>> {
+public class History implements ICliCommand<IProvideNothing> {
   private static final int COUNT_DISPLAY = 11;
   private static final String DESCRIPTION = "display last " + COUNT_DISPLAY + " commands";
 
@@ -25,7 +25,7 @@ public class History implements ICliCommand<CollectionCommandReceiver<?>> {
   }
 
   @Override
-  public Observable<Void> run(CliDependencyManager<? extends CollectionCommandReceiver<?>> dependencyManager,
+  public Observable<Void> run(CliDependencyManager<? extends IProvideNothing> dependencyManager,
       Stack<String> arguments) throws Exception {
         final var history = dependencyManager.getCommandLineReader().getHistory();
         final var historyIterator = history.reverseIterator();

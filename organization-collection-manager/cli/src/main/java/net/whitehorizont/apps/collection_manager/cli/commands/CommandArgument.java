@@ -1,5 +1,8 @@
 package net.whitehorizont.apps.collection_manager.cli.commands;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
+@NonNullByDefault
 public class CommandArgument {
   private final String value;
 

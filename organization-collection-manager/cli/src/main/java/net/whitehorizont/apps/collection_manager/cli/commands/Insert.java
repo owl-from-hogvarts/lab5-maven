@@ -7,11 +7,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import io.reactivex.rxjava3.core.Observable;
 import net.whitehorizont.apps.collection_manager.cli.CliDependencyManager;
 import net.whitehorizont.apps.collection_manager.cli.Streams;
-import net.whitehorizont.apps.collection_manager.core.collection.ICollection;
-import net.whitehorizont.apps.collection_manager.core.collection.ICollectionElement;
-import net.whitehorizont.apps.collection_manager.core.collection.keys.ElementKey;
-import net.whitehorizont.apps.collection_manager.core.commands.CollectionCommandReceiver;
+import net.whitehorizont.apps.collection_manager.core.collection.interfaces.ICollectionElement;
 import net.whitehorizont.apps.collection_manager.core.commands.InsertCommand;
+import net.whitehorizont.apps.collection_manager.core.dependencies.IProvideCollectionReceiver;
 import net.whitehorizont.apps.collection_manager.core.storage.errors.StorageInaccessibleError;
 import net.whitehorizont.apps.organization_collection_manager.lib.IWritableHostFactory;
 import net.whitehorizont.apps.organization_collection_manager.lib.MetadataComposite;
@@ -19,7 +17,7 @@ import net.whitehorizont.apps.organization_collection_manager.lib.validators.Val
 
 @NonNullByDefault
 public class Insert<Host extends ICollectionElement<Host>, WritableHost extends Host>
-    extends InputElementCommand<Host, WritableHost> implements ICliCommand<CollectionCommandReceiver<Host>> {
+    extends InputElementCommand<Host, WritableHost> implements ICliCommand<IProvideCollectionReceiver<?>> {
   
   public Insert(MetadataComposite<?, Host, WritableHost> metadata, IWritableHostFactory<WritableHost> elementFactory, Retries retries) {
     super(metadata, elementFactory, retries);
@@ -28,14 +26,12 @@ public class Insert<Host extends ICollectionElement<Host>, WritableHost extends 
   private static final String DESCRIPTION = "insert element into collection";
 
   @Override
-  public Observable<Void> run(CliDependencyManager<? extends CollectionCommandReceiver<Host>> dependencyManager, Stack<String> arguments)
+  public Observable<Void> run(CliDependencyManager<IProvideCollectionReceiver<?>> dependencyManager, Stack<String> arguments)
       throws StorageInaccessibleError, ValidationError {
-
-    final var collection = dependencyManager.getCollectionReceiver();
-    final var key = collection.getElementKeyFromString(arguments.pop());
+    final var key = arguments.pop();
 
     try {
-      final var insertCommand = getInsertCommand(key, collection, dependencyManager);
+      final var insertCommand = getInsertCommand(key, dependencyManager);
 
       return dependencyManager.getCommandQueue().push(insertCommand);
     } catch (ValidationError e) {
@@ -44,15 +40,14 @@ public class Insert<Host extends ICollectionElement<Host>, WritableHost extends 
     }
   }
 
-  private InsertCommand<Host> getInsertCommand(ElementKey key, ICollection<Host> collection, CliDependencyManager<?> dependencyManager) throws ValidationError {
+  private InsertCommand<?, Host> getInsertCommand(String key, CliDependencyManager<?> dependencyManager) throws ValidationError {
     final var lineReader = dependencyManager.getGenericLineReader();
     final Streams streams = prepareStreams(dependencyManager);
     
     final var host = getWritableCollectionElement();
     promptForFields(host, lineReader, streams);
     
-    final var receiver = new CollectionCommandReceiver<>(collection);
-    return new InsertCommand<>(key, host, receiver);
+    return new InsertCommand<>(key, host);
   }
 
   @Override
