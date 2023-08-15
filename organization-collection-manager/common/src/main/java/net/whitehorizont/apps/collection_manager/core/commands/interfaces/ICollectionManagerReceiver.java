@@ -1,4 +1,4 @@
-package net.whitehorizont.apps.collection_manager.core.commands;
+package net.whitehorizont.apps.collection_manager.core.commands.interfaces;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 

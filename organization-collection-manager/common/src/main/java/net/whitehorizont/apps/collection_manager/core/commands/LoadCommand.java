@@ -4,6 +4,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import io.reactivex.rxjava3.core.Observable;
 import net.whitehorizont.apps.collection_manager.core.collection.interfaces.ICollectionElement;
+import net.whitehorizont.apps.collection_manager.core.commands.interfaces.ICollectionCommandReceiver;
+import net.whitehorizont.apps.collection_manager.core.commands.interfaces.ICommand;
 import net.whitehorizont.apps.collection_manager.core.dependencies.IProvideCollectionReceiver;
 
 @NonNullByDefault

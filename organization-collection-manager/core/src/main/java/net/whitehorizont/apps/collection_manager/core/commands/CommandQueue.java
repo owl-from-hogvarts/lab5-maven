@@ -8,9 +8,11 @@ import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.observables.ConnectableObservable;
 import io.reactivex.rxjava3.subjects.PublishSubject;
 import io.reactivex.rxjava3.subjects.Subject;
+import net.whitehorizont.apps.collection_manager.core.commands.interfaces.ICommand;
+import net.whitehorizont.apps.collection_manager.core.commands.interfaces.ICommandQueue;
 
 @NonNullByDefault
-public class CommandQueue<DependencyManager> {
+public class CommandQueue<DependencyManager> implements ICommandQueue<DependencyManager> {
   private final Subject<ConnectableObservable<?>> commands = PublishSubject.create();
   private final DependencyManager dependencyManager;
 
@@ -20,6 +22,7 @@ public class CommandQueue<DependencyManager> {
     this.dependencyManager = dependencyManager;
   }
 
+  @Override
   public <@NonNull T> Observable<T> push(ICommand<T, DependencyManager> command) {
     return Observable.create((subscriber) -> {
 

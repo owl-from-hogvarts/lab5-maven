@@ -4,8 +4,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import net.whitehorizont.apps.collection_manager.core.collection.interfaces.ICollection;
 import net.whitehorizont.apps.collection_manager.core.collection.interfaces.ICollectionElement;
-import net.whitehorizont.apps.collection_manager.core.commands.ICollectionCommandReceiver;
-import net.whitehorizont.apps.collection_manager.core.commands.ICollectionManagerReceiver;
+import net.whitehorizont.apps.collection_manager.core.commands.interfaces.ICollectionCommandReceiver;
+import net.whitehorizont.apps.collection_manager.core.commands.interfaces.ICollectionManagerReceiver;
 
 @NonNullByDefault
 public class CoreDependencyManager<CR extends ICollectionCommandReceiver<E>, E extends ICollectionElement<E>> implements IProvideCollectionReceiver<CR>,IProvideNothing, IProvideCollectionManagerReceiver<ICollection<E>> {

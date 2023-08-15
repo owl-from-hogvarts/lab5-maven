@@ -9,7 +9,7 @@ import io.reactivex.rxjava3.core.Single;
 import net.whitehorizont.apps.collection_manager.core.collection.keys.BaseId;
 import net.whitehorizont.apps.collection_manager.core.collection.keys.ElementKey;
 import net.whitehorizont.apps.collection_manager.core.collection.keys.UUID_ElementId;
-import net.whitehorizont.apps.collection_manager.core.commands.ICollectionCommandReceiver;
+import net.whitehorizont.apps.collection_manager.core.commands.interfaces.ICollectionCommandReceiver;
 import net.whitehorizont.apps.collection_manager.organisation.definitions.OrganisationType;
 import net.whitehorizont.apps.collection_manager.organisation.definitions.OrganisationElementDefinition.OrganisationElement;
 import net.whitehorizont.apps.collection_manager.organisation.definitions.OrganisationElementDefinition.OrganisationElementWritable;
