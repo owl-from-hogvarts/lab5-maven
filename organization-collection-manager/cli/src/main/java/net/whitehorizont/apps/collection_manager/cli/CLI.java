@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.jline.reader.EndOfFileException;
 import org.jline.reader.LineReader;
 import org.jline.reader.UserInterruptException;
@@ -107,16 +108,29 @@ public class CLI<CR extends CollectionCommandReceiver<?>> {
     defaultGlobalErrorHandler(e, System.err);
   }
 
+  private static boolean isErrorMessageEmpty(@Nullable Throwable error) {
+    return error == null || error.getMessage() == null || error.getMessage().length() < 1;
+  }
+
+  private static void printErrorMessage(PrintStream stream, Throwable error) {
+    stream.println("Unknown error: " + error.getMessage());
+  }
+
   private static boolean defaultGlobalErrorHandler(Throwable e, PrintStream err) {
     if (e instanceof RuntimeException) {
-      if (e.getCause() == null) {
-        err.println("Error: Unknown error ocurred! Please, file new issue on https://github.com/owl-from-hogvarts/lab5-maven");
-        // ? if something unknown happened, may be better crash?
+      final @Nullable Throwable cause = e.getCause();
+      if (isErrorMessageEmpty(cause)) {
+        if (isErrorMessageEmpty(e)) {
+          err.println("Error: Unknown error ocurred! Please, file new issue on https://github.com/owl-from-hogvarts/lab5-maven");
+          // ? if something unknown happened, may be better crash?
+          return false;
+        }
+
+        printErrorMessage(err, e);
         return false;
       }
 
-      e = e.getCause();
-      err.println("Unknown error: " + e.getMessage());
+      printErrorMessage(err, cause);
       return false;
     }
     err.println("Error: " + e.getMessage());
