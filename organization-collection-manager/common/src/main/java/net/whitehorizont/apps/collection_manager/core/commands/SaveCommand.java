@@ -8,6 +8,8 @@ import net.whitehorizont.apps.collection_manager.core.dependencies.IProvideColle
 
 @NonNullByDefault
 public class SaveCommand implements ICommand<Void, IProvideCollectionManagerReceiver<?>> {
+  private static final boolean isServerOnly = true; 
+  
   @Override
   public Observable<Void> execute(IProvideCollectionManagerReceiver<?> dependencyProvider) {
     final var collectionManagerReceiver = dependencyProvider.getCollectionManagerReceiver();
@@ -19,5 +21,11 @@ public class SaveCommand implements ICommand<Void, IProvideCollectionManagerRece
       });
     });
   }
+
+  @Override
+  public boolean isServerOnly() {
+    return isServerOnly;
+  }
+
 
 }
