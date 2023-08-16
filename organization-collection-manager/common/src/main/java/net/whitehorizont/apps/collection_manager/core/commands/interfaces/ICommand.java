@@ -18,4 +18,7 @@ import io.reactivex.rxjava3.core.Observable;
 public interface ICommand<Return, DependencyProvider> {
   /** Always ensure that observable completes */
   Observable<@NonNull Return> execute(DependencyProvider dependencyProvider);
+  default boolean isServerOnly() {
+    return false;
+  }
 }
