@@ -34,7 +34,7 @@ public class Show<Host extends ICollectionElement<Host>> extends BaseElementComm
 
   @Override
   public Observable<Void> run(
-      CliDependencyManager<IProvideCollectionReceiver<? extends ICollectionCommandReceiver<Host>>> dependencyManager,
+      CliDependencyManager<? extends IProvideCollectionReceiver<? extends ICollectionCommandReceiver<Host>>> dependencyManager,
       Stack<String> arguments) throws Exception {
     return Observable.create(subscriber -> {
       final var show = new ShowCommand<ICollectionCommandReceiver<Host>, Host>();

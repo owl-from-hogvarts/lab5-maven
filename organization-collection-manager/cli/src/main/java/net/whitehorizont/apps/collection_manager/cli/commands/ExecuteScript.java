@@ -60,14 +60,12 @@ public class ExecuteScript<DP> implements ICliCommand<DP> {
       // construct new cli instance with new stream configuration      
       final var executeScriptDependenciesConfig = new CliDependencyManager.Builder<DP>()
           .setStreams(scriptStreams)
-          .setCollectionReceiver(dependencyManager.getCollectionReceiver())
           .setCommands(executeScriptCommandSet)
           .setOnInterruptHandler(() -> Observable.empty())
           .setGlobalErrorHandler((e, _dependencyManager) -> {
             dependencyManager.getGlobalErrorHandler().handle(e, _dependencyManager);
             return true;
           })
-          .setCollectionManager(dependencyManager.getCollectionManager())
           .setDisplayPrompts(false)
           .setSystemTerminal(false);
       final var executeScriptDependencies = new CliDependencyManager<>(executeScriptDependenciesConfig);

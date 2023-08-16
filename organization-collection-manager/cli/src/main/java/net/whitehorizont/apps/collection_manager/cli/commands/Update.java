@@ -37,7 +37,7 @@ public class Update
   }
 
   @Override
-  public Observable<Void> run(CliDependencyManager<IProvideCollectionReceiver<? extends IOrganisationCollectionCommandReceiver>> dependencyManager, Stack<String> arguments) throws Exception {    
+  public Observable<Void> run(CliDependencyManager<? extends IProvideCollectionReceiver<? extends IOrganisationCollectionCommandReceiver>> dependencyManager, Stack<String> arguments) throws Exception {    
     final String idString = arguments.pop().trim().strip();
     final var id = OrganisationElementDefinition.ID_METADATA.getValueBuilder().get().buildFromString(idString);
 

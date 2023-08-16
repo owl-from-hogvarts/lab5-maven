@@ -9,7 +9,7 @@ import net.whitehorizont.apps.collection_manager.core.dependencies.IProvideColle
 import net.whitehorizont.apps.collection_manager.organisation.definitions.OrganisationElementDefinition.OrganisationElementWritable;
 
 @NonNullByDefault
-public class UpdateCommand implements ICommand<Void, IProvideCollectionReceiver<IOrganisationCollectionCommandReceiver>> {
+public class UpdateCommand implements ICommand<Void, IProvideCollectionReceiver<? extends IOrganisationCollectionCommandReceiver>> {
   private final BaseId id;
   private final OrganisationElementWritable element;
 
@@ -21,7 +21,7 @@ public class UpdateCommand implements ICommand<Void, IProvideCollectionReceiver<
 
   @Override
   public Observable<Void> execute(
-      IProvideCollectionReceiver<IOrganisationCollectionCommandReceiver> dependencyProvider) {
+      IProvideCollectionReceiver<? extends IOrganisationCollectionCommandReceiver> dependencyProvider) {
     return dependencyProvider.getCollectionReceiver().replaceById(id, element);
   }
 }

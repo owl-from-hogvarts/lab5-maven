@@ -12,10 +12,15 @@ import net.whitehorizont.apps.collection_manager.core.commands.interfaces.IComma
 import net.whitehorizont.apps.collection_manager.core.dependencies.IProvideCollectionReceiver;
 
 @NonNullByDefault
-public class ShowCommand<C extends ICollectionCommandReceiver<E>, E extends ICollectionElement<E>> implements ICommand<Entry<ElementKey, E>, IProvideCollectionReceiver<C>> {
+public class ShowCommand<C extends ICollectionCommandReceiver<E>, E extends ICollectionElement<E>> implements ICommand<Entry<ElementKey, E>, IProvideCollectionReceiver<? extends C>> {
   @Override
-  public Observable<Entry<ElementKey, E>> execute(IProvideCollectionReceiver<C> dependencyProvider) {
-    return dependencyProvider.getCollectionReceiver().getEveryWithKey$(); // who the fuck designed java generics
+  public Observable<Entry<ElementKey, E>> execute(IProvideCollectionReceiver<? extends C> dependencyProvider) {
+    final C collection = dependencyProvider.getCollectionReceiver();
+    return collection.getEveryWithKey$(); // who the fuck designed java generics
   }
+
+  // private static void getEveryWithKey(C ) {
+
+  // }
   
 }

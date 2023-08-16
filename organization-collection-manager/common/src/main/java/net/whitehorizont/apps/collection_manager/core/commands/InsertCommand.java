@@ -9,7 +9,7 @@ import net.whitehorizont.apps.collection_manager.core.commands.interfaces.IComma
 import net.whitehorizont.apps.collection_manager.core.dependencies.IProvideCollectionReceiver;
 
 @NonNullByDefault
-public class InsertCommand<C extends ICollectionCommandReceiver<E>, E extends ICollectionElement<E>> implements ICommand<Void, IProvideCollectionReceiver<C>> {
+public class InsertCommand<C extends ICollectionCommandReceiver<E>, E extends ICollectionElement<E>> implements ICommand<Void, IProvideCollectionReceiver<? extends C>> {
   private final E element;
   private final String key;
 
@@ -19,7 +19,7 @@ public class InsertCommand<C extends ICollectionCommandReceiver<E>, E extends IC
   }
 
   @Override
-  public Observable<Void> execute(IProvideCollectionReceiver<C> dependencyProvider) {
+  public Observable<Void> execute(IProvideCollectionReceiver<? extends C> dependencyProvider) {
     final C collection = dependencyProvider.getCollectionReceiver();
     
     return Observable.create(subscriber -> {
