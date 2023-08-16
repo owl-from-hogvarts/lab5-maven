@@ -1,5 +1,6 @@
 package net.whitehorizont.apps.collection_manager.organisation.definitions;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,7 +19,6 @@ import net.whitehorizont.apps.organization_collection_manager.lib.factories.Doub
 import net.whitehorizont.apps.organization_collection_manager.lib.factories.EnumFactory;
 import net.whitehorizont.apps.organization_collection_manager.lib.factories.StringFactory;
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationResult;
-
 
 @NonNullByDefault
 public class OrganisationElementDefinition {
@@ -67,12 +67,35 @@ public class OrganisationElementDefinition {
       .setValueBuilder(new DoubleFactory())
       .build();
 
+  public static final FieldMetadataExtended<OrganisationElement, OrganisationElementWritable, String> FULL_NAME_METADATA = FieldMetadataExtended
+      .<OrganisationElement, OrganisationElementWritable, String>builder()
+      .setDisplayedName("Full name")
+      .setRequired("Full name can't be empty")
+      .addSimpleValidator(
+          fullName -> new ValidationResult<>(fullName.length() > 0, "Full name must contain at least one symbol"))
+      .setValueBuilder(new StringFactory())
+      .setValueGetter(host -> host.getFullName())
+      .setValueSetter((host, value) -> host.fullName(value))
+      .build();
+
+  public static final FieldMetadataExtended<OrganisationElement, OrganisationElementWritable, LocalDateTime> CREATION_DATE_METADATA = FieldMetadataExtended
+      .<OrganisationElement, OrganisationElementWritable, LocalDateTime>builder()
+      .setDisplayedName("Creation date")
+      .setRequired(null)
+      .addTag(Tag.SKIP_INTERACTIVE_INPUT)
+      .addTag(Tag.PRESERVE)
+      .setValueGetter(host -> host.getCreationDate())
+      .setValueSetter((element, value) -> element.creationDate(value))
+      .build();
+
   public static MetadataComposite<?, OrganisationElement, OrganisationElementWritable> getMetadata() {
     final List<FieldMetadataExtended<OrganisationElement, OrganisationElementWritable, ?>> leafs = new ArrayList<>();
     leafs.add(ID_METADATA);
     leafs.add(NAME_METADATA);
     leafs.add(TYPE_METADATA);
     leafs.add(ANNUAL_TURNOVER_METADATA);
+    leafs.add(FULL_NAME_METADATA);
+    leafs.add(CREATION_DATE_METADATA);
 
     final List<MetadataComposite<OrganisationElement, ?, ?>> children = new ArrayList<>();
     children.add(CoordinatesDefinition.<OrganisationElement>getTree((organisation) -> organisation.coordinates));
@@ -98,6 +121,16 @@ public class OrganisationElementDefinition {
     protected OrganisationType type;
     protected Double annualTurnover;
     protected AddressWritable address = new AddressWritable();
+    protected String fullName;
+    protected LocalDateTime creationDate = LocalDateTime.now();
+
+    public LocalDateTime getCreationDate() {
+      return creationDate;
+    }
+
+    public String getFullName() {
+      return fullName;
+    }
 
     protected String getName() {
       return name;
@@ -127,6 +160,17 @@ public class OrganisationElementDefinition {
   }
 
   public static class OrganisationElementWritable extends OrganisationElement {
+
+    private OrganisationElementWritable creationDate(LocalDateTime creationDate) {
+      this.creationDate = creationDate;
+      return this;
+    }
+    
+
+    private OrganisationElementWritable fullName(String fullName) {
+      this.fullName = fullName;
+      return this;
+    }
 
     private OrganisationElementWritable name(String name) {
       this.name = name;
