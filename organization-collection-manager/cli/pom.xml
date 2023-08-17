@@ -82,7 +82,7 @@
           </descriptorRefs>
           <archive>
             <manifest>
-              <mainClass>net.whitehorizont.apps.organization_collection_manager.cli.App</mainClass>
+              <mainClass>net.whitehorizont.apps.collection_manager.cli.App</mainClass>
             </manifest>
           </archive>
         </configuration>
