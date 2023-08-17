@@ -28,13 +28,20 @@ public abstract class BaseElementCommand<Host> {
     this.metadata = metadata;
   }
 
-  protected static DecoratedString prepareNodeTitle(String title) {
+  protected static DecoratedString decorateTitle(String title) {
       final var titleDecorator = getDecorator();
       return titleDecorator.setMiddle(title);
   }
 
-  protected static String buildChildNodeTitle(String title, int nestLevel) {
-    return StringHelper.padStart(title, computePaddedStringLength(nestLevel, title), PADDING_SYMBOL) + FIELD_NAME_VALUE_SEPARATOR;
+  protected static void printChildNodeTitle(MetadataComposite<?, ?, ?> childNode, int nestLevel, PrintStream out) {
+    if (childNode.isSkipDisplay()) {
+      return;
+    }
+
+    final var title = childNode.getDisplayedName();
+    final var paddedTitle = StringHelper.padStart(title, computePaddedStringLength(nestLevel, title), PADDING_SYMBOL) + FIELD_NAME_VALUE_SEPARATOR;
+
+    out.println(paddedTitle);
   }
 
   protected static int computePaddedStringLength(int nestLevel, String string) {
@@ -67,7 +74,7 @@ public abstract class BaseElementCommand<Host> {
 
   private static <Host, WritableHost extends Host> void printFields(MetadataComposite<?, Host, WritableHost> node, Host host, Optional<ISerializableKey> key, PrintStream out, int nestLevel) {
     final String nodeTitle = node.getDisplayedName();
-    final var titleDecorated = prepareNodeTitle(nodeTitle);
+    final var titleDecorated = decorateTitle(nodeTitle);
     if (key.isPresent()) {
       titleDecorated.setLeft(key.get().serialize());
     }
@@ -92,7 +99,7 @@ public abstract class BaseElementCommand<Host> {
   
   private static <ParentHost, Host, WritableHost extends Host> void doForChild(MetadataComposite<ParentHost, Host, WritableHost> childMetadata, ParentHost host, Optional<ISerializableKey> key, PrintStream out, int nestLevel) {
     final var childHost = childMetadata.extractChildHost(host);
-    out.println(buildChildNodeTitle(childMetadata.getDisplayedName(), nestLevel));
-    printFields(childMetadata, childHost, key, out, nestLevel + 1);
+    printChildNodeTitle(childMetadata, nestLevel, out);
+    printFields(childMetadata, childHost, key, out, childMetadata.isSkipDisplay() ? nestLevel : nestLevel + 1);
   }
 }

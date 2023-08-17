@@ -80,7 +80,7 @@ public class InputElementCommand<Host extends ICollectionElement<Host>, Writable
 
     final String nodeTitle = node.getDisplayedName();
     if (isElement(nestLevel)) {
-      out.println(prepareNodeTitle(nodeTitle).build());
+      out.println(decorateTitle(nodeTitle).build());
     }
 
     for (final var metadata : fieldsMetadata) {
@@ -139,8 +139,12 @@ public class InputElementCommand<Host extends ICollectionElement<Host>, Writable
 
   private <ParentHost, Host, WritableHost extends Host> void doForChild(MetadataComposite<ParentHost, Host, WritableHost> childMetadata, ParentHost host, LineReader lineReader, Streams streams, int nestLevel) throws ValidationError {
       final var childHost = childMetadata.extractChildHost(host);
-      streams.out.println(buildChildNodeTitle(childMetadata.getDisplayedName(), nestLevel));
-      promptForFields(childMetadata, childHost, lineReader, streams, nestLevel + 1);
+      printChildNodeTitle(childMetadata, nestLevel, streams.out);
+      // TODO: rework base command and input command
+      // FIXME: make doForChild more general
+      // if skipDisplay, then we don't wan't to change nest level
+      // skipDisplay hides internal structure, without affecting output
+      promptForFields(childMetadata, childHost, lineReader, streams, childMetadata.isSkipDisplay() ? nestLevel : nestLevel + 1);
   }
 
   protected Streams prepareStreams(CliDependencyManager<?> dependencyManager) {
