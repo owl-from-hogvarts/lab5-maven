@@ -14,7 +14,7 @@ import net.whitehorizont.apps.collection_manager.core.storage.FileStorage;
 import net.whitehorizont.apps.collection_manager.core.storage.collection_adapter.CollectionAdapter;
 import net.whitehorizont.apps.collection_manager.core.storage.errors.StorageInaccessibleError;
 import net.whitehorizont.apps.collection_manager.organisation.definitions.OrganisationElementDefinition;
-import net.whitehorizont.apps.collection_manager.organisation.definitions.OrganisationElementDefinition.OrganisationElement;
+import net.whitehorizont.apps.collection_manager.organisation.definitions.OrganisationElementDefinition.OrganisationElementFull;
 import net.whitehorizont.apps.organization_collection_manager.lib.ICanRichValidate;
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationError;
 
@@ -32,8 +32,8 @@ public class Server {
     final var commandQueue = new CommandQueue<>(dependencyManager);
   }
 
-  private static FileStorage<ICollection<OrganisationElement>> setupStorage(String fileStoragePath) {
-    final var collectionValidators = new ArrayList<ICanRichValidate<OrganisationElement, ICollection<OrganisationElement>>>();
+  private static FileStorage<ICollection<OrganisationElementFull>> setupStorage(String fileStoragePath) {
+    final var collectionValidators = new ArrayList<ICanRichValidate<OrganisationElementFull, ICollection<OrganisationElementFull>>>();
     collectionValidators.add((element, collection) -> {
       final var idGetter = OrganisationElementDefinition.ID_METADATA.getValueGetter();
       final var duplicateIdElements$ = collection.getEvery$()
@@ -46,7 +46,7 @@ public class Server {
       // TODO: handle error, regenerate id
     });
 
-    final var xmlCollectionAdapter = new CollectionAdapter<OrganisationElement>(
+    final var xmlCollectionAdapter = new CollectionAdapter<OrganisationElementFull>(
         OrganisationElementDefinition.getMetadata());
     final var testStorage = new FileStorage<>(fileStoragePath, xmlCollectionAdapter);
     return testStorage;

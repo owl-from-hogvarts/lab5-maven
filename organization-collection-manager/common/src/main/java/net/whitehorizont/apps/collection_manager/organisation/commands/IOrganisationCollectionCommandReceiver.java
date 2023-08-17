@@ -6,16 +6,18 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Single;
+import net.whitehorizont.apps.collection_manager.core.collection.errors.DuplicateElements;
 import net.whitehorizont.apps.collection_manager.core.collection.keys.BaseId;
 import net.whitehorizont.apps.collection_manager.core.collection.keys.ElementKey;
 import net.whitehorizont.apps.collection_manager.core.collection.keys.UUID_ElementId;
 import net.whitehorizont.apps.collection_manager.core.commands.interfaces.ICollectionCommandReceiver;
 import net.whitehorizont.apps.collection_manager.organisation.definitions.OrganisationType;
-import net.whitehorizont.apps.collection_manager.organisation.definitions.OrganisationElementDefinition.OrganisationElement;
+import net.whitehorizont.apps.collection_manager.organisation.definitions.OrganisationElementDefinition.OrganisationElementFull;
 import net.whitehorizont.apps.collection_manager.organisation.definitions.OrganisationElementDefinition.OrganisationElementWritable;
+import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationError;
 
 @NonNullByDefault
-public interface IOrganisationCollectionCommandReceiver extends ICollectionCommandReceiver<OrganisationElement> {
+public interface IOrganisationCollectionCommandReceiver extends ICollectionCommandReceiver<OrganisationElementFull> {
 
   Observable<Void> replaceById(BaseId id, OrganisationElementWritable prototype);
 
@@ -25,12 +27,14 @@ public interface IOrganisationCollectionCommandReceiver extends ICollectionComma
 
   void removeByRevenue(RemovalCriteria removalCriteria, double targetValue);
 
-  Observable<Entry<ElementKey, OrganisationElement>> getStartsWith$(String startOfFullName);
+  Observable<Entry<ElementKey, OrganisationElementFull>> getStartsWith$(String startOfFullName);
 
-  Observable<Entry<ElementKey, OrganisationElement>> getDescending$();
+  Observable<Entry<ElementKey, OrganisationElementFull>> getDescending$();
 
   public static enum RemovalCriteria {
     BELOW,
     ABOVE
   }
+
+  void insert(String key, OrganisationElementWritable element) throws ValidationError, DuplicateElements;
 }

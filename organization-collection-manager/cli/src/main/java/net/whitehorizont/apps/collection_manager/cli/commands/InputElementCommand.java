@@ -8,7 +8,6 @@ import org.jline.reader.LineReader;
 
 import net.whitehorizont.apps.collection_manager.cli.CliDependencyManager;
 import net.whitehorizont.apps.collection_manager.cli.Streams;
-import net.whitehorizont.apps.collection_manager.core.collection.interfaces.ICollectionElement;
 import net.whitehorizont.apps.organization_collection_manager.lib.FieldMetadataExtended;
 import net.whitehorizont.apps.organization_collection_manager.lib.IWritableHostFactory;
 import net.whitehorizont.apps.organization_collection_manager.lib.MetadataComposite;
@@ -17,7 +16,7 @@ import net.whitehorizont.apps.organization_collection_manager.lib.validators.Val
 import net.whitehorizont.libs.file_system.StringHelper;
 
 @NonNullByDefault
-public class InputElementCommand<Host extends ICollectionElement<Host>, WritableHost extends Host> extends BaseElementCommand<Host> {
+public class InputElementCommand<Host, WritableHost extends Host> extends BaseElementCommand<Host> {
   private static final String HINT_PREFIX = "Hint for next field: ";
   // FIXME: the property should be within parent class
   private final MetadataComposite<?, Host, WritableHost> metadata;

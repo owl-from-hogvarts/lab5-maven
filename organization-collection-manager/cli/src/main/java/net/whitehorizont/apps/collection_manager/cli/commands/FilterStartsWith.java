@@ -10,12 +10,12 @@ import net.whitehorizont.apps.collection_manager.cli.CliDependencyManager;
 import net.whitehorizont.apps.collection_manager.core.dependencies.IProvideCollectionReceiver;
 import net.whitehorizont.apps.collection_manager.organisation.commands.FilterStartsWithCommand;
 import net.whitehorizont.apps.collection_manager.organisation.commands.IOrganisationCollectionCommandReceiver;
-import net.whitehorizont.apps.collection_manager.organisation.definitions.OrganisationElementDefinition.OrganisationElement;
+import net.whitehorizont.apps.collection_manager.organisation.definitions.OrganisationElementDefinition.OrganisationElementFull;
 import net.whitehorizont.apps.organization_collection_manager.lib.MetadataComposite;
 
 @NonNullByDefault
-public class FilterStartsWith extends BaseElementCommand<OrganisationElement> implements ICliCommand<IProvideCollectionReceiver<? extends IOrganisationCollectionCommandReceiver>> {
-  public FilterStartsWith(MetadataComposite<?, OrganisationElement, ?> metadata) {
+public class FilterStartsWith extends BaseElementCommand<OrganisationElementFull> implements ICliCommand<IProvideCollectionReceiver<? extends IOrganisationCollectionCommandReceiver>> {
+  public FilterStartsWith(MetadataComposite<?, OrganisationElementFull, ?> metadata) {
     super(metadata);
   }
 

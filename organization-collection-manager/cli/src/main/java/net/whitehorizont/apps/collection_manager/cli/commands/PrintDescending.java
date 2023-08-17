@@ -10,12 +10,12 @@ import net.whitehorizont.apps.collection_manager.cli.CliDependencyManager;
 import net.whitehorizont.apps.collection_manager.core.dependencies.IProvideCollectionReceiver;
 import net.whitehorizont.apps.collection_manager.organisation.commands.GetDescendingCommand;
 import net.whitehorizont.apps.collection_manager.organisation.commands.IOrganisationCollectionCommandReceiver;
-import net.whitehorizont.apps.collection_manager.organisation.definitions.OrganisationElementDefinition.OrganisationElement;
+import net.whitehorizont.apps.collection_manager.organisation.definitions.OrganisationElementDefinition.OrganisationElementFull;
 import net.whitehorizont.apps.organization_collection_manager.lib.MetadataComposite;
 
 @NonNullByDefault
-public class PrintDescending extends BaseElementCommand<OrganisationElement> implements ICliCommand<IProvideCollectionReceiver<? extends IOrganisationCollectionCommandReceiver>> {
-  public PrintDescending(MetadataComposite<?, OrganisationElement, ?> metadata) {
+public class PrintDescending extends BaseElementCommand<OrganisationElementFull> implements ICliCommand<IProvideCollectionReceiver<? extends IOrganisationCollectionCommandReceiver>> {
+  public PrintDescending(MetadataComposite<?, OrganisationElementFull, ?> metadata) {
     super(metadata);
   }
 

@@ -8,10 +8,10 @@ import io.reactivex.rxjava3.core.Observable;
 import net.whitehorizont.apps.collection_manager.core.collection.keys.ElementKey;
 import net.whitehorizont.apps.collection_manager.core.commands.interfaces.ICommand;
 import net.whitehorizont.apps.collection_manager.core.dependencies.IProvideCollectionReceiver;
-import net.whitehorizont.apps.collection_manager.organisation.definitions.OrganisationElementDefinition.OrganisationElement;
+import net.whitehorizont.apps.collection_manager.organisation.definitions.OrganisationElementDefinition.OrganisationElementFull;
 
 @NonNullByDefault
-public class FilterStartsWithCommand implements ICommand<Entry<ElementKey, OrganisationElement>, IProvideCollectionReceiver<? extends IOrganisationCollectionCommandReceiver>> {
+public class FilterStartsWithCommand implements ICommand<Entry<ElementKey, OrganisationElementFull>, IProvideCollectionReceiver<? extends IOrganisationCollectionCommandReceiver>> {
   private final String prefix;
 
   public FilterStartsWithCommand(String prefix) {
@@ -19,7 +19,7 @@ public class FilterStartsWithCommand implements ICommand<Entry<ElementKey, Organ
   }
 
   @Override
-  public Observable<Entry<ElementKey, OrganisationElement>> execute(
+  public Observable<Entry<ElementKey, OrganisationElementFull>> execute(
       IProvideCollectionReceiver<? extends IOrganisationCollectionCommandReceiver> dependencyProvider) {
     return dependencyProvider.getCollectionReceiver().getStartsWith$(prefix);
   }

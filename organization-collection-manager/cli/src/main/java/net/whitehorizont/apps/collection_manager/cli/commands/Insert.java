@@ -7,21 +7,22 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import io.reactivex.rxjava3.core.Observable;
 import net.whitehorizont.apps.collection_manager.cli.CliDependencyManager;
 import net.whitehorizont.apps.collection_manager.cli.Streams;
-import net.whitehorizont.apps.collection_manager.core.collection.interfaces.ICollectionElement;
-import net.whitehorizont.apps.collection_manager.core.commands.InsertCommand;
-import net.whitehorizont.apps.collection_manager.core.commands.interfaces.ICollectionCommandReceiver;
 import net.whitehorizont.apps.collection_manager.core.dependencies.IProvideCollectionReceiver;
 import net.whitehorizont.apps.collection_manager.core.storage.errors.StorageInaccessibleError;
+import net.whitehorizont.apps.collection_manager.organisation.commands.IOrganisationCollectionCommandReceiver;
+import net.whitehorizont.apps.collection_manager.organisation.commands.InsertOrganisationCommand;
+import net.whitehorizont.apps.collection_manager.organisation.definitions.OrganisationElementDefinition.OrganisationElement;
+import net.whitehorizont.apps.collection_manager.organisation.definitions.OrganisationElementDefinition.OrganisationElementWritable;
 import net.whitehorizont.apps.organization_collection_manager.lib.IWritableHostFactory;
 import net.whitehorizont.apps.organization_collection_manager.lib.MetadataComposite;
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationError;
 
 @NonNullByDefault
-public class Insert<Host extends ICollectionElement<Host>, WritableHost extends Host>
-    extends InputElementCommand<Host, WritableHost>
-    implements ICliCommand<IProvideCollectionReceiver<? extends ICollectionCommandReceiver<Host>>> {
+public class Insert
+    extends InputElementCommand<OrganisationElement, OrganisationElementWritable>
+    implements ICliCommand<IProvideCollectionReceiver<? extends IOrganisationCollectionCommandReceiver>> {
 
-  public Insert(MetadataComposite<?, Host, WritableHost> metadata, IWritableHostFactory<WritableHost> elementFactory,
+  public Insert(MetadataComposite<?, OrganisationElement, OrganisationElementWritable> metadata, IWritableHostFactory<OrganisationElementWritable> elementFactory,
       Retries retries) {
     super(metadata, elementFactory, retries);
   }
@@ -30,7 +31,7 @@ public class Insert<Host extends ICollectionElement<Host>, WritableHost extends 
 
   @Override
   public Observable<Void> run(
-      CliDependencyManager<? extends IProvideCollectionReceiver<? extends ICollectionCommandReceiver<Host>>> dependencyManager,
+      CliDependencyManager<? extends IProvideCollectionReceiver<? extends IOrganisationCollectionCommandReceiver>> dependencyManager,
       Stack<String> arguments)
       throws StorageInaccessibleError, ValidationError {
     final var key = arguments.pop();
@@ -42,7 +43,7 @@ public class Insert<Host extends ICollectionElement<Host>, WritableHost extends 
       final var host = getWritableCollectionElement();
       promptForFields(host, lineReader, streams);
 
-      final var insertCommand = new InsertCommand<>(key, host);
+      final var insertCommand = new InsertOrganisationCommand(key, host);
 
       return dependencyManager.getCommandQueue().push(insertCommand);
     } catch (ValidationError e) {

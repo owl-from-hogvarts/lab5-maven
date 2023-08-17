@@ -26,6 +26,7 @@ import net.whitehorizont.apps.collection_manager.core.dependencies.IUniversalCor
 import net.whitehorizont.apps.collection_manager.organisation.commands.IOrganisationCollectionCommandReceiver;
 import net.whitehorizont.apps.collection_manager.organisation.definitions.OrganisationElementDefinition;
 import net.whitehorizont.apps.collection_manager.organisation.definitions.OrganisationElementDefinition.OrganisationElement;
+import net.whitehorizont.apps.collection_manager.organisation.definitions.OrganisationElementDefinition.OrganisationElementFull;
 
 /**
  * Hello world!
@@ -59,12 +60,12 @@ public class App
 
 
 
-    public static Map<String, ICliCommand<? super IUniversalCoreProvider<? extends IOrganisationCollectionCommandReceiver, OrganisationElement>>> buildMainCommandSet() {
+    public static Map<String, ICliCommand<? super IUniversalCoreProvider<? extends IOrganisationCollectionCommandReceiver, OrganisationElementFull>>> buildMainCommandSet() {
         final var baseCommands = buildBaseCommandSet();
         final Insert.Retries retries = new Insert.Retries();
-        final var insert = new Insert<>(OrganisationElementDefinition.getMetadata(), new OrganisationElementDefinition.OrganisationElementFactory(), retries);
+        final var insert = new Insert(OrganisationElementDefinition.getInputMetadata(), new OrganisationElementDefinition.OrganisationElementFactory(), retries);
         baseCommands.put("insert", insert);
-        final var update = new Update(OrganisationElementDefinition.getMetadata(), new OrganisationElementDefinition.OrganisationElementFactory(), retries);
+        final var update = new Update(OrganisationElementDefinition.getInputMetadata(), new OrganisationElementDefinition.OrganisationElementFactory(), retries);
         baseCommands.put("update", update);
 
         final var executeScriptCommandSet = buildExecuteScriptCommandSet();
@@ -76,8 +77,8 @@ public class App
         return baseCommands;
     }
 
-    public static Map<String, ICliCommand<? super IUniversalCoreProvider<? extends IOrganisationCollectionCommandReceiver, OrganisationElement>>> buildBaseCommandSet() {
-        final var commands = new HashMap<String, ICliCommand<? super IUniversalCoreProvider<? extends IOrganisationCollectionCommandReceiver, OrganisationElement>>>();
+    public static Map<String, ICliCommand<? super IUniversalCoreProvider<? extends IOrganisationCollectionCommandReceiver, OrganisationElementFull>>> buildBaseCommandSet() {
+        final var commands = new HashMap<String, ICliCommand<? super IUniversalCoreProvider<? extends IOrganisationCollectionCommandReceiver, OrganisationElementFull>>>();
         final var show = new Show<>(OrganisationElementDefinition.getMetadata());
         commands.put("show", show);
         // final var save = new Save();
@@ -103,18 +104,18 @@ public class App
 
         return commands;
     }
-    public static Map<String, ICliCommand<? super IUniversalCoreProvider<? extends IOrganisationCollectionCommandReceiver,OrganisationElement>>> buildExecuteScriptCommandSet() {
+    public static Map<String, ICliCommand<? super IUniversalCoreProvider<? extends IOrganisationCollectionCommandReceiver,OrganisationElementFull>>> buildExecuteScriptCommandSet() {
         final var commands = buildBaseCommandSet();
         final Insert.Retries retries = new Insert.Retries(1); // does not make sense to infinitely ask for right data from script
-        final var insert = new Insert<>(OrganisationElementDefinition.getMetadata(), new OrganisationElementDefinition.OrganisationElementFactory(), retries);
+        final var insert = new Insert(OrganisationElementDefinition.getInputMetadata(), new OrganisationElementDefinition.OrganisationElementFactory(), retries);
         commands.put("insert", insert);
-        final var update = new Update(OrganisationElementDefinition.getMetadata(), new OrganisationElementDefinition.OrganisationElementFactory(), retries);
+        final var update = new Update(OrganisationElementDefinition.getInputMetadata(), new OrganisationElementDefinition.OrganisationElementFactory(), retries);
         commands.put("update", update);
 
         return commands;
     }
 
-    public static void addSystemCommands(Map<String, ICliCommand<? super IUniversalCoreProvider<? extends IOrganisationCollectionCommandReceiver,OrganisationElement>>> commands) {
+    public static void addSystemCommands(Map<String, ICliCommand<? super IUniversalCoreProvider<? extends IOrganisationCollectionCommandReceiver,OrganisationElementFull>>> commands) {
         commands.put(Exit.EXIT_COMMAND, new Exit());
         commands.put(Help.HELP_COMMAND, new Help());
     }

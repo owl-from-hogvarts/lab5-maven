@@ -3,8 +3,10 @@ package net.whitehorizont.apps.collection_manager.organisation.definitions;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 import net.whitehorizont.apps.collection_manager.core.collection.interfaces.ICollectionElement;
 import net.whitehorizont.apps.collection_manager.core.collection.keys.UUID_ElementId;
@@ -36,12 +38,11 @@ public class OrganisationElementDefinition {
       .addSimpleValidator((value) -> new ValidationResult<>(value.length() >= 1, "String should not be empty"))
       .build();
 
-  public static final FieldMetadataExtended<OrganisationElement, OrganisationElementWritable, UUID_ElementId> ID_METADATA = FieldMetadataExtended
-      .<OrganisationElement, OrganisationElementWritable, UUID_ElementId>builder()
+  public static final FieldMetadataExtended<OrganisationElementFull, OrganisationElementFull, UUID_ElementId> ID_METADATA = FieldMetadataExtended
+      .<OrganisationElementFull, OrganisationElementFull, UUID_ElementId>builder()
       .setDisplayedName("ID")
       .setRequired("ID must be provided for collection element")
-      .setValueSetter((element, ID) -> element.ID(ID))
-      .setValueGetter(element -> element.getID())
+      .setValueGetter(element -> element.metadata.getID())
       .addTag(Tag.PRESERVE)
       .addTag(Tag.SKIP_INTERACTIVE_INPUT)
       .setValueBuilder((idString) -> new UUID_ElementId(idString))
@@ -78,31 +79,43 @@ public class OrganisationElementDefinition {
       .setValueSetter((host, value) -> host.fullName(value))
       .build();
 
-  public static final FieldMetadataExtended<OrganisationElement, OrganisationElementWritable, LocalDateTime> CREATION_DATE_METADATA = FieldMetadataExtended
-      .<OrganisationElement, OrganisationElementWritable, LocalDateTime>builder()
+  public static final FieldMetadataExtended<OrganisationElementFull, OrganisationElementFull, LocalDateTime> CREATION_DATE_METADATA = FieldMetadataExtended
+      .<OrganisationElementFull, OrganisationElementFull, LocalDateTime>builder()
       .setDisplayedName("Creation date")
       .setRequired(null)
       .addTag(Tag.SKIP_INTERACTIVE_INPUT)
       .addTag(Tag.PRESERVE)
-      .setValueGetter(host -> host.getCreationDate())
-      .setValueSetter((element, value) -> element.creationDate(value))
+      .setValueGetter(host -> host.metadata.getCreationDate())
       .build();
 
-  public static MetadataComposite<?, OrganisationElement, OrganisationElementWritable> getMetadata() {
+  public static MetadataComposite<?, OrganisationElement, OrganisationElementWritable> getInputMetadata() {
+    return getOrganisationMetadata(null);
+  }
+
+  private static <ParentHost> MetadataComposite<ParentHost, OrganisationElement, OrganisationElementWritable> getOrganisationMetadata(Function<ParentHost, OrganisationElementWritable> organisationExtractor) {
     final List<FieldMetadataExtended<OrganisationElement, OrganisationElementWritable, ?>> leafs = new ArrayList<>();
-    leafs.add(ID_METADATA);
     leafs.add(NAME_METADATA);
     leafs.add(TYPE_METADATA);
     leafs.add(ANNUAL_TURNOVER_METADATA);
     leafs.add(FULL_NAME_METADATA);
-    leafs.add(CREATION_DATE_METADATA);
 
     final List<MetadataComposite<OrganisationElement, ?, ?>> children = new ArrayList<>();
     children.add(CoordinatesDefinition.<OrganisationElement>getTree((organisation) -> organisation.coordinates));
     children.add(AddressDefinition.getMetadata(organisation -> organisation.address));
 
-    return new MetadataComposite<Object, OrganisationElement, OrganisationElementWritable>(ELEMENT_TITLE, leafs,
-        children, null);
+    return new MetadataComposite<ParentHost, OrganisationElement, OrganisationElementWritable>(ELEMENT_TITLE, leafs,
+        children, organisationExtractor, organisationExtractor != null);
+  }
+
+  public static MetadataComposite<?, OrganisationElementFull, OrganisationElementFull> getMetadata() {
+    final List<FieldMetadataExtended<OrganisationElementFull, OrganisationElementFull, ?>> leafs = new ArrayList<>();
+    leafs.add(ID_METADATA);
+    leafs.add(CREATION_DATE_METADATA);
+
+    final List<MetadataComposite<OrganisationElementFull, ?, ?>> children = new ArrayList<>();
+    children.add(getOrganisationMetadata((parent) -> parent.element));
+
+    return new MetadataComposite<>(ELEMENT_TITLE, leafs, children, null);
   }
 
   public static class OrganisationElementFactory implements IWritableHostFactory<OrganisationElementWritable> {
@@ -114,19 +127,69 @@ public class OrganisationElementDefinition {
 
   }
 
-  public static class OrganisationElement implements ICollectionElement<OrganisationElement> {
-    protected String name;
+  public static class OrganisationElementFull implements ICollectionElement<OrganisationElementFull> {
+    private final OrganisationElementWritable element;
+    public OrganisationElementWritable getElement() {
+      return element;
+    }
+
+
+    private final OrganisationElementAutogenerated metadata;
+
+    public OrganisationElementAutogenerated getMetadata() {
+      return metadata;
+    }
+
+
+    public OrganisationElementFull(OrganisationElementAutogenerated metadata, OrganisationElementWritable element) {
+      this.metadata = metadata;
+      this.element = element;
+    }
+
+
+    @Override
+    public int compareTo(OrganisationElementFull other) {
+      return (int) (this.element.getAnnualTurnover() - other.element.getAnnualTurnover());
+    }
+  }
+
+  public static class OrganisationElementFullWritable extends OrganisationElementFull {
+
+    public OrganisationElementFullWritable(OrganisationElementAutogenerated metadata,
+        OrganisationElementWritable element) {
+      super(metadata, element);
+    }
+
+
+
+  }
+
+  /**
+   * ! THIS IS READONLY STRUCTURE !
+   * 
+   * DO NOT USE WITH "FILL" OPERATION
+   */
+  public static class OrganisationElementAutogenerated {
     protected UUID_ElementId ID = new UUID_ElementId(); // init with default value which is easily overridable
+    protected LocalDateTime creationDate = LocalDateTime.now();
+
+    private LocalDateTime getCreationDate() {
+      return creationDate;
+    }
+
+    private UUID_ElementId getID() {
+      return ID;
+    }
+    
+  }
+
+  public static class OrganisationElement {
+    protected String name;
     protected CoordinatesWriteable coordinates = new CoordinatesWriteable();
     protected OrganisationType type;
     protected Double annualTurnover;
     protected AddressWritable address = new AddressWritable();
     protected String fullName;
-    protected LocalDateTime creationDate = LocalDateTime.now();
-
-    public LocalDateTime getCreationDate() {
-      return creationDate;
-    }
 
     public String getFullName() {
       return fullName;
@@ -134,10 +197,6 @@ public class OrganisationElementDefinition {
 
     protected String getName() {
       return name;
-    }
-
-    protected UUID_ElementId getID() {
-      return ID;
     }
 
     protected Coordinates getCoordinates() {
@@ -151,20 +210,9 @@ public class OrganisationElementDefinition {
     protected Double getAnnualTurnover() {
       return annualTurnover;
     }
-
-    @Override
-    public int compareTo(OrganisationElement other) {
-      // will not return null, 'cause field is not nullable
-      return (int) (this.annualTurnover - other.annualTurnover);
-    }
   }
 
   public static class OrganisationElementWritable extends OrganisationElement {
-
-    private OrganisationElementWritable creationDate(LocalDateTime creationDate) {
-      this.creationDate = creationDate;
-      return this;
-    }
     
 
     private OrganisationElementWritable fullName(String fullName) {
@@ -179,11 +227,6 @@ public class OrganisationElementDefinition {
 
     private OrganisationElementWritable annualTurnover(Double annualTurnover) {
       this.annualTurnover = annualTurnover;
-      return this;
-    }
-
-    private OrganisationElementWritable ID(UUID_ElementId id) {
-      this.ID = id;
       return this;
     }
 
