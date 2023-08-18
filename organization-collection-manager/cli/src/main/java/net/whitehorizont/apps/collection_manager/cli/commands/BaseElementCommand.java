@@ -100,6 +100,6 @@ public abstract class BaseElementCommand<Host> {
   private static <ParentHost, Host, WritableHost extends Host> void doForChild(MetadataComposite<ParentHost, Host, WritableHost> childMetadata, ParentHost host, Optional<ISerializableKey> key, PrintStream out, int nestLevel) {
     final var childHost = childMetadata.extractChildHost(host);
     printChildNodeTitle(childMetadata, nestLevel, out);
-    printFields(childMetadata, childHost, key, out, childMetadata.isSkipDisplay() ? nestLevel : nestLevel + 1);
+    printFields(childMetadata, childHost, key, out, /* childMetadata.isSkipDisplay() ? nestLevel : */ nestLevel + 1);
   }
 }
