@@ -1,5 +1,6 @@
 package net.whitehorizont.apps.collection_manager.cli;
 
+import java.net.URLClassLoader;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,6 +23,7 @@ import net.whitehorizont.apps.collection_manager.cli.commands.RemoveLower;
 import net.whitehorizont.apps.collection_manager.cli.commands.Show;
 import net.whitehorizont.apps.collection_manager.cli.commands.Update;
 import net.whitehorizont.apps.collection_manager.core.collection.CollectionMetadataDefinition;
+import net.whitehorizont.apps.collection_manager.core.commands.interfaces.ICommandQueue;
 import net.whitehorizont.apps.collection_manager.core.dependencies.IUniversalCoreProvider;
 import net.whitehorizont.apps.collection_manager.organisation.commands.IOrganisationCollectionCommandReceiver;
 import net.whitehorizont.apps.collection_manager.organisation.definitions.OrganisationElementDefinition;
@@ -46,10 +48,15 @@ public class App
         final var commands = buildMainCommandSet();
         addSystemCommands(commands);
     
+        final var server = URLClassLoader.getSystemClassLoader().loadClass("net.whitehorizont.apps.collection_manager.core.Server");
+        final var startServer = server.getMethod("startServer");
+        final ICommandQueue commandQueue = (ICommandQueue) startServer.invoke(null);
+
         // other configuration 
         final var streams = new Streams(System.in, System.out, System.err);
         final var dependencyManagerBuilder = new CliDependencyManager.Builder()
             .setStreams(streams)
+            .setCommandQueue(commandQueue)
             .setGlobalErrorHandler(CLI::defaultGlobalErrorHandler)
             .setCommands(commands);
         final var dependencyManager = new CliDependencyManager<>(dependencyManagerBuilder);

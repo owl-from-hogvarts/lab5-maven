@@ -9,6 +9,7 @@ import net.whitehorizont.apps.collection_manager.core.collection.interfaces.ICol
 import net.whitehorizont.apps.collection_manager.core.commands.CollectionManagerReceiver;
 import net.whitehorizont.apps.collection_manager.core.commands.CommandQueue;
 import net.whitehorizont.apps.collection_manager.core.commands.OrganisationCollectionCommandReceiver;
+import net.whitehorizont.apps.collection_manager.core.commands.interfaces.ICommandQueue;
 import net.whitehorizont.apps.collection_manager.core.dependencies.CoreDependencyManager;
 import net.whitehorizont.apps.collection_manager.core.storage.FileStorage;
 import net.whitehorizont.apps.collection_manager.core.storage.collection_adapter.CollectionAdapter;
@@ -21,6 +22,10 @@ import net.whitehorizont.apps.organization_collection_manager.lib.validators.Val
 @NonNullByDefault
 public class Server {
   public static void main(String[] args) throws StorageInaccessibleError {
+
+  }
+
+  public static ICommandQueue startServer() throws StorageInaccessibleError {
     final var testStorage = setupStorage(getStoragePath());
     final var collectionManager = new CollectionManager<>(testStorage);
     final var collectionManagerReceiver = new CollectionManagerReceiver<>(collectionManager);
@@ -29,7 +34,9 @@ public class Server {
     final var collectionCommandReceiver = new OrganisationCollectionCommandReceiver(collection);
 
     final var dependencyManager = new CoreDependencyManager<>(collectionCommandReceiver, collectionManagerReceiver);
-    final var commandQueue = new CommandQueue<>(dependencyManager);
+    final CommandQueue<CoreDependencyManager<OrganisationCollectionCommandReceiver, OrganisationElementFull>> commandQueue = new CommandQueue<>(dependencyManager);
+
+    return commandQueue;
   }
 
   private static FileStorage<ICollection<OrganisationElementFull>> setupStorage(String fileStoragePath) {
