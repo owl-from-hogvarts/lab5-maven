@@ -53,7 +53,7 @@ public class Insert
   }
 
   @Override
-  public Optional<String> getArgument() {
+  public Optional<String> getArgumentName() {
     return Optional.of("key");
   }
 

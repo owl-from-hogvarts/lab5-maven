@@ -22,7 +22,7 @@ public class PrintDescending extends BaseElementCommand<OrganisationElementFull>
   private static final String DESCRIPTION = "print organisations sorted by annual turnover by descending order";
 
   @Override
-  public Optional<String> getArgument() {
+  public Optional<String> getArgumentName() {
     return Optional.empty();
   }
 

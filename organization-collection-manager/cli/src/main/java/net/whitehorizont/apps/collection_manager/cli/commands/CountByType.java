@@ -21,7 +21,7 @@ public class CountByType implements ICliCommand<IProvideCollectionReceiver<? ext
   private final EnumFactory<OrganisationType> enumFactory = new EnumFactory<>(OrganisationType.class);
 
   @Override
-  public Optional<String> getArgument() {
+  public Optional<String> getArgumentName() {
     return Optional.of("type");
   }
 

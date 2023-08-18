@@ -17,7 +17,7 @@ public class RemoveById implements ICliCommand<IProvideCollectionReceiver<? exte
   private static final String DESCRIPTION = "removes element with specified id";
 
   @Override
-  public Optional<String> getArgument() {
+  public Optional<String> getArgumentName() {
     return Optional.of("id");
   }
 

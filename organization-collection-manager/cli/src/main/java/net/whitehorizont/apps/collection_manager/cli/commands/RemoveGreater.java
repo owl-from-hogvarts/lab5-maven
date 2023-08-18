@@ -21,7 +21,7 @@ public class RemoveGreater implements ICliCommand<IProvideCollectionReceiver<? e
   private static final IFromStringBuilder<Double> doubleParser = new DoubleFactory();
 
   @Override
-  public Optional<String> getArgument() {
+  public Optional<String> getArgumentName() {
     return Optional.of("annualTurnover");
   }
 

@@ -29,7 +29,7 @@ public class ExecuteScript<DP> implements ICliCommand<DP> {
   }
 
   @Override
-  public Optional<String> getArgument() {
+  public Optional<String> getArgumentName() {
     return Optional.of("path");
   }
 

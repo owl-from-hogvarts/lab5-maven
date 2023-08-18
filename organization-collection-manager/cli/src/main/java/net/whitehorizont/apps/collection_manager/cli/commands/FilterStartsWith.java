@@ -22,7 +22,7 @@ public class FilterStartsWith extends BaseElementCommand<OrganisationElementFull
   private static final String DESCRIPTION = "display organisations, which name starts with {prefix}";
 
   @Override
-  public Optional<String> getArgument() {
+  public Optional<String> getArgumentName() {
     return Optional.of("prefix");
   }
 

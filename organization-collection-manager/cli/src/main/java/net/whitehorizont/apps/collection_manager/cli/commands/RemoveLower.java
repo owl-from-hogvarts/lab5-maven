@@ -21,7 +21,7 @@ public class RemoveLower implements ICliCommand<IProvideCollectionReceiver<? ext
   private static final IFromStringBuilder<Double> doubleParser = new DoubleFactory();
 
   @Override
-  public Optional<String> getArgument() {
+  public Optional<String> getArgumentName() {
     return Optional.of("annualTurnover");
   }
 

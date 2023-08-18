@@ -21,7 +21,7 @@ public class Info extends BaseElementCommand<CollectionMetadataComputed> impleme
   private static String INFO_DESCRIPTION = "show information about collection itself";
 
   @Override
-  public Optional<String> getArgument() {
+  public Optional<String> getArgumentName() {
     return Optional.empty();
   }
 

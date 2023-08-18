@@ -15,7 +15,7 @@ public class Clear implements ICliCommand<IProvideCollectionReceiver<?>> {
   private static final String DESCRIPTION = "delete all elements from collection";
 
   @Override
-  public Optional<String> getArgument() {
+  public Optional<String> getArgumentName() {
     return Optional.empty();
   }
 

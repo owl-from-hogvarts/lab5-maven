@@ -16,7 +16,7 @@ public class Exit implements ICliCommand<IProvideNothing> {
   private static final String EXIT_MESSAGE = "Exiting without saving!";
 
   @Override
-  public Optional<String> getArgument() {
+  public Optional<String> getArgumentName() {
     return Optional.empty();
   }
   

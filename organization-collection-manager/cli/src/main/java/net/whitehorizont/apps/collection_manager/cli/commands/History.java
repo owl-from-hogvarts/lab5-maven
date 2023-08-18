@@ -15,7 +15,7 @@ public class History implements ICliCommand<IProvideNothing> {
   private static final String DESCRIPTION = "display last " + COUNT_DISPLAY + " commands";
 
   @Override
-  public Optional<String> getArgument() {
+  public Optional<String> getArgumentName() {
     return Optional.empty();
   }
 

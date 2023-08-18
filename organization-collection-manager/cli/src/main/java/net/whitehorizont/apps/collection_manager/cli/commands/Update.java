@@ -27,7 +27,7 @@ public class Update
   
 
   @Override
-  public Optional<String> getArgument() {
+  public Optional<String> getArgumentName() {
     return Optional.of("id");
   }
 

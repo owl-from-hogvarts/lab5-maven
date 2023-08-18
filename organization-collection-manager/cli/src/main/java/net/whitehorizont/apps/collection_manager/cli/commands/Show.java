@@ -23,7 +23,7 @@ public class Show<Host extends ICollectionElement<Host>> extends BaseElementComm
   private static final String DESCRIPTION = "print all collection elements";
 
   @Override
-  public Optional<String> getArgument() {
+  public Optional<String> getArgumentName() {
     return Optional.empty();
   }
 

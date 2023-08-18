@@ -26,7 +26,7 @@ public class Help implements ICliCommand<IProvideNothing> {
   public static final String HELP_COMMAND = "help";
 
   @Override
-  public Optional<String> getArgument() {
+  public Optional<String> getArgumentName() {
     return Optional.empty();
   }
 
@@ -69,8 +69,8 @@ public class Help implements ICliCommand<IProvideNothing> {
   private Pair<String, String> retrieveCommandDescription(
       Entry<String, ? extends ICliCommand<?>> command) {
         String argument = "";
-        if (command.getValue().getArgument().isPresent()) {
-          argument = " {" + command.getValue().getArgument().get() + "}";
+        if (command.getValue().getArgumentName().isPresent()) {
+          argument = " {" + command.getValue().getArgumentName().get() + "}";
         }
     return new Pair<String, String>(command.getKey() + argument, command.getValue().getCommandDescription());
   }

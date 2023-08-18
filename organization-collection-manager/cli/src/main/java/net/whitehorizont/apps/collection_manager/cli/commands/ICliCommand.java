@@ -10,7 +10,7 @@ import net.whitehorizont.apps.collection_manager.cli.CliDependencyManager;
 
 @NonNullByDefault
 public interface ICliCommand<DP> {
-  Optional<String> getArgument();
+  Optional<String> getArgumentName();
   String getCommandDescription();
 
   /**

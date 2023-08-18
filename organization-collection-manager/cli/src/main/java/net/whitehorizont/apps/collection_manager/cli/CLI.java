@@ -95,9 +95,9 @@ public class CLI<DP> {
       }
 
       final var commandDescriptor = commands.get(command);
-      if (convertBoolean(commandDescriptor.getArgument().isPresent()) != wordsStack.size()) {
+      if (convertBoolean(commandDescriptor.getArgumentName().isPresent()) != wordsStack.size()) {
         // 1 because all command accept either one or zero arguments
-        throw new IncorrectNumberOfArguments(command, convertBoolean(commandDescriptor.getArgument().isPresent()), wordsStack.size());
+        throw new IncorrectNumberOfArguments(command, convertBoolean(commandDescriptor.getArgumentName().isPresent()), wordsStack.size());
       }
 
       return commandDescriptor.run(this.dependencyManager, wordsStack);
