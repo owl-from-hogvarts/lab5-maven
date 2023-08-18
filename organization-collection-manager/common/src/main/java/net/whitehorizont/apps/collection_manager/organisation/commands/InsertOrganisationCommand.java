@@ -23,6 +23,7 @@ public class InsertOrganisationCommand implements ICommand<Void, IProvideCollect
       IProvideCollectionReceiver<? extends IOrganisationCollectionCommandReceiver> dependencyProvider) {
         return Observable.create(subscriber -> {
           dependencyProvider.getCollectionReceiver().insert(key, element);
+          subscriber.onComplete();
         });
       }
   
