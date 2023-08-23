@@ -36,8 +36,8 @@ public class Test {
     final String received = StandardCharsets.UTF_8.decode(ByteBuffer.wrap(payloads.get(0))).toString();
     System.out.println(received.equals(sent));
     System.out.println(received);
-    System.out.println("sent length: " + sent.replace("\0", "").length());
-    System.out.println("received length: " + received.replace("\0", "").length());
+    System.out.println("sent length: " + sent.length());
+    System.out.println("received length: " + received.length());
   }
 
   private static class MockTransport implements ITransport<Object> {
@@ -53,6 +53,7 @@ public class Test {
 
     @Override
     public void send(byte[] packet, Object endpoint) {
+      assert packet.length <= MTU;
       System.out.println("---> sending packet");
       packets.add(packet);
       final var hex = HexFormat.ofDelimiter(" ");
