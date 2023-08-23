@@ -53,6 +53,7 @@ public class LongPackageFactory implements IPacketFactory {
     transfer.write(Math.toIntExact(packet.getOffset()), packet.getPayload());
 
     if (transfer.isFulfilled()) {
+      transfers.remove(packet.getTransferId());
       return Optional.of(transfer.getFullPayload().array());
     }
 
