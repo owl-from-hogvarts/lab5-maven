@@ -65,7 +65,7 @@ public class LongPackage implements IPacket {
 
   @Override
   public short calcPacketLength() {
-    return (short) (getHeaderSize() + payload.length);
+    return (short) (IPacket.bitsToBytes(getHeaderSize()) + payload.length);
   }
 
   @Override
@@ -90,7 +90,7 @@ public class LongPackage implements IPacket {
    * @return amount of bytes
    */
   public static short getHeaderSize() {
-    return (short) Math.ceil((TRANSFER_ID_FIELD_SIZE + TOTAL_LENGTH_FIELD_SIZE + OFFSET_FIELD_SIZE + LENGTH_FIELD_SIZE) / 8);
+    return (short) (TRANSFER_ID_FIELD_SIZE + TOTAL_LENGTH_FIELD_SIZE + OFFSET_FIELD_SIZE + LENGTH_FIELD_SIZE);
   }
 
 }

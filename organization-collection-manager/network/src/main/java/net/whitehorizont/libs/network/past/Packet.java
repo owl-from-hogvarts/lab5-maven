@@ -54,15 +54,11 @@ public class Packet implements IPacket {
   }
 
   public static short calcAllocatedSpace() {
-    return calcSizeInBytes(calcHeaderSizeInBits());
+    return IPacket.bitsToBytes(calcHeaderSizeInBits());
   }
 
   private static short calcHeaderSizeInBits() {
     return VERSION_SIZE + TYPE_SIZE;
-  }
-
-  public static short calcSizeInBytes(int sizeInBits) {
-    return (short) Math.ceil(sizeInBits / 8);
   }
  
   // whole array is considered a packet

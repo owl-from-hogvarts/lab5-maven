@@ -8,4 +8,8 @@ public interface IPacket {
   byte[] toBytes();
   short calcPacketLength();
   byte getType();
+
+  public static short bitsToBytes(int sizeInBits) {
+    return (short) Math.ceil(sizeInBits / 8);
+  }
 }

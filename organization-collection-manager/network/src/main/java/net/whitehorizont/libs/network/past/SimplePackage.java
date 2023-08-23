@@ -57,7 +57,7 @@ public class SimplePackage implements IPacket {
 
   @Override
   public short calcPacketLength() {
-    return (short) (LENGTH_FIELD_SIZE + payload.length);
+    return (short) (IPacket.bitsToBytes(LENGTH_FIELD_SIZE) + payload.length);
   }
 
   @Override
