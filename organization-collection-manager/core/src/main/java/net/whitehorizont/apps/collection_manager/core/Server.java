@@ -10,6 +10,7 @@ import net.whitehorizont.apps.collection_manager.core.commands.CollectionManager
 import net.whitehorizont.apps.collection_manager.core.commands.CommandQueue;
 import net.whitehorizont.apps.collection_manager.core.commands.OrganisationCollectionCommandReceiver;
 import net.whitehorizont.apps.collection_manager.core.commands.interfaces.ICommandQueue;
+import net.whitehorizont.apps.collection_manager.core.commands.SaveCommand;
 import net.whitehorizont.apps.collection_manager.core.dependencies.CoreDependencyManager;
 import net.whitehorizont.apps.collection_manager.core.storage.FileStorage;
 import net.whitehorizont.apps.collection_manager.core.storage.collection_adapter.CollectionAdapter;
@@ -35,6 +36,10 @@ public class Server {
 
     final var dependencyManager = new CoreDependencyManager<>(collectionCommandReceiver, collectionManagerReceiver);
     final CommandQueue<CoreDependencyManager<OrganisationCollectionCommandReceiver, OrganisationElementFull>> commandQueue = new CommandQueue<>(dependencyManager);
+
+    Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+      commandQueue.pushServer(new SaveCommand()).blockingSubscribe();
+    }));
 
     return commandQueue;
   }

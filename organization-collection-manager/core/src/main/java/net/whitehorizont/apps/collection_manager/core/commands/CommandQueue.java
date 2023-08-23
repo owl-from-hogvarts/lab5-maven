@@ -23,7 +23,11 @@ public class CommandQueue<DependencyManager> implements ICommandQueue<Dependency
   }
 
   @Override
-  public <@NonNull T> Observable<T> push(ICommand<T, ? super DependencyManager> command) {
+  public <@NonNull T> Observable<T> push(ICommand<T, ? super DependencyManager> command) throws EPERM {
+    if (command.isServerOnly()) {
+      throw new EPERM();
+    }
+    
     return Observable.create((subscriber) -> {
 
       final var execution$ = command.execute(dependencyManager).publish();
@@ -38,7 +42,25 @@ public class CommandQueue<DependencyManager> implements ICommandQueue<Dependency
     command.connect();
   }
 
-  Observable<Void> terminate() {
+  /**
+   * !!! CLIENTS SHOULD HAVE NO WAY TO CALL THIS !!!
+   * 
+   * By pass command security checks
+   * 
+   * @return
+   */
+  public <@NonNull T> Observable<T> pushServer(ICommand<T, ? super DependencyManager> command) {
+    return Observable.create((subscriber) -> {
+
+      final var execution$ = command.execute(dependencyManager).publish();
+      // this does not immediately start execution of observable
+      // to start actual execution call connect
+      execution$.subscribe(subscriber::onNext, subscriber::onError, subscriber::onComplete);
+      commands.onNext(execution$);
+    });
+  }
+
+  public Observable<Void> terminate() {
     // TODO: finish
     try {
       commands.onComplete();
