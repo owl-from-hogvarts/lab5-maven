@@ -3,13 +3,10 @@ package net.whitehorizont.libs.network.past;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
-import java.util.function.Consumer;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 // Manages transfers within single connection
@@ -52,7 +49,7 @@ public class LongPackageFactory implements IPacketFactory {
 
   public Optional<byte[]> getCompletePackage(byte[] bytes) {
     final var packet = LongPackage.fromBytes(ByteBuffer.wrap(bytes));
-    final var transfer = transfers.getOrDefault(packet.getTransferId(), new TransferDescriptor(Math.toIntExact(packet.getTotalLength())));
+    final var transfer = transfers.computeIfAbsent(packet.getTransferId(), transferId -> new TransferDescriptor(Math.toIntExact(packet.getTotalLength())));
     transfer.write(Math.toIntExact(packet.getOffset()), packet.getPayload());
 
     if (transfer.isFulfilled()) {
