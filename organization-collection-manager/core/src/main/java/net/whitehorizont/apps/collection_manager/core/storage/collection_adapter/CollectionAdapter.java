@@ -41,7 +41,8 @@ public class CollectionAdapter<E extends ICollectionElement<E>>
   }
 
   {
-    serializer.allowTypesByWildcard(new String[]{"net.whitehorizont.apps.organization_collection_manager.core.**"});
+    serializer.allowTypesByWildcard(new String[]{"net.whitehorizont.apps.collection_manager.core.**"});
+    serializer.allowTypesByWildcard(new String[]{"net.whitehorizont.apps.collection_manager.organisation.**"});
     serializer.processAnnotations(StorageXml.class);
   }
   @SuppressWarnings("null")
