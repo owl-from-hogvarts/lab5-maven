@@ -80,6 +80,7 @@ public class LongPackage implements IPacket {
     final var payloadLength = bytes.getShort();
 
     final byte[] payload = new byte[payloadLength];
+    bytes.get(payload);
 
     return new LongPackage(transferId, totalLength, offset, payload);
   }
