@@ -1,7 +1,9 @@
 package net.whitehorizont.libs.network.past;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -13,6 +15,11 @@ public class SimplePackageFactory implements IPacketFactory {
     final List<IPacket> packets = new ArrayList<>();
     packets.add(packet);
     return packets;
+  }
+
+  @Override
+  public Optional<byte[]> getCompletePackage(byte[] packet) {
+    return Optional.of(SimplePackage.fromBytes(ByteBuffer.wrap(packet)).getPayload());
   }
 
 }

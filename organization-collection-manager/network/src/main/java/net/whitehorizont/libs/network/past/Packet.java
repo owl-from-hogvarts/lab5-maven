@@ -11,10 +11,20 @@ public class Packet implements IPacket {
   private static final byte VERSION_SIZE = 16;
   private static final byte TYPE_SIZE = 8;
   private final short version = 0;
-  private final ITypedPacket typedPacket;
+  private final byte type;
+  private final byte[] payload;
+  
+  public byte[] getPayload() {
+    return payload;
+  }
 
-  public Packet(ITypedPacket typedPacket) {
-    this.typedPacket = typedPacket;
+  public Packet(IPacket typedPacket) {
+    this(typedPacket.getType(), typedPacket.toBytes());
+  }
+
+  public Packet(byte type, byte[] payload) {
+    this.type = type;
+    this.payload = payload;
   }
 
   @Override
@@ -28,19 +38,19 @@ public class Packet implements IPacket {
 
 
   private ByteBuffer writePayload(ByteBuffer packetBuffer) {
-    return packetBuffer.put(typedPacket.toBytes());
+    return packetBuffer.put(payload);
   }
 
   private ByteBuffer writeHeader(ByteBuffer packetBuffer) {
     packetBuffer.putShort(version);
-    packetBuffer.put(typedPacket.getType());
+    packetBuffer.put(type);
 
     return packetBuffer;
   }
 
   @Override
   public short calcPacketLength() {
-    return (short) (calcAllocatedSpace() + typedPacket.calcPacketLength());
+    return (short) (calcAllocatedSpace() + payload.length);
   }
 
   public static short calcAllocatedSpace() {
@@ -54,5 +64,20 @@ public class Packet implements IPacket {
   public static short calcSizeInBytes(int sizeInBits) {
     return (short) Math.ceil(sizeInBits / 8);
   }
-  
+ 
+  // whole array is considered a packet
+  public static Packet fromBytes(byte[] bytes) {
+    final var byteBuffer = ByteBuffer.wrap(bytes);
+    final short version = byteBuffer.getShort();
+    final byte type = byteBuffer.get();
+    final byte[] payload = new byte[bytes.length - calcAllocatedSpace()];
+    byteBuffer.get(payload);
+
+    return new Packet(type, payload);
+  }
+
+  @Override
+  public byte getType() {
+    return type;
+  }
 }
