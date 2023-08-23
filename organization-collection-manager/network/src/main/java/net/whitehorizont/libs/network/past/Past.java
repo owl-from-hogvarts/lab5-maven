@@ -1,16 +1,9 @@
 package net.whitehorizont.libs.network.past;
 
-import java.nio.ByteBuffer;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 // The goal is to manage connections
 @NonNullByDefault
@@ -25,13 +18,15 @@ public class Past<Endpoint> {
 
   private final ITransport<Endpoint> transport;
 
-  private final List<Consumer<Socket>> callbacks = new ArrayList<>();
-
   // key: Endpoint, { value: key: transferId, value: transferDescriptor }
   private final Map<Endpoint, Connection<Endpoint>> connections = new HashMap<>(START_CONNECTIONS_AMOUNT);
 
   public Past(ITransport<Endpoint> transport) {
     this.transport = transport;
+  }
+
+  public Connection<Endpoint> send(Endpoint endpoint) {
+    return new Connection<>(transport.getPacketLengthLimit(), new EndpointTransport<Endpoint>(endpoint, transport));
   }
 
   // control packets are special and are not directly sent by
@@ -52,86 +47,31 @@ public class Past<Endpoint> {
   // For too large data transfers, utilize streams. Regular api has
   // restriction on data length: no more than 2GiB
 
-  public void onRequest(Consumer<Socket> callback) {
-    this.callbacks.add(callback);
-  }
-
-  public void start() {
+  public Connection<Endpoint> poll() {
     // we will utilize futures, or even observables to handle
     // multithreading.
     // Until that, callback should not last long, or datagram loss will happen
     
-    // await on transport until data is available or timeout exceeds
-    final byte[] data = new byte[MAX_PACKET_SIZE];
-    final Endpoint endpoint = transport.receive(data);
+    while (true) {
 
-    final var connection = connections.computeIfAbsent(endpoint, lambdaEndpoint -> {
-      final Connection<Endpoint> lambdaConnection = new Connection<>(transport.getPacketLengthLimit(), new EndpointTransport<>(lambdaEndpoint, transport), this.callbacks);
-      return lambdaConnection;
-    });
-    connection.receive(data);
+      final TransportPacket<Endpoint> transportPacket = transport.receive();
+      
+      final var connection = connections.computeIfAbsent(transportPacket.source(), lambdaEndpoint -> new Connection<>(transport.getPacketLengthLimit(), new EndpointTransport<>(lambdaEndpoint, transport)));
+      if (connection.receive(transportPacket.payload())) {
+        return connection;
+      }
 
-    // now long package factory tracks transfers
-    // create set of package factories for each connection
-    // simple package factory instance can be shared because it does not have any state
-
-    // as we can't determine a layer to handle connections
-    // Let's try other approach
-    // What if we wan't to extend definition of connection?
-    // What if we add connection id or something like this to packets
-    // Then it becomes clear that connection identity recognition is logical layer chores
-    // Transport layer may provide some hints on connection data.
-    // Logical layer will operate on opaque objects which are meaningful only for transport layer
-    // They represent other end of communication, that is entity to which logical layer will send responses
-    // The endpoint opaque object must be unique as it may be used to represent connection all alone
-
-    // how to handle connections?
-    // on transport layer
-    // requires to create separate instances of packager for every connection
-
-    // on logical layer
-    // transport layer returns opaque handle which we should use when sending data back
-    // for every connection requires to hold list of open streams
-
-    // --------------- NEW CODE TO HANDLE INCOMING REQUESTS ---------------
-    // start server
-    // if new client encountered (this is determined by transport layer) onConnection method is called
-    // onConnection setup listeners like onData
-    // new Past(new UDPServerTransport())
-    // !within sendCallback
-    // transport.send(endpoint, payload)
-    // !within Past
-    // endpoint = transport.getData()
-    // connection = connections.getOrDefault(endpoint, new Connection(payload -> transport.send(endpoint, payload)))
-    // connection.handle(data)
-    // !within connection's handle
-    // new Factory(callback)
-    // packet = Packet.fromBytes(data)
-    // packetFactory = packetTypeMap.get(packet.getType())
-    // packetFactory.fromBytes(packet.getPayload())
-    // !within packetFactory's fromBytes
-    // packet = LongPackage.fromBytes(bytes)
-    // transfer = transfers.getOrDefault(packet.getTransferId(), new TransferDescriptor(callback))
-    // transfer.write(packet.getOffset(), packet.getPayload())
-    // if transfer.isComplete()
-    //   transfer.callback.call(transfer)
-
-    // requirements for callback arguments
-    // - get payload
-    // - send back
-    // - send error
-    //  or do nothing
-
-    // then argument should contain at least endpoint
+      // explicitly
+      continue;
+    }
 
     // --------------- USER SIDE ---------------
-    // new Past(new UDPDatagramChannelServer()).onRequest(connection -> {
-    //   command = serializer.deserialize(payload);
-    //   commandQueue.push(command).subscribe(result -> {
-    //      resultBytes = serializer.serialize(result)
-    //      connection.send(resultBytes)
-    //   })
-    // })
+    // past = new Past(new UDPDatagramChannelServer())
+    // while (true)
+    //   connection = past.poll()
+    //   for (payload of collection.getPayloads())
+    //     command = serializer.deserialize(payload)
+    //     commandQueue.push(command).subscribe(result -> connection.send(serializer.serialize(result)))
   }
 
   // transform api back to imperative-classic

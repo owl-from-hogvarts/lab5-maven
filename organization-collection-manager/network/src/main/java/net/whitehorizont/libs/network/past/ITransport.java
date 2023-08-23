@@ -6,5 +6,5 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public interface ITransport<Endpoint> {
   short getPacketLengthLimit();
   void send(byte[] packet, Endpoint endpoint);
-  Endpoint receive(byte[] packet);
+  TransportPacket<Endpoint> receive();
 }

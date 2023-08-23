@@ -3,8 +3,6 @@ package net.whitehorizont.libs.network.past;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Consumer;
-
 import net.whitehorizont.libs.network.past.Past.EndpointTransport;
 
 // Manages package factories within single connection
@@ -12,16 +10,15 @@ public class Connection<Endpoint> {
   private final List<IPacketFactory> factories = new ArrayList<>(10);
   // connection to the endpoint
   // replies should go here
-  private final List<Consumer<Socket>> callbacks;
   private final EndpointTransport<Endpoint> endpointTransport;
+  private List<byte[]> completePayloads = new ArrayList<>();
 
-  public Connection(short lengthLimit, EndpointTransport<Endpoint> endpointTransport, List<Consumer<Socket>> callbacks) {
+  public Connection(short lengthLimit, EndpointTransport<Endpoint> endpointTransport) {
     factories.add(0, null);
     factories.add(1, new SimplePackageFactory());
     factories.add(2, new LongPackageFactory(lengthLimit));
 
     this.endpointTransport = endpointTransport;
-    this.callbacks = callbacks;
   }
 
   private boolean isExceedsLengthLimit(byte[] bytes) {
@@ -56,19 +53,25 @@ public class Connection<Endpoint> {
 
   }
 
-  public void receive(byte[] bytes) {
-    final var packet = Packet.fromBytes(bytes);
+  /**
+   * 
+   * @param packetBytes
+   * @return {@code true} means at least one data entity is available
+   */
+  boolean receive(byte[] packetBytes) {
+    final var packet = Packet.fromBytes(packetBytes);
     final Optional<byte[]> payloadMaybe = factories.get(packet.getType()).getCompletePackage(packet.getPayload());
+
     if (payloadMaybe.isPresent()) {
-      callCallbacks(payloadMaybe.get());
+      completePayloads.add(payloadMaybe.get());
     }
+
+    return !completePayloads.isEmpty();
   }
 
-  private void callCallbacks(byte[] payload) {
-    
-    for (final var callback : callbacks) {
-      final var socket = new Socket(payload, this);
-      callback.accept(socket);
-    }
+  public List<byte[]> getPayloads() {
+    final var completePayloads = this.completePayloads;
+    this.completePayloads = new ArrayList<>();
+    return completePayloads;
   }
 }
