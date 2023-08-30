@@ -7,7 +7,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 // The goal is to manage connections
 @NonNullByDefault
-public class Past<Endpoint> {
+public class Past<Endpoint> implements INetworkPackager<Endpoint> {
   // MS stands for milliseconds
   private static final long RECEIVE_TIMEOUT_MS = 1000;
   // while protocol does not yet limit maximum concurrency
@@ -25,6 +25,7 @@ public class Past<Endpoint> {
     this.transport = transport;
   }
 
+  @Override
   public Connection<Endpoint> send(Endpoint endpoint) {
     return new Connection<>(transport.getPacketLengthLimit(), new EndpointTransport<Endpoint>(endpoint, transport));
   }
@@ -47,6 +48,7 @@ public class Past<Endpoint> {
   // For too large data transfers, utilize streams. Regular api has
   // restriction on data length: no more than 2GiB
 
+  @Override
   public Connection<Endpoint> poll() {
     // we will utilize futures, or even observables to handle
     // multithreading.
