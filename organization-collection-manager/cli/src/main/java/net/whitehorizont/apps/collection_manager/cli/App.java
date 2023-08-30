@@ -23,6 +23,7 @@ import net.whitehorizont.apps.collection_manager.cli.commands.RemoveLower;
 import net.whitehorizont.apps.collection_manager.cli.commands.Show;
 import net.whitehorizont.apps.collection_manager.cli.commands.Update;
 import net.whitehorizont.apps.collection_manager.core.collection.CollectionMetadataDefinition;
+import net.whitehorizont.apps.collection_manager.core.commands.interfaces.ICollectionCommandReceiver;
 import net.whitehorizont.apps.collection_manager.core.commands.interfaces.ICommandQueue;
 import net.whitehorizont.apps.collection_manager.core.dependencies.IUniversalCoreProvider;
 import net.whitehorizont.apps.collection_manager.organisation.commands.IOrganisationCollectionCommandReceiver;
@@ -50,15 +51,15 @@ public class App
     
         final var server = URLClassLoader.getSystemClassLoader().loadClass("net.whitehorizont.apps.collection_manager.core.Server");
         final var startServer = server.getMethod("startServer");
-        final ICommandQueue commandQueue = (ICommandQueue) startServer.invoke(null);
+        final ICommandQueue<IUniversalCoreProvider<? extends IOrganisationCollectionCommandReceiver, OrganisationElementFull>> commandQueue = new NetworkCommandQueue<>();
 
         // other configuration 
         final var streams = new Streams(System.in, System.out, System.err);
-        final var dependencyManagerBuilder = new CliDependencyManager.Builder()
+        final var dependencyManagerBuilder = new CliDependencyManager.Builder<IUniversalCoreProvider<? extends IOrganisationCollectionCommandReceiver, OrganisationElementFull>>()
             .setStreams(streams)
-            .setCommandQueue(commandQueue)
             .setGlobalErrorHandler(CLI::defaultGlobalErrorHandler)
-            .setCommands(commands);
+            .setCommands(commands)
+            .setCommandQueue(commandQueue);
         final var dependencyManager = new CliDependencyManager<>(dependencyManagerBuilder);
         final var cli = new CLI<>(dependencyManager);
 

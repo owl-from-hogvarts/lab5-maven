@@ -1,5 +1,7 @@
 package net.whitehorizont.apps.collection_manager.core.commands.interfaces;
 
+import java.io.Serializable;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import io.reactivex.rxjava3.annotations.NonNull;
@@ -15,7 +17,7 @@ import io.reactivex.rxjava3.core.Observable;
  * 
  */
 @NonNullByDefault
-public interface ICommand<Return, DependencyProvider> {
+public interface ICommand<Return, DependencyProvider> extends Serializable {
   /** Always ensure that observable completes */
   Observable<@NonNull Return> execute(DependencyProvider dependencyProvider);
   default boolean isServerOnly() {
