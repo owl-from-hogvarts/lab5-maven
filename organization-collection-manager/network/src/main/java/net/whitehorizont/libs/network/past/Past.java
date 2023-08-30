@@ -26,7 +26,7 @@ public class Past<Endpoint> implements INetworkPackager<Endpoint> {
   }
 
   @Override
-  public Connection<Endpoint> send(Endpoint endpoint) {
+  public IConnection<Endpoint> send(Endpoint endpoint) {
     return new Connection<>(transport.getPacketLengthLimit(), new EndpointTransport<Endpoint>(endpoint, transport));
   }
 
@@ -49,7 +49,7 @@ public class Past<Endpoint> implements INetworkPackager<Endpoint> {
   // restriction on data length: no more than 2GiB
 
   @Override
-  public Connection<Endpoint> poll() {
+  public IConnection<Endpoint> poll() {
     // we will utilize futures, or even observables to handle
     // multithreading.
     // Until that, callback should not last long, or datagram loss will happen

@@ -6,7 +6,7 @@ import java.util.Optional;
 import net.whitehorizont.libs.network.past.Past.EndpointTransport;
 
 // Manages package factories within single connection
-public class Connection<Endpoint> {
+public class Connection<Endpoint> implements IConnection<Endpoint> {
   private final List<IPacketFactory> factories = new ArrayList<>(10);
   // connection to the endpoint
   // replies should go here
