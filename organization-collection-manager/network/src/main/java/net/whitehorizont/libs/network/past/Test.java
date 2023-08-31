@@ -28,7 +28,7 @@ public class Test {
     final var encoded = sent.getBytes();
     
     final var packager = new Past<Object>(new MockTransport());
-    final var sendConnection = packager.send(new Object());
+    final var sendConnection = packager.connect(new Object());
     sendConnection.send(encoded);
     final var connection = packager.poll();
     final var payloads = connection.getPayloads();

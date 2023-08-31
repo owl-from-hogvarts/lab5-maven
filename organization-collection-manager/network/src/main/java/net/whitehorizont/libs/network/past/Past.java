@@ -26,9 +26,11 @@ public class Past<Endpoint> implements INetworkPackager<Endpoint> {
   }
 
   @Override
-  public IConnection<Endpoint> send(Endpoint endpoint) {
-    return new Connection<>(transport.getPacketLengthLimit(), new EndpointTransport<Endpoint>(endpoint, transport));
+  public IConnection<Endpoint> connect(Endpoint endpoint) {
+    return new Connection<>(transport.getPacketLengthLimit(), new EndpointTransport<Endpoint>(endpoint, transport, this));
   }
+
+
 
   // control packets are special and are not directly sent by
   // upper layer
@@ -58,7 +60,7 @@ public class Past<Endpoint> implements INetworkPackager<Endpoint> {
 
       final TransportPacket<Endpoint> transportPacket = transport.receive();
       
-      final var connection = connections.computeIfAbsent(transportPacket.source(), lambdaEndpoint -> new Connection<>(transport.getPacketLengthLimit(), new EndpointTransport<>(lambdaEndpoint, transport)));
+      final var connection = connections.computeIfAbsent(transportPacket.source(), lambdaEndpoint -> new Connection<>(transport.getPacketLengthLimit(), new EndpointTransport<>(lambdaEndpoint, transport, this)));
       if (connection.receive(transportPacket.payload())) {
         return connection;
       }
@@ -91,11 +93,18 @@ public class Past<Endpoint> implements INetworkPackager<Endpoint> {
 
   public static class EndpointTransport<Endpoint> {
     private final Endpoint endpoint;
-    private final ITransport<Endpoint> transport;
     
-    public EndpointTransport(Endpoint endpoint, ITransport<Endpoint> transport) {
+    public Endpoint getEndpoint() {
+      return endpoint;
+    }
+
+    private final ITransport<Endpoint> transport;
+    private final Past<Endpoint> connectionManager;
+    
+    public EndpointTransport(Endpoint endpoint, ITransport<Endpoint> transport, Past<Endpoint> connectionManager) {
       this.endpoint = endpoint;
       this.transport = transport;
+      this.connectionManager = connectionManager;
     }
 
     void send(byte[] packet) {
@@ -104,6 +113,10 @@ public class Past<Endpoint> implements INetworkPackager<Endpoint> {
 
     short getPacketLengthLimit() {
       return transport.getPacketLengthLimit();
+    }
+
+    IConnection<Endpoint> poll() {
+      return connectionManager.poll();
     }
   }
 }
