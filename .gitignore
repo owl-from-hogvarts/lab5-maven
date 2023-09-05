@@ -9,6 +9,7 @@ test.xml
 *.png
 *.jpg
 .directory
+.idea
 
 .vscode
 build
