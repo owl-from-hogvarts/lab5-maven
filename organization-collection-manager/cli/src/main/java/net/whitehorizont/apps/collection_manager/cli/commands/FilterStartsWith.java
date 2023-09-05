@@ -38,8 +38,8 @@ public class FilterStartsWith extends BaseElementCommand<OrganisationElementFull
         final var out = dependencyManager.getStreams().out;
         final var filterCommand = new FilterStartsWithCommand(prefix);
         dependencyManager.getCommandQueue().push(filterCommand).blockingSubscribe(keyElement -> {
-          final var element = keyElement.getValue();
-          printFields(element, keyElement.getKey(), out);
+          final var element = keyElement.getValue1();
+          printFields(element, keyElement.getValue0(), out);
         });
 
         return Observable.empty();

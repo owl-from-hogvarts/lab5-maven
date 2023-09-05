@@ -1,9 +1,9 @@
 package net.whitehorizont.apps.collection_manager.core.commands;
 
 import java.util.List;
-import java.util.Map.Entry;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.javatuples.Pair;
 
 import io.reactivex.rxjava3.core.Observable;
 import net.whitehorizont.apps.collection_manager.core.collection.CollectionMetadataDefinition.CollectionMetadata;
@@ -46,7 +46,7 @@ public class CollectionCommandReceiver<E extends ICollectionElement<E>> implemen
   }
 
   @Override
-  public Observable<Entry<ElementKey, E>> getEveryWithKey$() {
+  public Observable<Pair<ElementKey, E>> getEveryWithKey$() {
     return this.collection.getEveryWithKey$();
   }
 

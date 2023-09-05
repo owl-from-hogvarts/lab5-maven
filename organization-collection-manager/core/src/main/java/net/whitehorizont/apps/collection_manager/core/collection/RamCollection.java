@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.Map.Entry;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.javatuples.Pair;
 
 import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.Observable;
@@ -102,12 +103,12 @@ public class RamCollection<E extends ICollectionElement<E>>
   }
 
   @Override
-  public Observable<Entry<ElementKey, E>> getEveryWithKey$() {
+  public Observable<Pair<ElementKey, E>> getEveryWithKey$() {
     return Observable.just(elements).flatMap((elements) -> {
       @SuppressWarnings("null")
       final @NonNull Set<Entry<ElementKey, E>> keyValuePairs = elements.entrySet();
 
-      return Observable.fromIterable(keyValuePairs);
+      return Observable.fromIterable(keyValuePairs).map(keyValue -> new Pair<>(keyValue.getKey(), keyValue.getValue()));
     });
   }
 

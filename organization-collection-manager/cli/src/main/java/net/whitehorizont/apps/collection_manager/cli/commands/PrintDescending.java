@@ -37,8 +37,8 @@ public class PrintDescending extends BaseElementCommand<OrganisationElementFull>
         final var command = new GetDescendingCommand();
         final var out = dependencyManager.getStreams().out;
         dependencyManager.getCommandQueue().push(command).blockingSubscribe(keyElement -> {
-          final var element = keyElement.getValue();
-          printFields(element, keyElement.getKey(), out);
+          final var element = keyElement.getValue1();
+          printFields(element, keyElement.getValue0(), out);
         });
 
         return Observable.empty();

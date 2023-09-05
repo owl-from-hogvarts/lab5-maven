@@ -40,8 +40,8 @@ public class Show<Host extends ICollectionElement<Host>> extends BaseElementComm
       final var show = new ShowCommand<ICollectionCommandReceiver<Host>, Host>();
       final var out = dependencyManager.getStreams().out;
       dependencyManager.getCommandQueue().push(show).subscribe(keyElement -> {
-        final var element = keyElement.getValue();
-        printFields(element, keyElement.getKey(), out);
+        final var element = keyElement.getValue1();
+        printFields(element, keyElement.getValue0(), out);
       });
       subscriber.onComplete();
     });

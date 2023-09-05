@@ -1,8 +1,8 @@
 package net.whitehorizont.apps.collection_manager.organisation.commands;
 
-import java.util.Map.Entry;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.javatuples.Pair;
 
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Single;
@@ -27,9 +27,9 @@ public interface IOrganisationCollectionCommandReceiver extends ICollectionComma
 
   void removeByRevenue(RemovalCriteria removalCriteria, double targetValue);
 
-  Observable<Entry<ElementKey, OrganisationElementFull>> getStartsWith$(String startOfFullName);
+  Observable<Pair<ElementKey, OrganisationElementFull>> getStartsWith$(String startOfFullName);
 
-  Observable<Entry<ElementKey, OrganisationElementFull>> getDescending$();
+  Observable<Pair<ElementKey, OrganisationElementFull>> getDescending$();
 
   public static enum RemovalCriteria {
     BELOW,

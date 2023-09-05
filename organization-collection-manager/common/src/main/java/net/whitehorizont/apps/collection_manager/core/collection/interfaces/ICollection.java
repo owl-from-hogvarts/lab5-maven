@@ -1,9 +1,9 @@
 package net.whitehorizont.apps.collection_manager.core.collection.interfaces;
 
 import java.util.List;
-import java.util.Map.Entry;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.javatuples.Pair;
 
 import io.reactivex.rxjava3.core.Observable;
 import net.whitehorizont.apps.collection_manager.core.collection.CollectionMetadataDefinition.CollectionMetadata;
@@ -49,7 +49,7 @@ public interface ICollection<E extends ICollectionElement<E>> {
 
   Observable<E> getEvery$();
 
-  Observable<Entry<ElementKey, E>> getEveryWithKey$();
+  Observable<Pair<ElementKey, E>> getEveryWithKey$();
 
   Observable<List<E>> getAll$();
 
