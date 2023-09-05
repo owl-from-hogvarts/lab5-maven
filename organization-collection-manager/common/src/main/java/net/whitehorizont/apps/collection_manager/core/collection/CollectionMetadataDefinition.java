@@ -1,5 +1,6 @@
 package net.whitehorizont.apps.collection_manager.core.collection;
 
+import java.io.Serializable;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -77,7 +78,7 @@ public class CollectionMetadataDefinition {
 
   // some fields are computed so moving them into separate class
   // this allows to not store them
-  public static class CollectionMetadataComputed extends CollectionMetadata {
+  public static class CollectionMetadataComputed extends CollectionMetadata implements Serializable {
     // temp values to catch uninitialized fields
     private int elementCount = -789;
     private String collectionType = "foobar";

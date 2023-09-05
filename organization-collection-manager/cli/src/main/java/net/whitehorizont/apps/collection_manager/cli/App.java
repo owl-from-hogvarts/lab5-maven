@@ -1,6 +1,6 @@
 package net.whitehorizont.apps.collection_manager.cli;
 
-import java.net.URLClassLoader;
+import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,13 +23,13 @@ import net.whitehorizont.apps.collection_manager.cli.commands.RemoveLower;
 import net.whitehorizont.apps.collection_manager.cli.commands.Show;
 import net.whitehorizont.apps.collection_manager.cli.commands.Update;
 import net.whitehorizont.apps.collection_manager.core.collection.CollectionMetadataDefinition;
-import net.whitehorizont.apps.collection_manager.core.commands.interfaces.ICollectionCommandReceiver;
 import net.whitehorizont.apps.collection_manager.core.commands.interfaces.ICommandQueue;
 import net.whitehorizont.apps.collection_manager.core.dependencies.IUniversalCoreProvider;
 import net.whitehorizont.apps.collection_manager.organisation.commands.IOrganisationCollectionCommandReceiver;
 import net.whitehorizont.apps.collection_manager.organisation.definitions.OrganisationElementDefinition;
-import net.whitehorizont.apps.collection_manager.organisation.definitions.OrganisationElementDefinition.OrganisationElement;
 import net.whitehorizont.apps.collection_manager.organisation.definitions.OrganisationElementDefinition.OrganisationElementFull;
+import net.whitehorizont.libs.network.past.Past;
+import net.whitehorizont.libs.network.transport.udp.datagram_channel.DatagramChannelAdapter;
 
 /**
  * Hello world!
@@ -49,9 +49,8 @@ public class App
         final var commands = buildMainCommandSet();
         addSystemCommands(commands);
     
-        final var server = URLClassLoader.getSystemClassLoader().loadClass("net.whitehorizont.apps.collection_manager.core.Server");
-        final var startServer = server.getMethod("startServer");
-        final ICommandQueue<IUniversalCoreProvider<? extends IOrganisationCollectionCommandReceiver, OrganisationElementFull>> commandQueue = new NetworkCommandQueue<>();
+        final var connectionToServer = new Past<>(new DatagramChannelAdapter(new InetSocketAddress("localhost", 44444))).connect(new InetSocketAddress("localhost", 55555));
+        final ICommandQueue<IUniversalCoreProvider<? extends IOrganisationCollectionCommandReceiver, OrganisationElementFull>> commandQueue = new NetworkCommandQueue<>(connectionToServer);
 
         // other configuration 
         final var streams = new Streams(System.in, System.out, System.err);
