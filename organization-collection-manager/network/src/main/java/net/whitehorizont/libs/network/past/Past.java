@@ -27,7 +27,7 @@ public class Past<Endpoint> implements INetworkPackager<Endpoint> {
 
   @Override
   public IConnection<Endpoint> connect(Endpoint endpoint) {
-    return new Connection<>(transport.getPacketLengthLimit(), new EndpointTransport<Endpoint>(endpoint, transport, this));
+    return this.connections.computeIfAbsent(endpoint, endpointLambda -> new Connection<>(transport.getPacketLengthLimit(), new EndpointTransport<Endpoint>(endpoint, transport, this)));
   }
 
 
