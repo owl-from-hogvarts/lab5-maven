@@ -13,4 +13,5 @@ public interface IConnection<Endpoint> {
   // Awaits until at least one package is completely received
   List<byte[]> await();
 
+  Endpoint getEndpoint();
 }

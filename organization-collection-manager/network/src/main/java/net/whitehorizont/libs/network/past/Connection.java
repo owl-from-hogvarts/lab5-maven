@@ -74,4 +74,20 @@ public class Connection<Endpoint> implements IConnection<Endpoint> {
     this.completePayloads = new ArrayList<>();
     return completePayloads;
   }
+
+  @Override
+  public List<byte[]> await() {
+    // poll transport until this connection is selected
+    while (true) {
+      final var connection = endpointTransport.poll();
+      if (connection.getEndpoint() == this.getEndpoint()) {
+        return connection.getPayloads();
+      }
+    }
+  }
+
+  @Override
+  public Endpoint getEndpoint() {
+    return endpointTransport.getEndpoint();
+  }
 }
