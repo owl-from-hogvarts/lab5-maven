@@ -1,5 +1,6 @@
 package net.whitehorizont.apps.collection_manager.organisation.definitions;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
@@ -39,7 +40,7 @@ public class CoordinatesDefinition {
       .setRequired("Y must be provided!")
       .build();
 
-  public static class Coordinates {
+  public static class Coordinates implements Serializable {
     protected int x;
 
     private int getX() {

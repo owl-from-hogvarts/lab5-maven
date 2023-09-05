@@ -1,5 +1,6 @@
 package net.whitehorizont.apps.collection_manager.organisation.definitions;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
@@ -45,7 +46,7 @@ public class AddressDefinition {
     return new MetadataComposite<>(TITLE, leafs, child, addressExtractor);
   }
 
-  public static class Address {
+  public static class Address implements Serializable {
     protected String street;
     protected String zipCode;
     protected LocationWritable town = new LocationWritable();

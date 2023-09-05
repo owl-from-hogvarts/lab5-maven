@@ -1,5 +1,6 @@
 package net.whitehorizont.apps.collection_manager.organisation.definitions;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
@@ -59,7 +60,7 @@ public class LocationDefinition {
     return new MetadataComposite<>(TITLE, leafs, new ArrayList<>(), hostExtractor);
   }
 
-  public static class Location {
+  public static class Location implements Serializable {
     protected Float x;
     protected Double y;
     protected Integer z;

@@ -1,7 +1,5 @@
 package net.whitehorizont.apps.collection_manager.organisation.commands;
 
-import java.util.Optional;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import io.reactivex.rxjava3.core.Observable;
@@ -11,17 +9,16 @@ import net.whitehorizont.apps.collection_manager.core.dependencies.IProvideColle
 
 @NonNullByDefault
 public class RemoveCommand implements ICommand<Long, IProvideCollectionReceiver<? extends IOrganisationCollectionCommandReceiver>> {
-  private final Optional<UUID_ElementId> id;
+  private final UUID_ElementId id;
 
-  @SuppressWarnings("null")
   public RemoveCommand(UUID_ElementId id) {
-    this.id = Optional.of(id);
+    this.id = id;
   }
 
   @Override
   public Observable<Long> execute(
       IProvideCollectionReceiver<? extends IOrganisationCollectionCommandReceiver> dependencyProvider) {
-    dependencyProvider.getCollectionReceiver().removeById(id.get());
+    dependencyProvider.getCollectionReceiver().removeById(id);
     return Observable.empty();
   }
   
