@@ -56,6 +56,11 @@
       <artifactId>file_system</artifactId>
       <version>1.0-SNAPSHOT</version>
     </dependency>
+    <dependency>
+      <groupId>net.whitehorizont.libs</groupId>
+      <artifactId>network</artifactId>
+      <version>1.0-SNAPSHOT</version>
+    </dependency>
   </dependencies>
 
   <build>
@@ -99,7 +104,7 @@
           </descriptorRefs>
           <archive>
             <manifest>
-              <mainClass>net.whitehorizont.apps.organization_collection_manager.core.App</mainClass>
+              <mainClass>net.whitehorizont.apps.collection_manager.core.Server</mainClass>
             </manifest>
           </archive>
         </configuration>

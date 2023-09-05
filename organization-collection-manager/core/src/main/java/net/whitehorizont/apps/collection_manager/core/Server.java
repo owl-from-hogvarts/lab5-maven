@@ -1,5 +1,6 @@
 package net.whitehorizont.apps.collection_manager.core;
 
+import java.net.InetSocketAddress;
 import java.util.ArrayList;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -9,7 +10,6 @@ import net.whitehorizont.apps.collection_manager.core.collection.interfaces.ICol
 import net.whitehorizont.apps.collection_manager.core.commands.CollectionManagerReceiver;
 import net.whitehorizont.apps.collection_manager.core.commands.CommandQueue;
 import net.whitehorizont.apps.collection_manager.core.commands.OrganisationCollectionCommandReceiver;
-import net.whitehorizont.apps.collection_manager.core.commands.interfaces.ICommandQueue;
 import net.whitehorizont.apps.collection_manager.core.commands.SaveCommand;
 import net.whitehorizont.apps.collection_manager.core.dependencies.CoreDependencyManager;
 import net.whitehorizont.apps.collection_manager.core.storage.FileStorage;
@@ -19,14 +19,16 @@ import net.whitehorizont.apps.collection_manager.organisation.definitions.Organi
 import net.whitehorizont.apps.collection_manager.organisation.definitions.OrganisationElementDefinition.OrganisationElementFull;
 import net.whitehorizont.apps.organization_collection_manager.lib.ICanRichValidate;
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationError;
+import net.whitehorizont.libs.network.past.Past;
+import net.whitehorizont.libs.network.transport.udp.datagram_channel.DatagramChannelAdapter;
 
 @NonNullByDefault
 public class Server {
   public static void main(String[] args) throws StorageInaccessibleError {
-
+    startServer().start();
   }
 
-  public static ICommandQueue startServer() throws StorageInaccessibleError {
+  public static CommandQueue<CoreDependencyManager<OrganisationCollectionCommandReceiver, OrganisationElementFull>, InetSocketAddress> startServer() throws StorageInaccessibleError {
     final var testStorage = setupStorage(getStoragePath());
     final var collectionManager = new CollectionManager<>(testStorage);
     final var collectionManagerReceiver = new CollectionManagerReceiver<>(collectionManager);
@@ -35,7 +37,7 @@ public class Server {
     final var collectionCommandReceiver = new OrganisationCollectionCommandReceiver(collection);
 
     final var dependencyManager = new CoreDependencyManager<>(collectionCommandReceiver, collectionManagerReceiver);
-    final CommandQueue<CoreDependencyManager<OrganisationCollectionCommandReceiver, OrganisationElementFull>> commandQueue = new CommandQueue<>(dependencyManager);
+    final CommandQueue<CoreDependencyManager<OrganisationCollectionCommandReceiver, OrganisationElementFull>, InetSocketAddress> commandQueue = new CommandQueue<>(dependencyManager, new Past<>(new DatagramChannelAdapter(new InetSocketAddress("localhost", 55555))));
 
     Runtime.getRuntime().addShutdownHook(new Thread(() -> {
       commandQueue.pushServer(new SaveCommand()).blockingSubscribe();
