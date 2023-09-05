@@ -7,10 +7,10 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
-import java.net.SocketException;
 import java.util.Arrays;
 
 public class DatagramSocketAdapter implements ITransport<InetSocketAddress> {
+    private static final short MTU = 1400;
     private DatagramSocket datagramSocket;
 
     public DatagramSocketAdapter(DatagramSocket datagramSocket) {
@@ -18,8 +18,8 @@ public class DatagramSocketAdapter implements ITransport<InetSocketAddress> {
     }
 
     @Override
-    public short getPacketLengthLimit() throws SocketException {
-        return (short) datagramSocket.getSendBufferSize();
+    public short getPacketLengthLimit() {
+        return MTU;
     }
 
     @Override
