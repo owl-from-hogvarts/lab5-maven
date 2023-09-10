@@ -49,7 +49,7 @@ public class App
         final var commands = buildMainCommandSet();
         addSystemCommands(commands);
     
-        final var connectionToServer = new Past<>(new DatagramChannelAdapter(new InetSocketAddress("localhost", 44444))).connect(new InetSocketAddress("localhost", 55555));
+        final var connectionToServer = new Past<>(new DatagramChannelAdapter(new InetSocketAddress("localhost", 0))).connect(new InetSocketAddress("localhost", 55555));
         final ICommandQueue<IUniversalCoreProvider<? extends IOrganisationCollectionCommandReceiver, OrganisationElementFull>> commandQueue = new NetworkCommandQueue<>(connectionToServer);
 
         // other configuration 
