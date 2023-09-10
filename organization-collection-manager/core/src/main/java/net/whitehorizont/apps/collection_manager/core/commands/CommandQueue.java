@@ -24,7 +24,6 @@ public class CommandQueue<DependencyManager, Endpoint> implements ICommandQueue<
 
 
   public CommandQueue(DependencyManager dependencyManager, INetworkPackager<Endpoint> network) {
-    commands.subscribe(this::executeNext);
     this.dependencyManager = dependencyManager;
     this.network = network;
   }
@@ -35,13 +34,7 @@ public class CommandQueue<DependencyManager, Endpoint> implements ICommandQueue<
       return Observable.error(new PermissionError("server only command!"));
     }
 
-    final var execution$ = command.execute(dependencyManager).publish();
-    commands.onNext(execution$);
-    return execution$;
-  }
-
-  private void executeNext(ConnectableObservable<?> command) {
-    command.connect();
+    return command.execute(dependencyManager).publish().refCount();
   }
 
   /**
