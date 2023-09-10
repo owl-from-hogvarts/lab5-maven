@@ -1,10 +1,16 @@
 package net.whitehorizont.apps.collection_manager.cli;
 
 import java.net.InetSocketAddress;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+
+import com.google.common.net.HostAndPort;
 
 import net.whitehorizont.apps.collection_manager.cli.commands.Clear;
 import net.whitehorizont.apps.collection_manager.cli.commands.CountByType;
@@ -28,6 +34,7 @@ import net.whitehorizont.apps.collection_manager.core.dependencies.IUniversalCor
 import net.whitehorizont.apps.collection_manager.organisation.commands.IOrganisationCollectionCommandReceiver;
 import net.whitehorizont.apps.collection_manager.organisation.definitions.OrganisationElementDefinition;
 import net.whitehorizont.apps.collection_manager.organisation.definitions.OrganisationElementDefinition.OrganisationElementFull;
+import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationError;
 import net.whitehorizont.libs.network.past.Past;
 import net.whitehorizont.libs.network.transport.udp.datagram_channel.DatagramChannelAdapter;
 
@@ -38,6 +45,10 @@ import net.whitehorizont.libs.network.transport.udp.datagram_channel.DatagramCha
 @NonNullByDefault
 public class App 
 {
+    static final int DEFAULT_SERVER_PORT = 55555;
+    static final String DEFAULT_SERVER_HOST = "localhost";
+    static final String SERVER_ENDPOINT_ENV_VAR = "OCM_SERVER";
+
     static {
         Thread.setDefaultUncaughtExceptionHandler(CLI::defaultGlobalErrorHandler);
     }
@@ -48,8 +59,9 @@ public class App
 
         final var commands = buildMainCommandSet();
         addSystemCommands(commands);
-    
-        final var connectionToServer = new Past<>(new DatagramChannelAdapter(new InetSocketAddress("localhost", 0))).connect(new InetSocketAddress("localhost", 55555));
+
+        final InetSocketAddress serverEndpoint = selectServerEndpoint();
+        final var connectionToServer = new Past<>(new DatagramChannelAdapter(new InetSocketAddress("localhost", 0))).connect(serverEndpoint);
         final ICommandQueue<IUniversalCoreProvider<? extends IOrganisationCollectionCommandReceiver, OrganisationElementFull>> commandQueue = new NetworkCommandQueue<>(connectionToServer);
 
         // other configuration 
@@ -125,5 +137,29 @@ public class App
     public static void addSystemCommands(Map<String, ICliCommand<? super IUniversalCoreProvider<? extends IOrganisationCollectionCommandReceiver,OrganisationElementFull>>> commands) {
         commands.put(Exit.EXIT_COMMAND, new Exit());
         commands.put(Help.HELP_COMMAND, new Help());
+    }
+
+    static InetSocketAddress selectServerEndpoint() throws ValidationError {
+        String serverEndpointString = System.getenv(SERVER_ENDPOINT_ENV_VAR);
+        
+        if (serverEndpointString != null && serverEndpointString.length() > 0) {
+            try {
+                final HostAndPort serverUrl = HostAndPort.fromString(serverEndpointString);
+                if (serverUrl.getHost() == null) {
+                    throw new ValidationError("Host must be provided! Specify valid " + SERVER_ENDPOINT_ENV_VAR + " value");
+                }
+
+                final String host = serverUrl.getHost();
+                final int port = serverUrl.getPort();
+                return new InetSocketAddress(host, port);
+            } catch (IllegalArgumentException e) {
+                throw new ValidationError(e.getMessage());
+            } catch (IllegalStateException e) {
+                throw new ValidationError("Got unparsable input: " + serverEndpointString + "!\nPlease specify valid ipv4 or ipv6 host and port!");
+            }
+        }
+
+        return new InetSocketAddress(DEFAULT_SERVER_HOST, DEFAULT_SERVER_PORT);
+
     }
 }

@@ -12,8 +12,8 @@ import net.whitehorizont.apps.collection_manager.core.dependencies.IProvideNothi
 @NonNullByDefault
 public class Exit implements ICliCommand<IProvideNothing> {
   public static final String EXIT_COMMAND = "exit";
-  private static final String DESCRIPTION = "exit without saving";
-  private static final String EXIT_MESSAGE = "Exiting without saving!";
+  private static final String DESCRIPTION = "Exit the program";
+  private static final String EXIT_MESSAGE = "Exiting! All changes are saved by server";
 
   @Override
   public Optional<String> getArgumentName() {
