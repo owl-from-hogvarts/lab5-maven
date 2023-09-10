@@ -47,7 +47,7 @@ public class Test {
     private final Object clientEndpoint = new Object();
 
     @Override
-    public short getPacketLengthLimit() {
+    public short getSendPacketLengthLimit() {
       return MTU;
     }
 

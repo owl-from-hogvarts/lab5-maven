@@ -7,10 +7,13 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
-import java.util.Arrays;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
+@NonNullByDefault
 public class DatagramSocketAdapter implements ITransport<InetSocketAddress> {
     private static final short MTU = 1400;
+    private static final int MAX_PACKET_SIZE = 1<<16;
     private DatagramSocket datagramSocket;
 
     public DatagramSocketAdapter(DatagramSocket datagramSocket) {
@@ -18,7 +21,7 @@ public class DatagramSocketAdapter implements ITransport<InetSocketAddress> {
     }
 
     @Override
-    public short getPacketLengthLimit() {
+    public short getSendPacketLengthLimit() {
         return MTU;
     }
 
@@ -35,15 +38,13 @@ public class DatagramSocketAdapter implements ITransport<InetSocketAddress> {
     @Override
     public TransportPacket<InetSocketAddress> receive() {
         try {
-            byte[] buffer = new byte[getPacketLengthLimit()];
+            byte[] buffer = new byte[MAX_PACKET_SIZE];
             DatagramPacket datagramPacket = new DatagramPacket(buffer, buffer.length);
             datagramSocket.receive(datagramPacket);
             InetSocketAddress senderAddress = (InetSocketAddress) datagramPacket.getSocketAddress();
-            byte[] data = Arrays.copyOf(datagramPacket.getData(), datagramPacket.getLength());
-            return new TransportPacket<>(senderAddress, data);
+            return new TransportPacket<InetSocketAddress>(senderAddress, buffer);
         } catch (IOException e) {
-            e.printStackTrace();
-            return null;
+            throw new RuntimeException();
         }
     }
 }

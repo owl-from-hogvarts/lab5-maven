@@ -15,6 +15,7 @@ import net.whitehorizont.libs.network.past.TransportPacket;
 @NonNullByDefault
 public class DatagramChannelAdapter implements ITransport<InetSocketAddress> {
    private static final short MTU = 1400;
+   private static final int MAX_PACKET_SIZE = 1<<16;
    
    private final DatagramChannel datagramChannel;
 
@@ -28,7 +29,7 @@ public class DatagramChannelAdapter implements ITransport<InetSocketAddress> {
    }
 
    @Override
-   public short getPacketLengthLimit() {
+   public short getSendPacketLengthLimit() {
       return MTU;
    }
 
@@ -45,10 +46,9 @@ public class DatagramChannelAdapter implements ITransport<InetSocketAddress> {
    @Override
    public TransportPacket<InetSocketAddress> receive() {
       try {
-         ByteBuffer buffer = ByteBuffer.allocate(getPacketLengthLimit());
+         ByteBuffer buffer = ByteBuffer.allocate(MAX_PACKET_SIZE);
          InetSocketAddress senderAddress = (InetSocketAddress) datagramChannel.receive(buffer);
-         byte[] data = Arrays.copyOf(buffer.array(), buffer.position());
-         return new TransportPacket<>(senderAddress, data);
+         return new TransportPacket<>(senderAddress, buffer.array());
       } catch (IOException e) {
          throw new RuntimeException();
       }

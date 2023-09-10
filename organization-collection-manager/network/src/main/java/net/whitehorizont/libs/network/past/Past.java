@@ -27,7 +27,7 @@ public class Past<Endpoint> implements INetworkPackager<Endpoint> {
 
   @Override
   public IConnection<Endpoint> connect(Endpoint endpoint) {
-    return this.connections.computeIfAbsent(endpoint, endpointLambda -> new Connection<>(transport.getPacketLengthLimit(), new EndpointTransport<Endpoint>(endpoint, transport, this)));
+    return this.connections.computeIfAbsent(endpoint, endpointLambda -> new Connection<>(transport.getSendPacketLengthLimit(), new EndpointTransport<Endpoint>(endpoint, transport, this)));
   }
 
 
@@ -60,7 +60,7 @@ public class Past<Endpoint> implements INetworkPackager<Endpoint> {
 
       final TransportPacket<Endpoint> transportPacket = transport.receive();
       
-      final var connection = connections.computeIfAbsent(transportPacket.source(), lambdaEndpoint -> new Connection<>(transport.getPacketLengthLimit(), new EndpointTransport<>(lambdaEndpoint, transport, this)));
+      final var connection = connections.computeIfAbsent(transportPacket.source(), lambdaEndpoint -> new Connection<>(transport.getSendPacketLengthLimit(), new EndpointTransport<>(lambdaEndpoint, transport, this)));
       if (connection.receive(transportPacket.payload())) {
         return connection;
       }
@@ -112,7 +112,7 @@ public class Past<Endpoint> implements INetworkPackager<Endpoint> {
     }
 
     short getPacketLengthLimit() {
-      return transport.getPacketLengthLimit();
+      return transport.getSendPacketLengthLimit();
     }
 
     IConnection<Endpoint> poll() {
