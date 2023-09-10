@@ -96,7 +96,7 @@ public class CliDependencyManager<DP> {
       this.commandLineReader = LineReaderBuilder.builder().terminal(defaultTerminal).build();
       this.genericLineReader = LineReaderBuilder.builder().terminal(defaultTerminal).build();
     } catch (IOException e) {
-      throw new TerminalUnavailable();
+      throw new TerminalUnavailable(e);
     }
   }
 

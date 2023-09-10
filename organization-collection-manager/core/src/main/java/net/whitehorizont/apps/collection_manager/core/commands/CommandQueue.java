@@ -30,19 +30,14 @@ public class CommandQueue<DependencyManager, Endpoint> implements ICommandQueue<
   }
 
   @Override
-  public <@NonNull T> Observable<T> push(ICommand<T, ? super DependencyManager> command) throws EPERM {
+  public <@NonNull T> Observable<T> push(ICommand<T, ? super DependencyManager> command) {
     if (command.isServerOnly()) {
-      throw new EPERM();
+      return Observable.error(new PermissionError("server only command!"));
     }
-    
-    return Observable.create((subscriber) -> {
 
-      final var execution$ = command.execute(dependencyManager).publish();
-      // this does not immediately start execution of observable
-      // to start actual execution call connect
-      execution$.subscribe(subscriber::onNext, subscriber::onError, subscriber::onComplete);
-      commands.onNext(execution$);
-    });
+    final var execution$ = command.execute(dependencyManager).publish();
+    commands.onNext(execution$);
+    return execution$;
   }
 
   private void executeNext(ConnectableObservable<?> command) {

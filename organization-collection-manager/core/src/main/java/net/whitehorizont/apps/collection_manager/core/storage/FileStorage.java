@@ -65,7 +65,7 @@ public class FileStorage<C extends ICollection<?>>
       fileChannel.truncate(fileContent.length);
       fileChannel.write(ByteBuffer.wrap(fileContent));
     } catch (IOException e) {
-      throw new StorageInaccessibleError();
+      throw new StorageInaccessibleError(e);
     }
   }
 
@@ -107,7 +107,7 @@ public class FileStorage<C extends ICollection<?>>
       channel.read(fileContent);
       return fileContent;
     } catch (IOException e) {
-      throw new StorageInaccessibleError();
+      throw new StorageInaccessibleError(e);
     }
 
   }
@@ -121,8 +121,7 @@ public class FileStorage<C extends ICollection<?>>
       try {
         PathHelpers.createParentDirectories(path);
       } catch (FileSystemException e) {
-        // TODO: pass error to clarify what went wrong
-        throw new StorageInaccessibleError();
+        throw new StorageInaccessibleError(e);
       }
     }
 
@@ -131,7 +130,7 @@ public class FileStorage<C extends ICollection<?>>
       final @NonNull SeekableByteChannel channel = Files.newByteChannel(path, FileStorage.DEFAULT_FILE_OPEN_OPTIONS);
       return channel;
     } catch (IOException e) {
-      throw new StorageInaccessibleError();
+      throw new StorageInaccessibleError(e);
     }
 
   }

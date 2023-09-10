@@ -4,9 +4,8 @@ public class TerminalUnavailable extends Exception {
 
   private static final String MESSAGE = "Terminal unavailable";
 
-  @Override
-  public String getMessage() {
-    return MESSAGE;
+  public TerminalUnavailable(Throwable cause) {
+    super(MESSAGE, cause);
   }
   
 }

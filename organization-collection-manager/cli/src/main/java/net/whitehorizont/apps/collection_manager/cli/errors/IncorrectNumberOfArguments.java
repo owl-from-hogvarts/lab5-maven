@@ -1,18 +1,11 @@
 package net.whitehorizont.apps.collection_manager.cli.errors;
 
 public class IncorrectNumberOfArguments extends Exception {
-  private final int expected;
-  private final int actual;
-  private final String command;
-
   public IncorrectNumberOfArguments(String command, int expected, int actual) {
-    this.command = command;
-    this.expected = expected;
-    this.actual = actual;
+    super(buildErrorMessage(command, expected, actual));
   }
 
-  @Override
-  public String getMessage() {
+  private static String buildErrorMessage(String command, int expected, int actual) {
     return "Incorrect number of arguments supplied for command \"" + command + "\". Expected " + expected + ". Got "
         + actual;
   }

@@ -102,7 +102,7 @@ public class OrganisationCollectionCommandReceiver extends CollectionCommandRece
     for (final var key : keysToDelete) {
       try {
         this.collection.delete(key);
-      } catch (Exception _ignore) {
+      } catch (NoSuchElement _ignore) {
         // should never happen
         assert false;
         throw new RuntimeException();
