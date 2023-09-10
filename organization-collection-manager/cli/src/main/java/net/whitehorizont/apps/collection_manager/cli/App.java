@@ -1,10 +1,7 @@
 package net.whitehorizont.apps.collection_manager.cli;
 
+import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -36,7 +33,7 @@ import net.whitehorizont.apps.collection_manager.organisation.definitions.Organi
 import net.whitehorizont.apps.collection_manager.organisation.definitions.OrganisationElementDefinition.OrganisationElementFull;
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationError;
 import net.whitehorizont.libs.network.past.Past;
-import net.whitehorizont.libs.network.transport.udp.datagram_channel.DatagramChannelAdapter;
+import net.whitehorizont.libs.network.transport.udp.DatagramSocketAdapter;
 
 /**
  * Hello world!
@@ -61,7 +58,8 @@ public class App
         addSystemCommands(commands);
 
         final InetSocketAddress serverEndpoint = selectServerEndpoint();
-        final var connectionToServer = new Past<>(new DatagramChannelAdapter(new InetSocketAddress("localhost", 0))).connect(serverEndpoint);
+        final var clientEndpoint = new DatagramSocket(new InetSocketAddress("localhost", 0));
+        final var connectionToServer = new Past<>(new DatagramSocketAdapter(clientEndpoint)).connect(serverEndpoint);
         final ICommandQueue<IUniversalCoreProvider<? extends IOrganisationCollectionCommandReceiver, OrganisationElementFull>> commandQueue = new NetworkCommandQueue<>(connectionToServer);
 
         // other configuration 

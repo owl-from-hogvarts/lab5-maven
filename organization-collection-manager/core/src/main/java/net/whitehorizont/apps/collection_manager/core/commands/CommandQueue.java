@@ -6,6 +6,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.observables.ConnectableObservable;
 import io.reactivex.rxjava3.subjects.PublishSubject;
 import io.reactivex.rxjava3.subjects.Subject;
@@ -14,6 +15,7 @@ import net.whitehorizont.apps.collection_manager.core.commands.interfaces.IComma
 import net.whitehorizont.libs.network.past.IConnection;
 import net.whitehorizont.libs.network.past.INetworkPackager;
 import net.whitehorizont.libs.network.serialize.SerializeManager;
+import net.whitehorizont.libs.result.Result;
 
 @NonNullByDefault
 public class CommandQueue<DependencyManager, Endpoint> implements ICommandQueue<DependencyManager> {
@@ -24,6 +26,7 @@ public class CommandQueue<DependencyManager, Endpoint> implements ICommandQueue<
 
 
   public CommandQueue(DependencyManager dependencyManager, INetworkPackager<Endpoint> network) {
+    this.commands.subscribe(this::executeNext);
     this.dependencyManager = dependencyManager;
     this.network = network;
   }
@@ -55,6 +58,10 @@ public class CommandQueue<DependencyManager, Endpoint> implements ICommandQueue<
     });
   }
 
+  private void executeNext(ConnectableObservable<?> command) {
+    command.connect();
+  }
+
   public Observable<Void> terminate() {
     // TODO: finish
     try {
@@ -84,7 +91,9 @@ public class CommandQueue<DependencyManager, Endpoint> implements ICommandQueue<
       final ICommand<T, DependencyManager> command = (ICommand<T, DependencyManager>) serializer.deserialize(payload);
       push(command)
         .toList()
-        .map(responseList -> serializer.serialize((ArrayList) responseList))
+        .map(responseList -> new Result<>((ArrayList) responseList))
+        .onErrorResumeNext(error -> Single.just(new Result<>(error)))
+        .map(result -> serializer.serialize(result))
         .subscribe(responseBytes -> connection.send(responseBytes), error -> error.printStackTrace());
   }
 }
