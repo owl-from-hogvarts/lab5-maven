@@ -11,6 +11,7 @@ import net.whitehorizont.apps.collection_manager.core.commands.interfaces.IComma
 import net.whitehorizont.apps.collection_manager.core.commands.interfaces.ICommandQueue;
 import net.whitehorizont.libs.network.past.IConnection;
 import net.whitehorizont.libs.network.serialize.SerializeManager;
+import net.whitehorizont.libs.network.serialize.UnparsableResponse;
 import net.whitehorizont.libs.result.Result;
 
 // DP is required only for type safety
@@ -61,8 +62,7 @@ public class NetworkCommandQueue<DP> implements ICommandQueue<DP> {
       
       return Observable.fromIterable(response.getResult());
     } catch (ClassNotFoundException e) {
-      assert false;
-      throw new RuntimeException();
+      return Observable.error(new UnparsableResponse(e));
     }
   }
 

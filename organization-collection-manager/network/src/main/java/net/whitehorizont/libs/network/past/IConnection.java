@@ -2,6 +2,9 @@ package net.whitehorizont.libs.network.past;
 
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
+@NonNullByDefault
 public interface IConnection<Endpoint> {
 
   // WHOLE PACKAGE AT ONCE

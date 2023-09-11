@@ -1,6 +1,5 @@
 package net.whitehorizont.apps.collection_manager.core.commands;
 
-
 import java.util.ArrayList;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -15,6 +14,7 @@ import net.whitehorizont.apps.collection_manager.core.commands.interfaces.IComma
 import net.whitehorizont.libs.network.past.IConnection;
 import net.whitehorizont.libs.network.past.INetworkPackager;
 import net.whitehorizont.libs.network.serialize.SerializeManager;
+import net.whitehorizont.libs.network.serialize.UnparsableResponse;
 import net.whitehorizont.libs.result.Result;
 
 @NonNullByDefault
@@ -23,7 +23,6 @@ public class CommandQueue<DependencyManager, Endpoint> implements ICommandQueue<
   private final Subject<ConnectableObservable<?>> commands = PublishSubject.create();
   private final DependencyManager dependencyManager;
   private final INetworkPackager<Endpoint> network;
-
 
   public CommandQueue(DependencyManager dependencyManager, INetworkPackager<Endpoint> network) {
     this.commands.subscribe(this::executeNext);
@@ -78,22 +77,31 @@ public class CommandQueue<DependencyManager, Endpoint> implements ICommandQueue<
       final var connection = network.poll();
       final var payloads = connection.getPayloads();
       for (final var payload : payloads) {
-        try {
-          executeCommand(payload, connection);
-        } catch (ClassNotFoundException e) {
-          throw new RuntimeException();
-        }
+        executeCommand(payload, connection);
       }
     }
   }
 
-  private <T> void executeCommand(byte[] payload, IConnection<?> connection) throws ClassNotFoundException {
-      final ICommand<T, DependencyManager> command = (ICommand<T, DependencyManager>) serializer.deserialize(payload);
+  private <T> void executeCommand(byte[] payload, IConnection<?> connection) {
+
+    try {
+      final @NonNull ICommand<@NonNull T, DependencyManager> command = (ICommand<T, DependencyManager>) serializer
+          .deserialize(payload);
+
       push(command)
-        .toList()
-        .map(responseList -> new Result<>((ArrayList) responseList))
-        .onErrorResumeNext(error -> Single.just(new Result<>(error)))
-        .map(result -> serializer.serialize(result))
-        .subscribe(responseBytes -> connection.send(responseBytes), error -> error.printStackTrace());
+          .toList()
+          .map(responseList -> new Result<>((ArrayList) responseList))
+          .onErrorResumeNext(error -> Single.just(new Result<>(error)))
+          .map(result -> serializer.serialize(result))
+          .subscribe(responseBytes -> connection.send(responseBytes), error -> error.printStackTrace());
+
+    } catch (ClassNotFoundException e) {
+      final var unparsable = new UnparsableResponse(e);
+      Observable.just(unparsable)
+          .map(err -> new Result<>(err))
+          .map(result -> serializer.serialize(result))
+          .subscribe(responseBytes -> connection.send(responseBytes), error -> error.printStackTrace());
+    }
+
   }
 }
