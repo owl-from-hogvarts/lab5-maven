@@ -55,18 +55,31 @@ public class Past<Endpoint> implements INetworkPackager<Endpoint> {
     // we will utilize futures, or even observables to handle
     // multithreading.
     // Until that, callback should not last long, or datagram loss will happen
-    
+    long time = System.currentTimeMillis();
     while (true) {
+      try {
+        final TransportPacket<Endpoint> transportPacket = transport.receive();
+        final var connection = connections.computeIfAbsent(transportPacket.source(), lambdaEndpoint -> new Connection<>(transport.getSendPacketLengthLimit(), new EndpointTransport<>(lambdaEndpoint, transport, this)));
+        if (connection.receive(transportPacket.payload())) {
+          return connection;
+        }
+      } catch (IndexOutOfBoundsException exception) {
+        try {
+          Thread.sleep(100);
+        } catch (InterruptedException e) {
+          throw new RuntimeException(e);
+        }
 
-      final TransportPacket<Endpoint> transportPacket = transport.receive();
-      
-      final var connection = connections.computeIfAbsent(transportPacket.source(), lambdaEndpoint -> new Connection<>(transport.getSendPacketLengthLimit(), new EndpointTransport<>(lambdaEndpoint, transport, this)));
-      if (connection.receive(transportPacket.payload())) {
-        return connection;
+        if (System.currentTimeMillis() - time > 3000) {
+          throw new RuntimeException("Что-то пошло не так. Возможно сервер временно недоступен или данные при передачи были утеряны.");
+        }
       }
 
+
+      
+
+
       // explicitly
-      continue;
     }
 
     // --------------- USER SIDE ---------------

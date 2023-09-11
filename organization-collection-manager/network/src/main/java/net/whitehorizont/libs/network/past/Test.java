@@ -24,12 +24,12 @@ public class Test {
               + //
               "\n" + //
               "";
-    
+
     final var encoded = sent.getBytes();
-    
+
     final var packager = new Past<Object>(new MockTransport());
     final var sendConnection = packager.connect(new Object());
-    sendConnection.send(encoded);
+    //sendConnection.send(encoded);
     final var connection = packager.poll();
     final var payloads = connection.getPayloads();
 
