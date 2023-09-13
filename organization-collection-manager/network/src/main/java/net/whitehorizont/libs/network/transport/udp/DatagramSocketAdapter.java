@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
+import java.net.SocketException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -19,6 +20,14 @@ public class DatagramSocketAdapter implements ITransport<InetSocketAddress> {
     public DatagramSocketAdapter(DatagramSocket datagramSocket) {
         this.datagramSocket = datagramSocket;
     }
+    public void setTimeout(int timeout) {
+        try {
+            datagramSocket.setSoTimeout(timeout);
+        } catch (SocketException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     @Override
     public short getSendPacketLengthLimit() {
