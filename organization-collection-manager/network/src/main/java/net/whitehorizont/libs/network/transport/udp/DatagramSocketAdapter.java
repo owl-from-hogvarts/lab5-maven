@@ -4,10 +4,7 @@ import net.whitehorizont.libs.network.past.ITransport;
 import net.whitehorizont.libs.network.past.TransportPacket;
 
 import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetSocketAddress;
-import java.net.SocketException;
+import java.net.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -39,19 +36,22 @@ public class DatagramSocketAdapter implements ITransport<InetSocketAddress> {
         try {
             DatagramPacket datagramPacket = new DatagramPacket(packet, packet.length, endpoint);
             datagramSocket.send(datagramPacket);
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     @Override
-    public TransportPacket<InetSocketAddress> receive() {
+    public TransportPacket<InetSocketAddress> receive() throws ServerTimeoutException {
         try {
             byte[] buffer = new byte[MAX_PACKET_SIZE];
             DatagramPacket datagramPacket = new DatagramPacket(buffer, buffer.length);
             datagramSocket.receive(datagramPacket);
             InetSocketAddress senderAddress = (InetSocketAddress) datagramPacket.getSocketAddress();
             return new TransportPacket<InetSocketAddress>(senderAddress, buffer);
+        } catch (SocketTimeoutException e) {
+            throw new ServerTimeoutException("Receive operation timed out");
         } catch (IOException e) {
             throw new RuntimeException();
         }

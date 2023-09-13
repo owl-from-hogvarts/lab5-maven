@@ -3,6 +3,7 @@ package net.whitehorizont.libs.network.past;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.whitehorizont.libs.network.transport.udp.ServerTimeoutException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 // The goal is to manage connections
@@ -73,10 +74,9 @@ public class Past<Endpoint> implements INetworkPackager<Endpoint> {
         if (System.currentTimeMillis() - time > 3000) {
           throw new RuntimeException("Что-то пошло не так. Возможно сервер временно недоступен или данные при передачи были утеряны.");
         }
+      } catch (ServerTimeoutException e) {
+        throw new RuntimeException(e);
       }
-
-
-      
 
 
       // explicitly
