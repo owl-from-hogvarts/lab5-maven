@@ -43,7 +43,7 @@ import net.whitehorizont.libs.network.transport.udp.DatagramSocketAdapter;
 @NonNullByDefault
 public class App 
 {
-    static final int DEFAULT_SERVER_PORT = 55555;
+    static final int DEFAULT_SERVER_PORT = 57461;
     static final String DEFAULT_SERVER_HOST = "localhost";
     static final String SERVER_ENDPOINT_ENV_VAR = "OCM_SERVER";
     static final GlobalErrorHandler globalErrorHandler = new GlobalErrorHandler();
@@ -60,7 +60,7 @@ public class App
         addSystemCommands(commands);
 
         final InetSocketAddress serverEndpoint = selectServerEndpoint();
-        final var clientEndpoint = new DatagramSocket(new InetSocketAddress("localhost", 0));
+        final var clientEndpoint = new DatagramSocket(new InetSocketAddress(0));
         final var connectionToServer = new Past<>(new DatagramSocketAdapter(clientEndpoint)).connect(serverEndpoint);
         final ICommandQueue<IUniversalCoreProvider<? extends IOrganisationCollectionCommandReceiver, OrganisationElementFull>> commandQueue = new NetworkCommandQueue<>(connectionToServer);
 

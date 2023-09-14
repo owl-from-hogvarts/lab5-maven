@@ -36,9 +36,8 @@ public class DatagramSocketAdapter implements ITransport<InetSocketAddress> {
         try {
             DatagramPacket datagramPacket = new DatagramPacket(packet, packet.length, endpoint);
             datagramSocket.send(datagramPacket);
-        }
-        catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 

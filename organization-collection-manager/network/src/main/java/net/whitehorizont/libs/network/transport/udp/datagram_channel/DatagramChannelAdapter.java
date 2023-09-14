@@ -39,7 +39,7 @@ public class DatagramChannelAdapter implements ITransport<InetSocketAddress> {
          ByteBuffer buffer = ByteBuffer.wrap(packet);
          datagramChannel.send(buffer, endpoint);
       } catch (IOException e) {
-         e.printStackTrace();
+         throw new RuntimeException(e);
       }
    }
 

@@ -37,7 +37,7 @@ public class Server {
     final var collectionCommandReceiver = new OrganisationCollectionCommandReceiver(collection);
 
     final var dependencyManager = new CoreDependencyManager<>(collectionCommandReceiver, collectionManagerReceiver);
-    final CommandQueue<CoreDependencyManager<OrganisationCollectionCommandReceiver, OrganisationElementFull>, InetSocketAddress> commandQueue = new CommandQueue<>(dependencyManager, new Past<>(new DatagramChannelAdapter(new InetSocketAddress("localhost", 55555))));
+    final CommandQueue<CoreDependencyManager<OrganisationCollectionCommandReceiver, OrganisationElementFull>, InetSocketAddress> commandQueue = new CommandQueue<>(dependencyManager, new Past<>(new DatagramChannelAdapter(new InetSocketAddress(57461))));
 
     Runtime.getRuntime().addShutdownHook(new Thread(() -> {
       commandQueue.pushServer(new SaveCommand()).blockingSubscribe();
