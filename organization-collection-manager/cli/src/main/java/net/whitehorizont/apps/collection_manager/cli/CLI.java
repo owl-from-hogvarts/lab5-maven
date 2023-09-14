@@ -21,6 +21,7 @@ import net.whitehorizont.apps.collection_manager.cli.errors.IGlobalErrorHandler;
 import net.whitehorizont.apps.collection_manager.cli.errors.IInterruptHandler;
 import net.whitehorizont.apps.collection_manager.cli.errors.IncorrectNumberOfArguments;
 import net.whitehorizont.apps.collection_manager.cli.errors.UnknownCommand;
+import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationError;
 
 @NonNullByDefault
 public class CLI<DP> {
@@ -36,9 +37,8 @@ public class CLI<DP> {
     return b ? 1 : 0;
   }
 
-  public void start() {
+  public void start() {    
     while (true) {
-      // I apologize for thar shit :)
       try {
         try {
           promptCommand().blockingSubscribe();
@@ -47,6 +47,7 @@ public class CLI<DP> {
           break;
         }
       } catch (Throwable e) {
+        // errors from blocking subscribe are wrapped into runtime exception
         if (e instanceof RuntimeException && e.getCause() != null) {
           e = e.getCause();
         }
@@ -101,44 +102,6 @@ public class CLI<DP> {
       }
 
       return commandDescriptor.run(this.dependencyManager, wordsStack);
-  }
-
-  public static void defaultGlobalErrorHandler(Thread thread, Throwable e) {
-    defaultGlobalErrorHandler(e, System.err);
-  }
-
-  private static boolean isErrorMessageEmpty(@Nullable Throwable error) {
-    return error == null || error.getMessage() == null || error.getMessage().length() < 1;
-  }
-
-  private static void printErrorMessage(PrintStream stream, Throwable error) {
-    stream.println("Unknown error: " + error.getMessage());
-  }
-
-  private static boolean defaultGlobalErrorHandler(Throwable e, PrintStream err) {
-    if (e instanceof RuntimeException) {
-      final @Nullable Throwable cause = e.getCause();
-      if (isErrorMessageEmpty(cause)) {
-        if (isErrorMessageEmpty(e)) {
-          err.println("Error: Unknown error ocurred! Please, file new issue on https://github.com/owl-from-hogvarts/lab5-maven");
-          // ? if something unknown happened, may be better crash?
-          return false;
-        }
-
-        printErrorMessage(err, e);
-        return false;
-      }
-
-      printErrorMessage(err, cause);
-      return false;
-    }
-    err.println("Error: " + e.getMessage());
-    return false;
-  }
-
-  public static boolean defaultGlobalErrorHandler(Throwable e, CliDependencyManager<?> dependencyManager) {
-    final var err = dependencyManager.getStreams().err;
-    return defaultGlobalErrorHandler(e, err);
   }
 
   public OutputStream getErrorStream() {

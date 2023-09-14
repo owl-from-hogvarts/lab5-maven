@@ -25,6 +25,7 @@ import net.whitehorizont.apps.collection_manager.cli.commands.RemoveGreater;
 import net.whitehorizont.apps.collection_manager.cli.commands.RemoveLower;
 import net.whitehorizont.apps.collection_manager.cli.commands.Show;
 import net.whitehorizont.apps.collection_manager.cli.commands.Update;
+import net.whitehorizont.apps.collection_manager.cli.errors.GlobalErrorHandler;
 import net.whitehorizont.apps.collection_manager.core.collection.CollectionMetadataDefinition;
 import net.whitehorizont.apps.collection_manager.core.commands.interfaces.ICommandQueue;
 import net.whitehorizont.apps.collection_manager.core.dependencies.IUniversalCoreProvider;
@@ -45,9 +46,10 @@ public class App
     static final int DEFAULT_SERVER_PORT = 55555;
     static final String DEFAULT_SERVER_HOST = "localhost";
     static final String SERVER_ENDPOINT_ENV_VAR = "OCM_SERVER";
+    static final GlobalErrorHandler globalErrorHandler = new GlobalErrorHandler();
 
     static {
-        Thread.setDefaultUncaughtExceptionHandler(CLI::defaultGlobalErrorHandler);
+        Thread.setDefaultUncaughtExceptionHandler(GlobalErrorHandler::defaultGlobalErrorHandler);
     }
 
     public static void main( String[] args ) throws Throwable
@@ -66,7 +68,7 @@ public class App
         final var streams = new Streams(System.in, System.out, System.err);
         final var dependencyManagerBuilder = new CliDependencyManager.Builder<IUniversalCoreProvider<? extends IOrganisationCollectionCommandReceiver, OrganisationElementFull>>()
             .setStreams(streams)
-            .setGlobalErrorHandler(CLI::defaultGlobalErrorHandler)
+            .setGlobalErrorHandler(globalErrorHandler)
             .setCommands(commands)
             .setCommandQueue(commandQueue);
         final var dependencyManager = new CliDependencyManager<>(dependencyManagerBuilder);

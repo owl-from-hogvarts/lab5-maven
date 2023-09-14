@@ -1,5 +1,8 @@
 package net.whitehorizont.libs.file_system;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
+@NonNullByDefault
 public class StringHelper {
   public static final String padBoth(String string, int targetLength, String padString) {
     // compute amount of remaining symbols

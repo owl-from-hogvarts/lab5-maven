@@ -22,7 +22,8 @@ public class EnumFactory<E extends Enum<E>> implements IFromStringBuilder<E> {
     try {
       return Enum.valueOf(enumClass, upperCaseString);
     } catch (IllegalArgumentException e) {
-      throw new ValidationError(buildErrorMessage(string), e);
+      // do not provide cause. Error message is already self explanatory
+      throw new ValidationError(buildErrorMessage(string));
     }
   }
 
