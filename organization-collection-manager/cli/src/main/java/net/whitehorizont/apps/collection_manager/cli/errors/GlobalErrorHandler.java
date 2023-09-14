@@ -1,6 +1,8 @@
 package net.whitehorizont.apps.collection_manager.cli.errors;
 
 import java.io.PrintStream;
+import java.util.Collection;
+import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -20,10 +22,14 @@ public class GlobalErrorHandler implements IGlobalErrorHandler {
   private static final String NEW_LINE_SEPARATOR = "\n";
 
   private static int computePaddedStringLength(int nestLevel, String string) {
-    final int paddingSize = nestLevel * PADDING_MULTIPLIER;
+    final int paddingSize = computePadding(nestLevel);
     final int paddedStringLength = paddingSize + string.length();
 
     return paddedStringLength;
+  }
+
+  private static int computePadding(int nestLevel) {
+    return nestLevel * PADDING_MULTIPLIER;
   }
 
   public static void defaultGlobalErrorHandler(Thread thread, Throwable e) {
@@ -69,20 +75,15 @@ public class GlobalErrorHandler implements IGlobalErrorHandler {
       // split into lines
       // to first line add nest padding and error prefix
       // to all next lines add nest padding and error prefix length
+      // pad prefix string instead of message string
 
-      final int nestLevelLoop = nestLevel;
-      final var firstLineStream = message.lines()
-          .findFirst()
-          .map(firstLine -> messagePrefix + firstLine)
-          .map(firstLine -> StringHelper.padStart(firstLine, computePaddedStringLength(nestLevelLoop, firstLine),
-              PADDING_SYMBOL))
-          .get();
-      final var remainingLines = message.lines()
-          .skip(1)
-          .map(line -> StringHelper.padStart(line,
-              computePaddedStringLength(nestLevelLoop, line) + messagePrefix.length(), PADDING_SYMBOL));
+      // first line is special case
+      final int targetPadding = computePaddedStringLength(nestLevel, messagePrefix);
+      final String firstLine = StringHelper.padStart(messagePrefix, targetPadding, PADDING_SYMBOL) + message.lines().findFirst().get();
+      final String padding = StringHelper.padStart("", targetPadding, PADDING_SYMBOL);
+      final var lines = message.lines().skip(1).map(line -> padding + line).toList();
 
-      final String messagePadded = firstLineStream + remainingLines.reduce("", (a, b) -> a + NEW_LINE_SEPARATOR + b);
+      final String messagePadded = firstLine + NEW_LINE_SEPARATOR + String.join(NEW_LINE_SEPARATOR, lines);
       printErrorMessage(err, messagePadded);
 
       e = e.getCause();
