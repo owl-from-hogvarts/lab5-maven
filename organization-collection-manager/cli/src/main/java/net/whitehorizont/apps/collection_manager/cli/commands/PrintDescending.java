@@ -32,16 +32,14 @@ public class PrintDescending extends BaseElementCommand<OrganisationElementFull>
   }
 
   @Override
-  public Observable<Void> run(CliDependencyManager<? extends IProvideCollectionReceiver<? extends IOrganisationCollectionCommandReceiver>> dependencyManager,
+  public Observable<?> run(CliDependencyManager<? extends IProvideCollectionReceiver<? extends IOrganisationCollectionCommandReceiver>> dependencyManager,
       Stack<String> arguments) throws Exception {
         final var command = new GetDescendingCommand();
         final var out = dependencyManager.getStreams().out;
-        dependencyManager.getCommandQueue().push(command).blockingSubscribe(keyElement -> {
+        return dependencyManager.getCommandQueue().push(command).doOnNext(keyElement -> {
           final var element = keyElement.getValue1();
           printFields(element, keyElement.getValue0(), out);
         });
-
-        return Observable.empty();
       }
   
 }

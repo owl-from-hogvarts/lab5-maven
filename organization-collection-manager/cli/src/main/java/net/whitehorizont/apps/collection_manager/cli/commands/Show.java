@@ -33,13 +33,13 @@ public class Show<Host extends ICollectionElement<Host>> extends BaseElementComm
   }
 
   @Override
-  public Observable<Void> run(
+  public Observable<?> run(
       CliDependencyManager<? extends IProvideCollectionReceiver<? extends ICollectionCommandReceiver<Host>>> dependencyManager,
       Stack<String> arguments) throws Exception {
 
       final var show = new ShowCommand<ICollectionCommandReceiver<Host>, Host>();
       final var out = dependencyManager.getStreams().out;
-      return (Observable) dependencyManager.getCommandQueue().push(show).doOnNext(keyElement -> {
+      return dependencyManager.getCommandQueue().push(show).doOnNext(keyElement -> {
         final var element = keyElement.getValue1();
         printFields(element, keyElement.getValue0(), out);
       });

@@ -2,14 +2,12 @@ package net.whitehorizont.apps.collection_manager.cli;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.jline.reader.EndOfFileException;
 import org.jline.reader.LineReader;
 import org.jline.reader.UserInterruptException;
@@ -21,7 +19,6 @@ import net.whitehorizont.apps.collection_manager.cli.errors.IGlobalErrorHandler;
 import net.whitehorizont.apps.collection_manager.cli.errors.IInterruptHandler;
 import net.whitehorizont.apps.collection_manager.cli.errors.IncorrectNumberOfArguments;
 import net.whitehorizont.apps.collection_manager.cli.errors.UnknownCommand;
-import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationError;
 
 @NonNullByDefault
 public class CLI<DP> {
@@ -37,11 +34,12 @@ public class CLI<DP> {
     return b ? 1 : 0;
   }
 
-  public void start() {    
+  public void start() {
     while (true) {
       try {
         try {
           promptCommand().blockingSubscribe();
+          // throw new RuntimeException(new ValidationError("long\nexplanation"));
         } catch (UserInterruptException | EndOfFileException e) {
           this.interruptHandler.handle().blockingSubscribe();
           break;
@@ -52,7 +50,7 @@ public class CLI<DP> {
           e = e.getCause();
         }
         if (globalErrorHandler.handle(e, dependencyManager)) {
-          break;
+        break;
         }
       }
     }
@@ -72,7 +70,7 @@ public class CLI<DP> {
     this.commands = dependencyManager.getCommands();
   }
 
-  public Observable<Void> promptCommand()
+  public Observable<?> promptCommand()
       throws Exception {
       final String userInput = reader.readLine(DEFAULT_PROMPT).trim().strip();
 
@@ -108,7 +106,7 @@ public class CLI<DP> {
     return reader.getTerminal().output();
   }
 
-  private Observable<Void> onInterop() throws Exception {
+  private Observable<?> onInterop() throws Exception {
     final var exitDescriptor = this.commands.get(Exit.EXIT_COMMAND);
     assert exitDescriptor != null;
 

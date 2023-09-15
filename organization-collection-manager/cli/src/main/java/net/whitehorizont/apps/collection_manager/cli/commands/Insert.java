@@ -36,7 +36,6 @@ public class Insert
       throws StorageInaccessibleError, ValidationError {
     final var key = arguments.pop();
 
-    try {
       final var lineReader = dependencyManager.getGenericLineReader();
       final Streams streams = prepareStreams(dependencyManager);
 
@@ -46,10 +45,6 @@ public class Insert
       final var insertCommand = new InsertOrganisationCommand(key, host);
 
       return dependencyManager.getCommandQueue().push(insertCommand);
-    } catch (ValidationError e) {
-
-      return Observable.error(e);
-    }
   }
 
   @Override

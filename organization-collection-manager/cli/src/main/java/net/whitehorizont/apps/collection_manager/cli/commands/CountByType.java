@@ -31,15 +31,13 @@ public class CountByType implements ICliCommand<IProvideCollectionReceiver<? ext
   }
 
   @Override
-  public Observable<Void> run(CliDependencyManager<? extends IProvideCollectionReceiver<? extends IOrganisationCollectionCommandReceiver>> dependencyManager, Stack<String> arguments) throws Exception {
+  public Observable<Long> run(CliDependencyManager<? extends IProvideCollectionReceiver<? extends IOrganisationCollectionCommandReceiver>> dependencyManager, Stack<String> arguments) throws Exception {
     final var type = enumFactory.buildFromString(arguments.pop().trim().strip()); 
     final var out = dependencyManager.getStreams().out;
     final ICommand<Long, IProvideCollectionReceiver<? extends IOrganisationCollectionCommandReceiver>> countCommand = new CountCommand(type);
     final ICommandQueue<? extends IProvideCollectionReceiver<? extends IOrganisationCollectionCommandReceiver>> queue = dependencyManager.getCommandQueue();
-    queue.push(countCommand).blockingSubscribe(result -> {
+    return queue.push(countCommand).doOnNext(result -> {
       out.println("Collection contains " + result.toString() + " elements with type " + type.toString());
     });
-
-    return Observable.empty();
   }
 }

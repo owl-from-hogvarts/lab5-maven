@@ -23,5 +23,5 @@ public interface ICliCommand<DP> {
    * @return
    * @throws Exception if command can't handle something, let's just fail and pass error to global error handler
    */
-  Observable<Void> run(CliDependencyManager<? extends DP> dependencyManager, Stack<String> arguments) throws Exception;
+  Observable<?> run(CliDependencyManager<? extends DP> dependencyManager, Stack<String> arguments) throws Exception;
 }

@@ -27,15 +27,14 @@ public class RemoveById implements ICliCommand<IProvideCollectionReceiver<? exte
   }
 
   @Override
-  public Observable<Void> run(CliDependencyManager<? extends IProvideCollectionReceiver<? extends IOrganisationCollectionCommandReceiver>> dependencyManager,
+  public Observable<?> run(CliDependencyManager<? extends IProvideCollectionReceiver<? extends IOrganisationCollectionCommandReceiver>> dependencyManager,
       Stack<String> arguments) throws Exception {        
         final String idString = arguments.pop().trim().strip();
         // DONE: get rid of UUID cast
         final var id = OrganisationElementDefinition.ID_METADATA.getValueBuilder().get().buildFromString(idString);
 
         final var removeCommand = new RemoveCommand(id);
-        dependencyManager.getCommandQueue().push(removeCommand).blockingSubscribe();
-        return Observable.empty();
+        return dependencyManager.getCommandQueue().push(removeCommand);
       }
   
 }

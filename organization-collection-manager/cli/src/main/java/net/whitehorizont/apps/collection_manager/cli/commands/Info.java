@@ -31,12 +31,11 @@ public class Info extends BaseElementCommand<CollectionMetadataComputed> impleme
   }
 
   @Override
-  public Observable<Void> run(CliDependencyManager<? extends IProvideCollectionReceiver<?>> dependencyManager,
+  public Observable<?> run(CliDependencyManager<? extends IProvideCollectionReceiver<?>> dependencyManager,
       Stack<String> arguments) throws Exception {
-        dependencyManager.getCommandQueue().push(new InfoCommand()).blockingSubscribe(collectionMetadata -> {
+        return dependencyManager.getCommandQueue().push(new InfoCommand()).doOnNext(collectionMetadata -> {
           printFields(collectionMetadata, dependencyManager.getStreams().out);
         });
-        return Observable.empty();
       }
 
 }

@@ -7,5 +7,5 @@ import io.reactivex.rxjava3.core.Observable;
 @NonNullByDefault
 @FunctionalInterface
 public interface IInterruptHandler {
-  Observable<Void> handle() throws Exception;
+  Observable<?> handle() throws Exception;
 }
