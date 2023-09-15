@@ -3,7 +3,7 @@ package net.whitehorizont.libs.network.past;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.whitehorizont.libs.network.transport.udp.ServerTimeoutException;
+import net.whitehorizont.libs.network.transport.udp.ReceiveTimeoutException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 // The goal is to manage connections
@@ -52,30 +52,15 @@ public class Past<Endpoint> implements INetworkPackager<Endpoint> {
   // restriction on data length: no more than 2GiB
 
   @Override
-  public IConnection<Endpoint> poll() {
+  public IConnection<Endpoint> poll() throws ReceiveTimeoutException {
     // we will utilize futures, or even observables to handle
     // multithreading.
     // Until that, callback should not last long, or datagram loss will happen
-    long time = System.currentTimeMillis();
     while (true) {
-      try {
-        final TransportPacket<Endpoint> transportPacket = transport.receive();
-        final var connection = connections.computeIfAbsent(transportPacket.source(), lambdaEndpoint -> new Connection<>(transport.getSendPacketLengthLimit(), new EndpointTransport<>(lambdaEndpoint, transport, this)));
-        if (connection.receive(transportPacket.payload())) {
-          return connection;
-        }
-      } catch (IndexOutOfBoundsException exception) {
-        try {
-          Thread.sleep(100);
-        } catch (InterruptedException e) {
-          throw new RuntimeException(e);
-        }
-
-        if (System.currentTimeMillis() - time > 3000) {
-          throw new RuntimeException("Что-то пошло не так. Возможно сервер временно недоступен или данные при передачи были утеряны.");
-        }
-      } catch (ServerTimeoutException e) {
-        throw new RuntimeException(e);
+      final TransportPacket<Endpoint> transportPacket = transport.receive();
+      final var connection = connections.computeIfAbsent(transportPacket.source(), lambdaEndpoint -> new Connection<>(transport.getSendPacketLengthLimit(), new EndpointTransport<>(lambdaEndpoint, transport, this)));
+      if (connection.receive(transportPacket.payload())) {
+        return connection;
       }
 
 
@@ -128,7 +113,7 @@ public class Past<Endpoint> implements INetworkPackager<Endpoint> {
       return transport.getSendPacketLengthLimit();
     }
 
-    IConnection<Endpoint> poll() {
+    IConnection<Endpoint> poll() throws ReceiveTimeoutException {
       return connectionManager.poll();
     }
   }

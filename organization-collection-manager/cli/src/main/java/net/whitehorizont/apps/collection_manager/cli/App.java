@@ -47,6 +47,7 @@ public class App
     static final String DEFAULT_SERVER_HOST = "localhost";
     static final String SERVER_ENDPOINT_ENV_VAR = "OCM_SERVER";
     static final GlobalErrorHandler globalErrorHandler = new GlobalErrorHandler();
+    static final long RECEIVE_TIMEOUT_MS = 7000;
 
     static {
         Thread.setDefaultUncaughtExceptionHandler(GlobalErrorHandler::defaultGlobalErrorHandler);
@@ -61,7 +62,9 @@ public class App
 
         final InetSocketAddress serverEndpoint = selectServerEndpoint();
         final var clientEndpoint = new DatagramSocket(new InetSocketAddress(0));
-        final var connectionToServer = new Past<>(new DatagramSocketAdapter(clientEndpoint)).connect(serverEndpoint);
+        final var clientTransport = new DatagramSocketAdapter(clientEndpoint);
+        clientTransport.setTimeout(RECEIVE_TIMEOUT_MS);
+        final var connectionToServer = new Past<>(clientTransport).connect(serverEndpoint);
         final ICommandQueue<IUniversalCoreProvider<? extends IOrganisationCollectionCommandReceiver, OrganisationElementFull>> commandQueue = new NetworkCommandQueue<>(connectionToServer);
 
         // other configuration 

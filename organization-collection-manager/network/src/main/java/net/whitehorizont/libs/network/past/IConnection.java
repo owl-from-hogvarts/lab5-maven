@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
+import net.whitehorizont.libs.network.transport.udp.ReceiveTimeoutException;
+
 @NonNullByDefault
 public interface IConnection<Endpoint> {
 
@@ -14,7 +16,7 @@ public interface IConnection<Endpoint> {
   List<byte[]> getPayloads();
 
   // Awaits until at least one package is completely received
-  List<byte[]> await();
+  List<byte[]> await() throws ReceiveTimeoutException;
 
   Endpoint getEndpoint();
 }

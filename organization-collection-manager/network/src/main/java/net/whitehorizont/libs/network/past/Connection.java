@@ -3,11 +3,17 @@ package net.whitehorizont.libs.network.past;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import net.whitehorizont.libs.network.past.Past.EndpointTransport;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
+import net.whitehorizont.libs.network.past.Past.EndpointTransport;
+import net.whitehorizont.libs.network.transport.udp.ReceiveTimeoutException;
+
+@NonNullByDefault
 // Manages package factories within single connection
 public class Connection<Endpoint> implements IConnection<Endpoint> {
-  private final List<IPacketFactory> factories = new ArrayList<>(10);
+  private final List<@Nullable IPacketFactory> factories = new ArrayList<>(10);
   // connection to the endpoint
   // replies should go here
   private final EndpointTransport<Endpoint> endpointTransport;
@@ -37,6 +43,10 @@ public class Connection<Endpoint> implements IConnection<Endpoint> {
     // supply payload to chosen packet factory
     // take packets from factory until no more available
     // for each packet
+    assert factory != null;
+    if (factory == null) {
+      throw new RuntimeException();
+    }
     for (final IPacket packet : factory.buildPackets(payload)) {
       // transform packets into bytes
       final byte[] packetBytes = packet.toBytes();
@@ -76,7 +86,7 @@ public class Connection<Endpoint> implements IConnection<Endpoint> {
   }
 
   @Override
-  public List<byte[]> await() {
+  public List<byte[]> await() throws ReceiveTimeoutException {
     // poll transport until this connection is selected
     while (true) {
       final var connection = endpointTransport.poll();

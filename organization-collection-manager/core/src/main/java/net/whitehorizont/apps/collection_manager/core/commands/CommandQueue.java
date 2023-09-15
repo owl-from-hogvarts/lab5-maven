@@ -15,6 +15,7 @@ import net.whitehorizont.libs.network.past.IConnection;
 import net.whitehorizont.libs.network.past.INetworkPackager;
 import net.whitehorizont.libs.network.serialize.SerializeManager;
 import net.whitehorizont.libs.network.serialize.UnparsableResponse;
+import net.whitehorizont.libs.network.transport.udp.ReceiveTimeoutException;
 import net.whitehorizont.libs.result.Result;
 
 @NonNullByDefault
@@ -74,10 +75,14 @@ public class CommandQueue<DependencyManager, Endpoint> implements ICommandQueue<
 
   public void start() {
     while (true) {
-      final var connection = network.poll();
-      final var payloads = connection.getPayloads();
-      for (final var payload : payloads) {
-        executeCommand(payload, connection);
+      try {
+        final var connection = network.poll();
+        final var payloads = connection.getPayloads();
+        for (final var payload : payloads) {
+          executeCommand(payload, connection);
+        }
+      } catch (ReceiveTimeoutException e) {
+        continue;
       }
     }
   }

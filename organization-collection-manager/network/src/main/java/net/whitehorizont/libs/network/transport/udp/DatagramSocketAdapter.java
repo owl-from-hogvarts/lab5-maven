@@ -17,11 +17,12 @@ public class DatagramSocketAdapter implements ITransport<InetSocketAddress> {
     public DatagramSocketAdapter(DatagramSocket datagramSocket) {
         this.datagramSocket = datagramSocket;
     }
-    public void setTimeout(int timeout) {
+    @Override
+    public void setTimeout(long timeoutMs) {
         try {
-            datagramSocket.setSoTimeout(timeout);
+            datagramSocket.setSoTimeout((int) timeoutMs);
         } catch (SocketException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 
@@ -42,7 +43,7 @@ public class DatagramSocketAdapter implements ITransport<InetSocketAddress> {
     }
 
     @Override
-    public TransportPacket<InetSocketAddress> receive() throws ServerTimeoutException {
+    public TransportPacket<InetSocketAddress> receive() throws ReceiveTimeoutException {
         try {
             byte[] buffer = new byte[MAX_PACKET_SIZE];
             DatagramPacket datagramPacket = new DatagramPacket(buffer, buffer.length);
@@ -50,9 +51,9 @@ public class DatagramSocketAdapter implements ITransport<InetSocketAddress> {
             InetSocketAddress senderAddress = (InetSocketAddress) datagramPacket.getSocketAddress();
             return new TransportPacket<InetSocketAddress>(senderAddress, buffer);
         } catch (SocketTimeoutException e) {
-            throw new ServerTimeoutException("Receive operation timed out");
+            throw new ReceiveTimeoutException("Receive timeout expired. Probably, server is unavailable!");
         } catch (IOException e) {
-            throw new RuntimeException();
+            throw new RuntimeException(e);
         }
     }
 }
