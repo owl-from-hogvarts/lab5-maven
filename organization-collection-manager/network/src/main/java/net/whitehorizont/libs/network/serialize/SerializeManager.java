@@ -13,7 +13,7 @@ public class SerializeManager {
             return outputStream.toByteArray();
         } catch (IOException ignore) {
             // as ByteArrayOutputStream is used, it should not throw any io exceptions
-            throw new RuntimeException();
+            throw new RuntimeException(ignore);
         }
     }
     public Object deserialize(byte[] data) throws ClassNotFoundException {
