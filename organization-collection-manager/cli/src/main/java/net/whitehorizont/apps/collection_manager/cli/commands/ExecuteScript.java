@@ -15,6 +15,7 @@ import net.whitehorizont.apps.collection_manager.cli.CLI;
 import net.whitehorizont.apps.collection_manager.cli.CliDependencyManager;
 import net.whitehorizont.apps.collection_manager.cli.Streams;
 import net.whitehorizont.apps.collection_manager.cli.errors.RecursionDetected;
+import net.whitehorizont.apps.collection_manager.core.commands.interfaces.ICommandQueue;
 import net.whitehorizont.libs.file_system.PathHelpers;
 
 @NonNullByDefault
@@ -66,6 +67,7 @@ public class ExecuteScript<DP> implements ICliCommand<DP> {
             dependencyManager.getGlobalErrorHandler().handle(e, _dependencyManager);
             return true;
           })
+          .setCommandQueue((ICommandQueue<DP>) dependencyManager.getCommandQueue())
           .setDisplayPrompts(false)
           .setSystemTerminal(false);
       final var executeScriptDependencies = new CliDependencyManager<>(executeScriptDependenciesConfig);
