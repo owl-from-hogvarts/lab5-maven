@@ -20,6 +20,7 @@ public class Connection<Endpoint> implements IConnection<Endpoint> {
   private List<byte[]> completePayloads = new ArrayList<>();
 
   public Connection(short lengthLimit, EndpointTransport<Endpoint> endpointTransport) {
+    System.out.println("Connection created");
     factories.add(0, null);
     factories.add(1, new SimplePackageFactory());
     factories.add(2, new LongPackageFactory(lengthLimit));

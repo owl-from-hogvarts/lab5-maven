@@ -51,10 +51,12 @@ public class DatagramChannelAdapter implements ITransport<InetSocketAddress> {
       final long time = System.currentTimeMillis();
 
       while (true) {
+         InetSocketAddress senderAddress = null;
          try {
-            ByteBuffer buffer = ByteBuffer.allocate(MAX_PACKET_SIZE);
-            InetSocketAddress senderAddress = (InetSocketAddress) datagramChannel.receive(buffer);
+            final ByteBuffer buffer = ByteBuffer.allocate(MAX_PACKET_SIZE);
+            senderAddress = (InetSocketAddress) datagramChannel.receive(buffer);
             if (senderAddress != null) {
+               System.out.println("Data received. Sender address " + senderAddress);
                return new TransportPacket<>(senderAddress, buffer.array());
             }
             Thread.sleep(RECEIVE_INTERVAL_MS);
@@ -62,10 +64,10 @@ public class DatagramChannelAdapter implements ITransport<InetSocketAddress> {
             throw new RuntimeException(e);
          } catch (InterruptedException ignore) {
             // time between calls to datagramChannel does not matter that much
-         } finally {
-            if ((System.currentTimeMillis() - time) > this.timeoutMs) {
-               throw new ReceiveTimeoutException("No activity on the line");
-            }
+         }
+
+         if (((System.currentTimeMillis() - time) > this.timeoutMs) && senderAddress == null) {
+            throw new ReceiveTimeoutException("No activity on the line");
          }
       }
    }

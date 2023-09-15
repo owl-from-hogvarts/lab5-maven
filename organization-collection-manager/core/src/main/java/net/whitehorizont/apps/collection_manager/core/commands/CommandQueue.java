@@ -79,6 +79,7 @@ public class CommandQueue<DependencyManager, Endpoint> implements ICommandQueue<
         final var connection = network.poll();
         final var payloads = connection.getPayloads();
         for (final var payload : payloads) {
+          System.out.println("Received payload. Length: " + payload.length);
           executeCommand(payload, connection);
         }
       } catch (ReceiveTimeoutException e) {
