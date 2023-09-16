@@ -7,6 +7,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import io.reactivex.rxjava3.core.Observable;
 import net.whitehorizont.apps.collection_manager.cli.CliDependencyManager;
 import net.whitehorizont.apps.collection_manager.cli.Streams;
+import net.whitehorizont.apps.collection_manager.cli.errors.UnexpectedEndOfFile;
 import net.whitehorizont.apps.collection_manager.core.dependencies.IProvideCollectionReceiver;
 import net.whitehorizont.apps.collection_manager.core.storage.errors.StorageInaccessibleError;
 import net.whitehorizont.apps.collection_manager.organisation.commands.IOrganisationCollectionCommandReceiver;
@@ -33,7 +34,7 @@ public class Insert
   public Observable<Void> run(
       CliDependencyManager<? extends IProvideCollectionReceiver<? extends IOrganisationCollectionCommandReceiver>> dependencyManager,
       Stack<String> arguments)
-      throws StorageInaccessibleError, ValidationError {
+      throws ValidationError, UnexpectedEndOfFile {
     final var key = arguments.pop();
 
       final var lineReader = dependencyManager.getGenericLineReader();
