@@ -66,6 +66,7 @@ public class DatagramChannelAdapter implements ITransport<InetSocketAddress> {
             // time between calls to datagramChannel does not matter that much
          }
 
+         // out of try statement, because should be executed for ignored exceptions too
          if (((System.currentTimeMillis() - time) > this.timeoutMs) && senderAddress == null) {
             throw new ReceiveTimeoutException("No activity on the line");
          }
