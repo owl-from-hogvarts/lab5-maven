@@ -47,7 +47,7 @@ public class Server {
   }
 
   private static FileStorage<ICollection<OrganisationElementFull>> setupStorage(String fileStoragePath) {
-    final var collectionValidators = new ArrayList<ICanRichValidate<OrganisationElementFull, ICollection<OrganisationElementFull>>>();
+    final var collectionValidators = new ArrayList<ICanRichValidate<OrganisationElementFull, ? super ICollection<OrganisationElementFull>>>();
     collectionValidators.add((element, collection) -> {
       final var idGetter = OrganisationElementDefinition.ID_METADATA.getValueGetter();
       final var duplicateIdElements$ = collection.getEvery$()
@@ -61,7 +61,7 @@ public class Server {
     });
 
     final var xmlCollectionAdapter = new CollectionAdapter<OrganisationElementFull>(
-        OrganisationElementDefinition.getMetadata());
+        OrganisationElementDefinition.getMetadata(), collectionValidators);
     final var testStorage = new FileStorage<>(fileStoragePath, xmlCollectionAdapter);
     return testStorage;
   }
