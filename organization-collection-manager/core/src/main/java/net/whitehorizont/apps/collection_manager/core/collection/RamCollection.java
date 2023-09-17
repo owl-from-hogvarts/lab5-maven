@@ -159,6 +159,8 @@ public class RamCollection<E extends ICollectionElement<E>>
         throw e;
       }
     } catch (DuplicateElements e) {
+      // replace is not atomic. actually may happen
+      // either lock or implement compare and swap
       assert false;
       throw new RuntimeException(e);
     }

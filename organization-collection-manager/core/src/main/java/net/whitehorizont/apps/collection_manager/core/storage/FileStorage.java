@@ -136,39 +136,13 @@ public class FileStorage<C extends ICollection<?>>
   }
 
   @Override
-  public Observable<C> load(BaseId key) {
-    return findCollectionById(key, this.load());
-  }
-
-  @Override
-  public Observable<C> loadAll() {
-    return this.load();
-  }
-
-  @Override
   public Observable<CollectionMetadata> loadMetadata() {
     return this.load().map(collection -> collection.getPersistentMetadata());
   }
 
   @Override
-  public Observable<CollectionMetadata> loadMetadata(BaseId key) {
-    return findCollectionById(key, this.load()).map(collection -> collection.getPersistentMetadata());
-  }
-
-  private Observable<C> findCollectionById(BaseId key, Observable<C> collections) {
-    return collections.filter((collection) -> collection.getPersistentMetadata().getId().equals(key)).singleOrError()
-        .onErrorResumeNext(error -> {
-          if (error instanceof NoSuchElementException) {
-            return Single.error(new CollectionNotFound());
-          }
-
-          return Single.error(error);
-        }).toObservable();
-  }
-
-  @Override
   public Observable<C> loadSafe(CollectionMetadata metadata) {
-    return this.load(metadata.getId()).onErrorResumeNext(error -> {
+    return this.load().onErrorResumeNext(error -> {
       if (error instanceof CollectionNotFound) {
         return Observable.just(adapter.deserializeSafe(metadata));
       }

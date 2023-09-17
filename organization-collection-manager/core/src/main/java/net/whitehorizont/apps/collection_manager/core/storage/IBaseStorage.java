@@ -30,7 +30,6 @@ public interface IBaseStorage<C extends ICollection<?>> {
    * Implementation choose default collection 
    */
   Observable<C> load();
-  Observable<C> load(BaseId key) throws CollectionNotFound;
   /**
    * Loads collection with id. If it does not exist, creates 
    * new collection with specified id and returns it
@@ -39,13 +38,6 @@ public interface IBaseStorage<C extends ICollection<?>> {
   Observable<C> loadSafe(CollectionMetadata metadata);
 
   /**
-   * Loads all collections. USE WITH CAUTION!
-   *
-   * Retrieving all collections may hit performance 
-   * @return
-   */
-  Observable<C> loadAll();
-  /**
    * Loads only collection metadata without body. 
    * 
    * When key not supplied, gets default collection metadata
@@ -53,7 +45,6 @@ public interface IBaseStorage<C extends ICollection<?>> {
    * @return
    */
   Observable<CollectionMetadata> loadMetadata() throws CollectionNotFound;
-  Observable<CollectionMetadata> loadMetadata(BaseId key) throws CollectionNotFound;
 
   void save(C collection) throws StorageInaccessibleError;
 }

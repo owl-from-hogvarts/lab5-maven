@@ -100,7 +100,7 @@ public class OrganisationElementDefinition {
     leafs.add(FULL_NAME_METADATA);
 
     final List<MetadataComposite<OrganisationElement, ?, ?>> children = new ArrayList<>();
-    children.add(CoordinatesDefinition.<OrganisationElement>getTree((organisation) -> organisation.coordinates));
+    children.add(CoordinatesDefinition.getTree((organisation) -> organisation.coordinates));
     children.add(AddressDefinition.getMetadata(organisation -> organisation.address));
 
     return new MetadataComposite<ParentHost, OrganisationElement, OrganisationElementWritable>(ELEMENT_TITLE, leafs,
