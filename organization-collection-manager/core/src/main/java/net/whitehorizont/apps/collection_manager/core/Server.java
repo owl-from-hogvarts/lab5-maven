@@ -87,7 +87,7 @@ public class Server {
     final RamCollection.Configuration<OrganisationElementFull, ?> collectionConfiguration = new RamCollection.Configuration<>();
     collectionConfiguration.elementMetadata(OrganisationElementDefinition.getMetadata())
     .metadata(null);
-    return new DatabaseStorage<>(connectionFactory, new OrganisationElementFullFactory(), collectionConfiguration);
+    return new DatabaseStorage<>(connectionFactory, new OrganisationElementFullFactory(), OrganisationElementDefinition.getMetadata(), collectionConfiguration, "organisations");
 
   }
 }

@@ -6,7 +6,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Optional;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -19,7 +18,6 @@ import net.whitehorizont.apps.collection_manager.core.collection.interfaces.ICol
 import net.whitehorizont.apps.collection_manager.core.collection.keys.KeyGenerationError;
 import net.whitehorizont.apps.collection_manager.core.storage.errors.CollectionNotFound;
 import net.whitehorizont.apps.collection_manager.core.storage.errors.StorageInaccessibleError;
-import net.whitehorizont.apps.collection_manager.organisation.definitions.OrganisationElementDefinition;
 import net.whitehorizont.apps.organization_collection_manager.lib.FieldMetadataExtended;
 import net.whitehorizont.apps.organization_collection_manager.lib.IWritableHostFactory;
 import net.whitehorizont.apps.organization_collection_manager.lib.MetadataComposite;
@@ -38,12 +36,17 @@ public class DatabaseStorage<Host extends ICollectionElement<Host>, WritableHost
   private final IWritableHostFactory<WritableHost> elementFactory;
   private final DatabaseConnectionFactory connectionFactory;
   private final RamCollection.Configuration<Host, ?> collectionFactory;
+  private final MetadataComposite<?, Host, WritableHost> elementMetadata;
+  private final String sqlSelectAll;
 
-  public DatabaseStorage(DatabaseConnectionFactory connectionFactory, IWritableHostFactory<WritableHost> elementFactory,
-      RamCollection.Configuration<Host, ?> collectionFactory) {
+  public DatabaseStorage(DatabaseConnectionFactory connectionFactory, IWritableHostFactory<WritableHost> elementFactory, MetadataComposite<?, Host, WritableHost> elementMetadata,
+      RamCollection.Configuration<Host, ?> collectionFactory, String tableName) {
     this.connectionFactory = connectionFactory;
     this.elementFactory = elementFactory;
     this.collectionFactory = collectionFactory;
+    this.elementMetadata = elementMetadata;
+
+    this.sqlSelectAll = "SELECT * FROM " + tableName;
   }
 
   // preconfigure database connection or connection factory
@@ -62,20 +65,20 @@ public class DatabaseStorage<Host extends ICollectionElement<Host>, WritableHost
   public Observable<ICollection<Host>> load() {
     return Observable.create(subscriber -> {
       // request collection elements from database
-      safeExecuteQuery("SELECT * FROM organisations", null, resultSet -> {
+      safeExecuteQuery(sqlSelectAll, null, resultSet -> {
         try {
         final var collection = createCollectionInstance();
         // populate collection with received elements
         while (resultSet.next()) {
           final var element = elementFactory.createWritable();
-          fillElement(resultSet, (MetadataComposite<?, Host, WritableHost>) OrganisationElementDefinition.getMetadata(),
+          fillElement(resultSet, elementMetadata,
               element);
           collection.insert(element);
         }
         // just return collection
 
         subscriber.onNext(collection);
-        subscriber.onComplete();          
+        subscriber.onComplete();
         } catch (SQLException|ValidationError|DuplicateElements|KeyGenerationError e) {
           subscriber.onError(e);
         }
