@@ -5,7 +5,7 @@ import io.reactivex.rxjava3.core.Observable;
 import net.whitehorizont.apps.collection_manager.core.collection.interfaces.ICollection;
 import net.whitehorizont.apps.collection_manager.core.collection.interfaces.ICollectionManager;
 import net.whitehorizont.apps.collection_manager.core.collection.keys.BaseId;
-import net.whitehorizont.apps.collection_manager.core.storage.IBaseStorage;
+import net.whitehorizont.apps.collection_manager.core.storage.IStorage;
 import net.whitehorizont.apps.collection_manager.core.storage.errors.CollectionNotFound;
 import net.whitehorizont.apps.collection_manager.core.storage.errors.StorageInaccessibleError;
 
@@ -19,12 +19,12 @@ import net.whitehorizont.apps.collection_manager.core.storage.errors.StorageInac
 @NonNullByDefault
 public class CollectionManager<C extends ICollection<?>>
     implements ICollectionManager<C> {
-  private final IBaseStorage<C> storage;
+  private final IStorage<C> storage;
   private final C collection;
 
   // makes collections in source available for loading
 
-  public CollectionManager(IBaseStorage<C> storage) {
+  public CollectionManager(IStorage<C> storage) {
     this.storage = storage;
     collection = storage.load().blockingFirst();
   }

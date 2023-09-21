@@ -9,17 +9,12 @@ import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
-import java.util.NoSuchElementException;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.Observable;
-import io.reactivex.rxjava3.core.Single;
 import net.whitehorizont.apps.collection_manager.core.collection.CollectionMetadataDefinition.CollectionMetadata;
 import net.whitehorizont.apps.collection_manager.core.collection.interfaces.ICollection;
-import net.whitehorizont.apps.collection_manager.core.collection.keys.BaseId;
-import net.whitehorizont.apps.collection_manager.core.storage.errors.CollectionNotFound;
 import net.whitehorizont.apps.collection_manager.core.storage.errors.ResourceEmpty;
 import net.whitehorizont.apps.collection_manager.core.storage.errors.StorageInaccessibleError;
 import net.whitehorizont.apps.collection_manager.core.storage.errors.TooLargeFile;
@@ -32,7 +27,7 @@ import net.whitehorizont.libs.file_system.PathHelpers;
 // can store only one collection
 @NonNullByDefault
 public class FileStorage<C extends ICollection<?>>
-    implements IBaseStorage<C> {
+    implements IStorage<C> {
   private final IFileAdapter<C> adapter;
   private final Path path;
 
@@ -138,17 +133,6 @@ public class FileStorage<C extends ICollection<?>>
   @Override
   public Observable<CollectionMetadata> loadMetadata() {
     return this.load().map(collection -> collection.getPersistentMetadata());
-  }
-
-  @Override
-  public Observable<C> loadSafe(CollectionMetadata metadata) {
-    return this.load().onErrorResumeNext(error -> {
-      if (error instanceof CollectionNotFound) {
-        return Observable.just(adapter.deserializeSafe(metadata));
-      }
-
-      return Observable.error(error);
-    });
   }
 
   // private void initEmptyCollection

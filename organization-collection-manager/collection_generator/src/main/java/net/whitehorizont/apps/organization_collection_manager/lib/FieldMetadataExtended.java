@@ -36,10 +36,16 @@ public class FieldMetadataExtended<Host, WritableHost extends Host, V> extends B
     private BiConsumer<WritableHost, V> valueSetter;
     private Function<Host, V> valueGetter;
     private EnumSet<Tag> tags = EnumSet.noneOf(Tag.class);
+    private Optional<SQLReader<V>> sqlReader = Optional.empty();
   
     @SuppressWarnings("unchecked")
     private This self() {
       return (This) this;
+    }
+
+    public This setSQLReader(SQLReader<V> sqlReader) {
+      this.sqlReader = Optional.of(sqlReader);
+      return self();
     }
 
     public This setValueGetter(Function<Host, V> valueGetter) {
@@ -128,6 +134,10 @@ public class FieldMetadataExtended<Host, WritableHost extends Host, V> extends B
 
   public EnumSet<Tag> getTags() {
     return metadata.tags;
+  }
+
+  public Optional<SQLReader<V>> getSQLReader() {
+    return metadata.sqlReader;
   }
   
   @Override

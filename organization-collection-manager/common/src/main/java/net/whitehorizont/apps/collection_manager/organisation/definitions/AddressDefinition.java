@@ -20,6 +20,7 @@ public class AddressDefinition {
   public static FieldMetadataExtended<Address, AddressWritable, String> STREET_METADATA = FieldMetadataExtended
       .<Address, AddressWritable, String>builder()
       .setDisplayedName("Street")
+      .setSQLReader(resultSet -> resultSet.getString("address_street"))
       .setValueBuilder(new StringFactory())
       .setValueGetter(host -> host.street)
       .setValueSetter((host, value) -> host.setStreet(value))
@@ -28,6 +29,7 @@ public class AddressDefinition {
   public static FieldMetadataExtended<Address, AddressWritable, String> ZIP_CODE_METADATA = FieldMetadataExtended
       .<Address, AddressWritable, String>builder()
       .setDisplayedName("Zip code")
+      .setSQLReader(resultSet -> resultSet.getString("address_zipcode"))
       .setValueSetter((host, value) -> host.setZipCode(value))
       .setValueGetter(host -> host.zipCode)
       .setValueBuilder(new StringFactory())

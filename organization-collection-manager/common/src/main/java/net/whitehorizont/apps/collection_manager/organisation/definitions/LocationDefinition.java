@@ -20,6 +20,7 @@ public class LocationDefinition {
       .<Location, LocationWritable, Float>builder()
       // just use default on null message
       .setRequired(null)
+      .setSQLReader(resultSet -> resultSet.getFloat("address_location_x"))
       .setValueGetter(host -> host.x)
       .setValueSetter((host, value) -> host.setX(value))
       .setValueBuilder(new IntegerFactory<>(Float.class))
@@ -28,6 +29,7 @@ public class LocationDefinition {
   public static FieldMetadataExtended<Location, LocationWritable, Double> Y_METADATA = FieldMetadataExtended
       .<Location, LocationWritable, Double>builder()
       .setRequired(null)
+      .setSQLReader(resultSet -> resultSet.getDouble("address_location_y"))
       .setValueGetter(host -> host.y)
       .setValueSetter((host, value) -> host.setY(value))
       .setValueBuilder(new IntegerFactory<>(Double.class))
@@ -36,6 +38,7 @@ public class LocationDefinition {
   public static FieldMetadataExtended<Location, LocationWritable, Integer> Z_METADATA = FieldMetadataExtended
       .<Location, LocationWritable, Integer>builder()
       .setDisplayedName("Z")
+      .setSQLReader(resultSet -> resultSet.getInt("address_location_z"))
       .setValueSetter((host, value) -> host.setZ(value))
       .setValueGetter(host -> host.z)
       .setValueBuilder(new IntegerFactory<>(Integer.class))
@@ -44,6 +47,7 @@ public class LocationDefinition {
   public static FieldMetadataExtended<Location, LocationWritable, String> NAME_METADATA = FieldMetadataExtended
       .<Location, LocationWritable, String>builder()
       .setDisplayedName("Name")
+      .setSQLReader(resultSet -> resultSet.getString("address_location_name"))
       .setValueSetter((host, value) -> host.setName(value))
       .setValueGetter(host -> host.name)
       .setValueBuilder(new StringFactory())

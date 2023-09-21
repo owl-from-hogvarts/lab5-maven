@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.Map.Entry;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.javatuples.Pair;
 
 import io.reactivex.rxjava3.annotations.NonNull;
@@ -40,13 +41,13 @@ public class RamCollection<E extends ICollectionElement<E>>
   private final IElementInfoProvider<E> elementMetadata;
   private final List<ICanRichValidate<E, ? super RamCollection<E>>> validators = new ArrayList<>();
 
-  public RamCollection(IElementInfoProvider<E> elementMetadata, CollectionMetadata metadata) {
-    this.metadata = metadata;
+  public RamCollection(IElementInfoProvider<E> elementMetadata, @Nullable CollectionMetadata metadata) {
+    this.metadata = metadata == null ? new CollectionMetadata(new UUID_CollectionId()) : metadata;
     this.elementMetadata = elementMetadata;
   }
 
   public RamCollection(IElementInfoProvider<E> elementMetadata) {
-    this(elementMetadata, new CollectionMetadata(new UUID_CollectionId()));
+    this(elementMetadata, null);
   }
 
   /**
@@ -70,6 +71,7 @@ public class RamCollection<E extends ICollectionElement<E>>
     }
 
     this.validateElement(element);
+    // replace with middleware
     this.elements.put(key, element);
   }
 
@@ -94,12 +96,7 @@ public class RamCollection<E extends ICollectionElement<E>>
 
   @Override
   public Observable<E> getEvery$() {
-    return Observable.just(elements).flatMap((elements) -> {
-      @SuppressWarnings("null")
-      final @NonNull var elementsList = elements.values();
-
-      return Observable.fromIterable(elementsList);
-    });
+    return Observable.fromIterable(elements.values());
   }
 
   @Override
@@ -186,5 +183,50 @@ public class RamCollection<E extends ICollectionElement<E>>
   @Override
   public String getCollectionType() {
     return this.elementMetadata.getDisplayedName();
+  }
+
+  public static class Configuration<E extends ICollectionElement<E>, This extends Configuration<E, This>> {
+    private CollectionMetadata metadata;
+    private IElementInfoProvider<E> elementMetadata;
+    private List<ICanRichValidate<E, ? super RamCollection<E>>> validators = new ArrayList<>();
+    
+    public Configuration() {
+    }
+
+    private This self() {
+      return (This) this;
+    }
+
+    public This metadata(CollectionMetadata metadata) {
+      this.metadata = metadata;
+      return self();
+    }
+
+    public This elementMetadata(IElementInfoProvider<E> elementMetadata) {
+      this.elementMetadata = elementMetadata;
+      return self();
+    }
+
+    public This validators(List<ICanRichValidate<E, ? super RamCollection<E>>> validators) {
+      this.validators = validators;
+      return self();
+    }
+
+    public RamCollection<E> build() {
+      checkNull("elementMetadata", elementMetadata);
+      checkNull("validators", validators);
+      final var collection = new RamCollection<>(elementMetadata, metadata);
+      for (final var validator : validators) {
+        collection.addValidator(validator);
+      }
+
+      return collection;
+    }
+
+    private void checkNull(String fieldName, @Nullable Object any) {
+      if (any == null) {
+        throw new InvalidBuilderConfiguration(fieldName);
+      }
+    }
   }
 }

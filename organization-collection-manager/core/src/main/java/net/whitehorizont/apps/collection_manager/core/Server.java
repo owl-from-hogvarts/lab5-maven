@@ -6,17 +6,22 @@ import java.util.ArrayList;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import net.whitehorizont.apps.collection_manager.core.collection.CollectionManager;
+import net.whitehorizont.apps.collection_manager.core.collection.RamCollection;
 import net.whitehorizont.apps.collection_manager.core.collection.interfaces.ICollection;
 import net.whitehorizont.apps.collection_manager.core.commands.CollectionManagerReceiver;
 import net.whitehorizont.apps.collection_manager.core.commands.CommandQueue;
 import net.whitehorizont.apps.collection_manager.core.commands.OrganisationCollectionCommandReceiver;
 import net.whitehorizont.apps.collection_manager.core.commands.SaveCommand;
 import net.whitehorizont.apps.collection_manager.core.dependencies.CoreDependencyManager;
+import net.whitehorizont.apps.collection_manager.core.storage.DatabaseConnectionFactory;
+import net.whitehorizont.apps.collection_manager.core.storage.DatabaseStorage;
 import net.whitehorizont.apps.collection_manager.core.storage.FileStorage;
 import net.whitehorizont.apps.collection_manager.core.storage.collection_adapter.CollectionAdapter;
 import net.whitehorizont.apps.collection_manager.core.storage.errors.StorageInaccessibleError;
 import net.whitehorizont.apps.collection_manager.organisation.definitions.OrganisationElementDefinition;
 import net.whitehorizont.apps.collection_manager.organisation.definitions.OrganisationElementDefinition.OrganisationElementFull;
+import net.whitehorizont.apps.collection_manager.organisation.definitions.OrganisationElementDefinition.OrganisationElementFullFactory;
+import net.whitehorizont.apps.collection_manager.organisation.definitions.OrganisationElementDefinition.OrganisationElementFullWritable;
 import net.whitehorizont.apps.organization_collection_manager.lib.ICanRichValidate;
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationError;
 import net.whitehorizont.libs.network.past.Past;
@@ -29,7 +34,8 @@ public class Server {
   }
 
   public static CommandQueue<CoreDependencyManager<OrganisationCollectionCommandReceiver, OrganisationElementFull>, InetSocketAddress> startServer() throws StorageInaccessibleError {
-    final var testStorage = setupStorage(getStoragePath());
+    // final var testStorage = setupStorage(getStoragePath());
+    final var testStorage = setupDatabase();
     final var collectionManager = new CollectionManager<>(testStorage);
     final var collectionManagerReceiver = new CollectionManagerReceiver<>(collectionManager);
 
@@ -46,7 +52,7 @@ public class Server {
     return commandQueue;
   }
 
-  private static FileStorage<ICollection<OrganisationElementFull>> setupStorage(String fileStoragePath) {
+  private static FileStorage<ICollection<OrganisationElementFull>> setupFileStorage(String fileStoragePath) {
     final var collectionValidators = new ArrayList<ICanRichValidate<OrganisationElementFull, ? super ICollection<OrganisationElementFull>>>();
     collectionValidators.add((element, collection) -> {
       final var idGetter = OrganisationElementDefinition.ID_METADATA.getValueGetter();
@@ -74,5 +80,14 @@ public class Server {
     }
 
     return maybePath;
+  }
+
+  private static DatabaseStorage<OrganisationElementFull, OrganisationElementFullWritable> setupDatabase() {
+    final var connectionFactory = new DatabaseConnectionFactory("jdbc:postgresql:studs", "removed", "removed");
+    final RamCollection.Configuration<OrganisationElementFull, ?> collectionConfiguration = new RamCollection.Configuration<>();
+    collectionConfiguration.elementMetadata(OrganisationElementDefinition.getMetadata())
+    .metadata(null);
+    return new DatabaseStorage<>(connectionFactory, new OrganisationElementFullFactory(), collectionConfiguration);
+
   }
 }

@@ -24,6 +24,7 @@ public class CoordinatesDefinition {
         return result;
       })
       .setDisplayedName("X")
+      .setSQLReader(resultSet -> resultSet.getInt("coordinates_x"))
       .setValueBuilder(new IntegerFactory<>(Integer.class))
       .setValueSetter((host, value) -> host.setX(value))
       .setValueGetter((host) -> host.getX())
@@ -33,6 +34,7 @@ public class CoordinatesDefinition {
   private static final FieldMetadataExtended<Coordinates, CoordinatesWriteable, Long> Y_METADATA = FieldMetadataExtended
       .<Coordinates, CoordinatesWriteable, Long>builder()
       .setDisplayedName("Y")
+      .setSQLReader(resultSet -> resultSet.getLong("coordinates_y"))
       .addSimpleValidator(value -> new ValidationResult<>(value <= 688, "Value should be lower or equal to 688"))
       .setValueBuilder(new IntegerFactory<>(Long.class))
       .setValueSetter((host, value) -> host.setY(value))
