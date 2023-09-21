@@ -36,7 +36,7 @@ public class CollectionCommandReceiver<E extends ICollectionElement<E>> implemen
   }
 
   @Override
-  public E delete(ElementKey key) throws NoSuchElement {
+  public E delete(ElementKey key) throws NoSuchElement, ValidationError {
     return this.collection.delete(key);
   }
 

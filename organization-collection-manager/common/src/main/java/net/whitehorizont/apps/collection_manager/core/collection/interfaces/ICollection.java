@@ -45,7 +45,7 @@ public interface ICollection<E extends ICollectionElement<E>> {
    */
   void replace(ElementKey key, E element) throws ValidationError, NoSuchElement;
 
-  E delete(ElementKey key) throws NoSuchElement;
+  E delete(ElementKey key) throws NoSuchElement, ValidationError;
 
   Observable<E> getEvery$();
 

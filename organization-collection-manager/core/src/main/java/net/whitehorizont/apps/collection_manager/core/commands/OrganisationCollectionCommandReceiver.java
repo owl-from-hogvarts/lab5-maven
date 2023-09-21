@@ -85,7 +85,7 @@ public class OrganisationCollectionCommandReceiver extends CollectionCommandRece
   }
 
   @Override
-  public void removeByRevenue(RemovalCriteria removalCriteria, double targetValue) {
+  public void removeByRevenue(RemovalCriteria removalCriteria, double targetValue) throws ValidationError {
     final var keysToDelete = this.getEveryWithKey$().filter(keyElement -> {
       final @NonNull var currentAnnualTurnover = OrganisationElementDefinition.ANNUAL_TURNOVER_METADATA.getValueGetter()
           .apply(keyElement.getValue1().getElement());

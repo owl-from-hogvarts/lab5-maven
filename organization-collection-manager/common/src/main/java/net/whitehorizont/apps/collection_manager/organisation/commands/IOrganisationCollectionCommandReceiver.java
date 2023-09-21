@@ -25,7 +25,7 @@ public interface IOrganisationCollectionCommandReceiver extends ICollectionComma
 
   void removeById(UUID_ElementId id);
 
-  void removeByRevenue(RemovalCriteria removalCriteria, double targetValue);
+  void removeByRevenue(RemovalCriteria removalCriteria, double targetValue) throws ValidationError;
 
   Observable<Pair<ElementKey, OrganisationElementFull>> getStartsWith$(String startOfFullName);
 

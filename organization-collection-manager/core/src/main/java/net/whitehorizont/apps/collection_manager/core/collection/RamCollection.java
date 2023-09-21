@@ -152,7 +152,7 @@ public class RamCollection<E extends ICollectionElement<E>>
   }
 
   @Override
-  public E delete(ElementKey key) throws NoSuchElement {
+  public E delete(ElementKey key) throws NoSuchElement, ValidationError {
     checkIfExists(key);
 
     final var element = this.elements.get(key);

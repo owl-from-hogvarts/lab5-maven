@@ -6,6 +6,7 @@ import io.reactivex.rxjava3.core.Observable;
 import net.whitehorizont.apps.collection_manager.core.commands.interfaces.ICommand;
 import net.whitehorizont.apps.collection_manager.core.dependencies.IProvideCollectionReceiver;
 import net.whitehorizont.apps.collection_manager.organisation.commands.IOrganisationCollectionCommandReceiver.RemovalCriteria;
+import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationError;
 
 @NonNullByDefault
 public class RemoveByRevenueCommand
@@ -21,7 +22,11 @@ public class RemoveByRevenueCommand
   @Override
   public Observable<Void> execute(
       IProvideCollectionReceiver<? extends IOrganisationCollectionCommandReceiver> dependencyProvider) {
-    dependencyProvider.getCollectionReceiver().removeByRevenue(removalCriteria, targetValue);
+    try {
+      dependencyProvider.getCollectionReceiver().removeByRevenue(removalCriteria, targetValue);
+    } catch (ValidationError e) {
+      return Observable.error(e);
+    }
     return Observable.empty();
   }
 
