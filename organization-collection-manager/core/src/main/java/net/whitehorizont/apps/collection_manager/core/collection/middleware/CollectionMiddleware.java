@@ -1,4 +1,4 @@
-package net.whitehorizont.apps.collection_manager.core.collection;
+package net.whitehorizont.apps.collection_manager.core.collection.middleware;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 

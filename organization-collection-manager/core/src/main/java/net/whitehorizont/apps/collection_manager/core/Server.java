@@ -7,9 +7,9 @@ import java.util.List;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import net.whitehorizont.apps.collection_manager.core.collection.CollectionManager;
-import net.whitehorizont.apps.collection_manager.core.collection.CollectionMiddleware;
 import net.whitehorizont.apps.collection_manager.core.collection.RamCollection;
-import net.whitehorizont.apps.collection_manager.core.collection.ValidateMiddleware;
+import net.whitehorizont.apps.collection_manager.core.collection.middleware.CollectionMiddleware;
+import net.whitehorizont.apps.collection_manager.core.collection.middleware.ValidateMiddleware;
 import net.whitehorizont.apps.collection_manager.core.commands.CollectionManagerReceiver;
 import net.whitehorizont.apps.collection_manager.core.commands.CommandQueue;
 import net.whitehorizont.apps.collection_manager.core.commands.OrganisationCollectionCommandReceiver;
