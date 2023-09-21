@@ -9,7 +9,6 @@ import net.whitehorizont.apps.collection_manager.cli.CliDependencyManager;
 import net.whitehorizont.apps.collection_manager.cli.Streams;
 import net.whitehorizont.apps.collection_manager.cli.errors.UnexpectedEndOfFile;
 import net.whitehorizont.apps.collection_manager.core.dependencies.IProvideCollectionReceiver;
-import net.whitehorizont.apps.collection_manager.core.storage.errors.StorageInaccessibleError;
 import net.whitehorizont.apps.collection_manager.organisation.commands.IOrganisationCollectionCommandReceiver;
 import net.whitehorizont.apps.collection_manager.organisation.commands.InsertOrganisationCommand;
 import net.whitehorizont.apps.collection_manager.organisation.definitions.OrganisationElementDefinition.OrganisationElement;

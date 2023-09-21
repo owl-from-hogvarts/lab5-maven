@@ -23,7 +23,6 @@ import net.whitehorizont.apps.collection_manager.core.collection.keys.ElementKey
 import net.whitehorizont.apps.collection_manager.core.collection.keys.ISerializableKey;
 import net.whitehorizont.apps.collection_manager.core.collection.keys.KeyGenerationError;
 import net.whitehorizont.apps.collection_manager.core.collection.keys.UUID_CollectionId;
-import net.whitehorizont.apps.organization_collection_manager.lib.ICanRichValidate;
 import net.whitehorizont.apps.organization_collection_manager.lib.IElementInfoProvider;
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationError;
 

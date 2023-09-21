@@ -1,9 +1,6 @@
 package net.whitehorizont.apps.collection_manager.cli.errors;
 
 import java.io.PrintStream;
-import java.util.Collection;
-import java.util.List;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 

@@ -1,7 +1,6 @@
 package net.whitehorizont.libs.result;
 
 import java.io.Serializable;
-import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
