@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.Map.Entry;
 
@@ -39,15 +40,14 @@ public class RamCollection<E extends ICollectionElement<E>>
   private final Map<ElementKey, E> elements = new LinkedHashMap<>();
   private final CollectionMetadata metadata;
   private final IElementInfoProvider<E> elementMetadata;
-  private final List<ICanRichValidate<E, ? super RamCollection<E>>> validators = new ArrayList<>();
-
-  public RamCollection(IElementInfoProvider<E> elementMetadata, @Nullable CollectionMetadata metadata) {
-    this.metadata = metadata == null ? new CollectionMetadata(new UUID_CollectionId()) : metadata;
-    this.elementMetadata = elementMetadata;
-  }
-
-  public RamCollection(IElementInfoProvider<E> elementMetadata) {
-    this(elementMetadata, null);
+  private final List<CollectionMiddleware<E>> insertMiddleware;
+  private final List<CollectionMiddleware<E>> deleteMiddleware;
+  
+  private RamCollection(Configuration<E, ?> configuration, Optional<CollectionMetadata> metadata) {
+    this.metadata = metadata.isEmpty() ? new CollectionMetadata(new UUID_CollectionId()) : metadata.get();
+    this.elementMetadata = configuration.elementMetadata;
+    this.insertMiddleware = configuration.insertMiddleware;
+    this.deleteMiddleware = configuration.deleteMiddleware;
   }
 
   /**
@@ -70,28 +70,11 @@ public class RamCollection<E extends ICollectionElement<E>>
       throw new DuplicateElements(key);
     }
 
-    this.validateElement(element);
+    for (final var singleMiddleware : insertMiddleware) {
+      singleMiddleware.accept(this, element);
+    }
     // replace with middleware
     this.elements.put(key, element);
-  }
-
-  /**
-   * Registers validator for this collection
-   * 
-   * @param validator will be executed on each insert
-   */
-  public void addValidator(ICanRichValidate<E, ? super RamCollection<E>> validator) {
-    this.validators.add(validator);
-  }
-
-  private void validateElement(E element) throws ValidationError {
-    // execute simple validators attached via metadata
-    this.elementMetadata.validate(element);
-    
-    // validate with rich validators
-    for (final var validator : this.validators) {
-      validator.validate(element, this);
-    }
   }
 
   @Override
@@ -172,6 +155,13 @@ public class RamCollection<E extends ICollectionElement<E>>
   @Override
   public E delete(ElementKey key) throws NoSuchElement {
     checkIfExists(key);
+
+    final var element = this.elements.get(key);
+
+    for (final var singleMiddleware : deleteMiddleware) {
+      singleMiddleware.accept(this, element);
+    }
+
     return this.elements.remove(key);
   }
 
@@ -185,20 +175,18 @@ public class RamCollection<E extends ICollectionElement<E>>
     return this.elementMetadata.getDisplayedName();
   }
 
-  public static class Configuration<E extends ICollectionElement<E>, This extends Configuration<E, This>> {
-    private CollectionMetadata metadata;
+  public static class Configuration<E extends ICollectionElement<E>, This extends Configuration<E, This>> implements Cloneable {
+    private Optional<CollectionMetadata> metadata = Optional.empty();
     private IElementInfoProvider<E> elementMetadata;
-    private List<ICanRichValidate<E, ? super RamCollection<E>>> validators = new ArrayList<>();
+    private List<CollectionMiddleware<E>> insertMiddleware;
+    private List<CollectionMiddleware<E>> deleteMiddleware;
     
-    public Configuration() {
-    }
-
     private This self() {
       return (This) this;
     }
 
     public This metadata(CollectionMetadata metadata) {
-      this.metadata = metadata;
+      this.metadata = Optional.of(metadata);
       return self();
     }
 
@@ -207,18 +195,25 @@ public class RamCollection<E extends ICollectionElement<E>>
       return self();
     }
 
-    public This validators(List<ICanRichValidate<E, ? super RamCollection<E>>> validators) {
-      this.validators = validators;
+    public This insertMiddleware(List<CollectionMiddleware<E>> middleware) {
+      this.insertMiddleware = middleware;
+      return self();
+    }
+
+    public This deleteMiddleware(List<CollectionMiddleware<E>> middleware) {
+      this.deleteMiddleware = middleware;
       return self();
     }
 
     public RamCollection<E> build() {
+      return build(this.metadata);
+    }
+
+    public RamCollection<E> build(Optional<CollectionMetadata> collectionMetadata) {
       checkNull("elementMetadata", elementMetadata);
-      checkNull("validators", validators);
-      final var collection = new RamCollection<>(elementMetadata, metadata);
-      for (final var validator : validators) {
-        collection.addValidator(validator);
-      }
+      checkNull("insertMiddleware", insertMiddleware);
+      checkNull("deleteMiddleware", deleteMiddleware);
+      final var collection = new RamCollection<>(this, collectionMetadata);
 
       return collection;
     }
@@ -226,6 +221,15 @@ public class RamCollection<E extends ICollectionElement<E>>
     private void checkNull(String fieldName, @Nullable Object any) {
       if (any == null) {
         throw new InvalidBuilderConfiguration(fieldName);
+      }
+    }
+
+    @Override
+    public This clone() {
+      try {
+        return (This) super.clone();
+      } catch (CloneNotSupportedException e) {
+        throw new RuntimeException(e);
       }
     }
   }

@@ -3,8 +3,7 @@ package net.whitehorizont.apps.collection_manager.core.storage.collection_adapte
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -18,8 +17,6 @@ import net.whitehorizont.apps.collection_manager.core.collection.interfaces.ICol
 import net.whitehorizont.apps.collection_manager.core.collection.keys.KeyGenerationError;
 import net.whitehorizont.apps.collection_manager.core.storage.IFileAdapter;
 import net.whitehorizont.apps.collection_manager.core.storage.errors.ResourceEmpty;
-import net.whitehorizont.apps.organization_collection_manager.lib.ICanRichValidate;
-import net.whitehorizont.apps.organization_collection_manager.lib.IElementInfoProvider;
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationError;
 
 /**
@@ -28,27 +25,24 @@ import net.whitehorizont.apps.organization_collection_manager.lib.validators.Val
 @NonNullByDefault
 public class CollectionAdapter<E extends ICollectionElement<E>>
     implements IFileAdapter<ICollection<E>> {
+
   private final XStream serializer = new XStream();
-  private final IElementInfoProvider<E> elementsInfo;
-  private final List<ICanRichValidate<E, ? super ICollection<E>>> validators;
-  public CollectionAdapter(IElementInfoProvider<E> elementsInfo) {
-    this(elementsInfo, new ArrayList<>());
-  }
-  
-  public CollectionAdapter(IElementInfoProvider<E> elementsInfo, List<ICanRichValidate<E, ? super ICollection<E>>> validators) {
-    this.elementsInfo = elementsInfo;
-    this.validators = validators;
-  }
+  private final RamCollection.Configuration<E, ?> collectionFactory;
 
   {
-    serializer.allowTypesByWildcard(new String[]{"net.whitehorizont.apps.collection_manager.core.**"});
-    serializer.allowTypesByWildcard(new String[]{"net.whitehorizont.apps.collection_manager.organisation.**"});
+    serializer.allowTypesByWildcard(new String[] { "net.whitehorizont.apps.collection_manager.core.**" });
+    serializer.allowTypesByWildcard(new String[] { "net.whitehorizont.apps.collection_manager.organisation.**" });
     serializer.processAnnotations(StorageXml.class);
   }
+
+  public CollectionAdapter(RamCollection.Configuration<E, ?> collectionFactory) {
+    this.collectionFactory = collectionFactory.clone();
+  }
+
   @SuppressWarnings("null")
   private static final Charset DEFAULT_ENCODING = StandardCharsets.UTF_8;
 
-  private CollectionXml<E, CollectionMetadata> prepareCollection(ICollection<E> collection) {    
+  private CollectionXml<E, CollectionMetadata> prepareCollection(ICollection<E> collection) {
     final var elements = collection.getEvery$()
         .toList().blockingGet();
     return new CollectionXml<>(collection.getPersistentMetadata(), elements);
@@ -65,10 +59,11 @@ public class CollectionAdapter<E extends ICollectionElement<E>>
 
     final var storageXml = new StorageXml<>(collectionXml, storageMetadata);
 
-    // hard code UTF-8 cause who the fuck except shitty windows uses other encoding for files?
+    // hard code UTF-8 cause who the fuck except shitty windows uses other encoding
+    // for files?
     // no array element should every be null
     @SuppressWarnings("null")
-    final byte @NonNull[] serializedContent = serializer.toXML(storageXml).getBytes(DEFAULT_ENCODING);
+    final byte @NonNull [] serializedContent = serializer.toXML(storageXml).getBytes(DEFAULT_ENCODING);
     return serializedContent;
   }
 
@@ -78,28 +73,27 @@ public class CollectionAdapter<E extends ICollectionElement<E>>
     final String xml_content = DEFAULT_ENCODING.decode(fileContent).toString();
     // parse xml:
     @SuppressWarnings("unchecked")
-    StorageXml<E, CollectionMetadata> storageXmlRepresentation = (StorageXml<E, CollectionMetadata>) serializer.fromXML(xml_content);
+    StorageXml<E, CollectionMetadata> storageXmlRepresentation = (StorageXml<E, CollectionMetadata>) serializer
+        .fromXML(xml_content);
 
+    // DONE: move configuration to collection factory
     final CollectionMetadata collectionMetadata = storageXmlRepresentation.collection.metadata;
-    
-    final var collection = new RamCollection<E>(this.elementsInfo, collectionMetadata);
 
-    // TODO: move configuration to collection factory
-    for (final var validator : this.validators) {
-      collection.addValidator(validator);
-    }
+    final var collection = collectionFactory.build(Optional.of(collectionMetadata));
+    ;
 
-    
     for (var elementXmlRepresentation : storageXmlRepresentation.collection.elements) {
       collection.insert(elementXmlRepresentation);
     }
 
     return collection;
-    //! reliable integrity check is impossible to implement without custom XML parser 
+    // reliable integrity check is impossible to 
+    // implement without custom XML parser
   }
 
   @Override
-  public RamCollection<E> deserialize(byte[] fileContent) throws ValidationError, ResourceEmpty, KeyGenerationError, DuplicateElements {
+  public RamCollection<E> deserialize(byte[] fileContent)
+      throws ValidationError, ResourceEmpty, KeyGenerationError, DuplicateElements {
     if (fileContent.length == 0) {
       // if something wrong with file, error any way
       // this is responsibility of client code to decide what to do with errors
@@ -115,12 +109,11 @@ public class CollectionAdapter<E extends ICollectionElement<E>>
 
   @Override
   public RamCollection<E> deserializeSafe(CollectionMetadata metadata) {
-    return new RamCollection<>(elementsInfo, metadata);
+    return this.collectionFactory.build(Optional.of(metadata));
   }
 
   @Override
   public RamCollection<E> deserializeSafe() {
-    final var emptyCollectionMetadata = new CollectionMetadata();
-    return new RamCollection<>(elementsInfo, emptyCollectionMetadata);
+    return this.collectionFactory.build();
   }
 }
