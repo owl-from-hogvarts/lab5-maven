@@ -11,6 +11,7 @@ import net.whitehorizont.apps.collection_manager.core.collection.errors.Duplicat
 import net.whitehorizont.apps.collection_manager.core.collection.errors.NoSuchElement;
 import net.whitehorizont.apps.collection_manager.core.collection.keys.ElementKey;
 import net.whitehorizont.apps.collection_manager.core.collection.keys.KeyGenerationError;
+import net.whitehorizont.apps.collection_manager.core.storage.errors.StorageInaccessibleError;
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationError;
 
 /**
@@ -27,10 +28,11 @@ public interface ICollection<E extends ICollectionElement<E>> {
    * @throws ValidationError
    * @throws DuplicateElements
    * @throws KeyGenerationError
+   * @throws StorageInaccessibleError
    * @throws NoSuchElement
    */
-  void insert(E element) throws ValidationError, DuplicateElements, KeyGenerationError;
-  void insert(ElementKey key, E element) throws ValidationError, DuplicateElements;
+  void insert(E element) throws ValidationError, DuplicateElements, KeyGenerationError, StorageInaccessibleError;
+  void insert(ElementKey key, E element) throws ValidationError, DuplicateElements, StorageInaccessibleError;
 
   /**
    * ! Only single element should be supplied !
@@ -42,10 +44,11 @@ public interface ICollection<E extends ICollectionElement<E>> {
    * @return
    * @throws ValidationError
    * @throws NoSuchElement
+   * @throws StorageInaccessibleError
    */
-  void replace(ElementKey key, E element) throws ValidationError, NoSuchElement;
+  void replace(ElementKey key, E element) throws ValidationError, NoSuchElement, StorageInaccessibleError;
 
-  E delete(ElementKey key) throws NoSuchElement, ValidationError;
+  E delete(ElementKey key) throws NoSuchElement, ValidationError, StorageInaccessibleError;
 
   Observable<E> getEvery$();
 

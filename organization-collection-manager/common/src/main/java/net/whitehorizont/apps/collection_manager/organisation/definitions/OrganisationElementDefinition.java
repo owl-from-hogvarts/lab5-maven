@@ -207,9 +207,14 @@ public class OrganisationElementDefinition {
     protected OrganisationType type;
     protected Double annualTurnover;
     protected AddressWritable address = new AddressWritable();
+
+    public AddressWritable getAddress() {
+      return address;
+    }
+
     protected String fullName;
 
-    public String getFullName() {
+    protected String getFullName() {
       return fullName;
     }
 
@@ -217,7 +222,7 @@ public class OrganisationElementDefinition {
       return name;
     }
 
-    protected Coordinates getCoordinates() {
+    public Coordinates getCoordinates() {
       return coordinates;
     }
 

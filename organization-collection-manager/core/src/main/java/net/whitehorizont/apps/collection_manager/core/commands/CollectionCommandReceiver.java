@@ -15,6 +15,7 @@ import net.whitehorizont.apps.collection_manager.core.collection.interfaces.ICol
 import net.whitehorizont.apps.collection_manager.core.collection.keys.ElementKey;
 import net.whitehorizont.apps.collection_manager.core.collection.keys.KeyGenerationError;
 import net.whitehorizont.apps.collection_manager.core.commands.interfaces.ICollectionCommandReceiver;
+import net.whitehorizont.apps.collection_manager.core.storage.errors.StorageInaccessibleError;
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationError;
 
 /**
@@ -31,12 +32,12 @@ public class CollectionCommandReceiver<E extends ICollectionElement<E>> implemen
 
 
   @Override
-  public void replace(ElementKey key, E element) throws ValidationError, NoSuchElement {
+  public void replace(ElementKey key, E element) throws ValidationError, NoSuchElement, StorageInaccessibleError {
     this.collection.replace(key, element);
   }
 
   @Override
-  public E delete(ElementKey key) throws NoSuchElement, ValidationError {
+  public E delete(ElementKey key) throws NoSuchElement, ValidationError, StorageInaccessibleError {
     return this.collection.delete(key);
   }
 
@@ -94,17 +95,17 @@ public class CollectionCommandReceiver<E extends ICollectionElement<E>> implemen
 
 
   @Override
-  public void insert(E element) throws ValidationError, DuplicateElements, KeyGenerationError {
+  public void insert(E element) throws ValidationError, DuplicateElements, KeyGenerationError, StorageInaccessibleError {
     this.collection.insert(element);
   }
 
 
   @Override
-  public void insert(ElementKey key, E element) throws ValidationError, DuplicateElements {
+  public void insert(ElementKey key, E element) throws ValidationError, DuplicateElements, StorageInaccessibleError {
     this.collection.insert(key, element);
   }
 
-  public void insert(String key, E element) throws ValidationError, DuplicateElements {
+  public void insert(String key, E element) throws ValidationError, DuplicateElements, StorageInaccessibleError {
     final ElementKey keyParsed = collection.getElementKeyFromString(key);
     this.collection.insert(keyParsed, element);
   }

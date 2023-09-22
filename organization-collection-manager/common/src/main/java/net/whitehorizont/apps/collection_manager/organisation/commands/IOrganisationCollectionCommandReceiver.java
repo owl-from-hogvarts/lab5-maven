@@ -11,6 +11,7 @@ import net.whitehorizont.apps.collection_manager.core.collection.keys.BaseId;
 import net.whitehorizont.apps.collection_manager.core.collection.keys.ElementKey;
 import net.whitehorizont.apps.collection_manager.core.collection.keys.UUID_ElementId;
 import net.whitehorizont.apps.collection_manager.core.commands.interfaces.ICollectionCommandReceiver;
+import net.whitehorizont.apps.collection_manager.core.storage.errors.StorageInaccessibleError;
 import net.whitehorizont.apps.collection_manager.organisation.definitions.OrganisationType;
 import net.whitehorizont.apps.collection_manager.organisation.definitions.OrganisationElementDefinition.OrganisationElementFull;
 import net.whitehorizont.apps.collection_manager.organisation.definitions.OrganisationElementDefinition.OrganisationElementWritable;
@@ -25,7 +26,7 @@ public interface IOrganisationCollectionCommandReceiver extends ICollectionComma
 
   void removeById(UUID_ElementId id);
 
-  void removeByRevenue(RemovalCriteria removalCriteria, double targetValue) throws ValidationError;
+  void removeByRevenue(RemovalCriteria removalCriteria, double targetValue) throws ValidationError, StorageInaccessibleError;
 
   Observable<Pair<ElementKey, OrganisationElementFull>> getStartsWith$(String startOfFullName);
 
@@ -36,5 +37,5 @@ public interface IOrganisationCollectionCommandReceiver extends ICollectionComma
     ABOVE
   }
 
-  void insert(String key, OrganisationElementWritable element) throws ValidationError, DuplicateElements;
+  void insert(String key, OrganisationElementWritable element) throws ValidationError, DuplicateElements, StorageInaccessibleError;
 }

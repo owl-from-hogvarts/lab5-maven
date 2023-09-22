@@ -15,7 +15,7 @@ import net.whitehorizont.apps.organization_collection_manager.lib.validators.Val
 public class CoordinatesDefinition {
   private static final String COORDINATES_TITLE = "Coordinates";
 
-  private static final FieldMetadataExtended<Coordinates, CoordinatesWriteable, Integer> X_METADATA = FieldMetadataExtended
+  public static final FieldMetadataExtended<Coordinates, CoordinatesWriteable, Integer> X_METADATA = FieldMetadataExtended
       .<Coordinates, CoordinatesWriteable, Integer>builder()
       .addSimpleValidator(value -> {
         final int x = value.intValue();
@@ -31,7 +31,7 @@ public class CoordinatesDefinition {
       .setRequired("X must be provided!")
       .build();
 
-  private static final FieldMetadataExtended<Coordinates, CoordinatesWriteable, Long> Y_METADATA = FieldMetadataExtended
+  public static final FieldMetadataExtended<Coordinates, CoordinatesWriteable, Long> Y_METADATA = FieldMetadataExtended
       .<Coordinates, CoordinatesWriteable, Long>builder()
       .setDisplayedName("Y")
       .setSQLReader(resultSet -> resultSet.getLong("coordinates_y"))

@@ -43,7 +43,7 @@ public class AddressDefinition {
     leafs.add(ZIP_CODE_METADATA);
 
     final List<MetadataComposite<Address, ?, ?>> child = new ArrayList<>();
-    child.add(LocationDefinition.getMetadata(address -> address.town));
+    child.add(LocationDefinition.getMetadata("Town", address -> address.town));
 
     return new MetadataComposite<>(TITLE, leafs, child, addressExtractor);
   }
@@ -53,7 +53,7 @@ public class AddressDefinition {
     protected String zipCode;
     protected LocationWritable town = new LocationWritable();
 
-    protected Location getTown() {
+    public Location getTown() {
       return this.town;
     }
   }

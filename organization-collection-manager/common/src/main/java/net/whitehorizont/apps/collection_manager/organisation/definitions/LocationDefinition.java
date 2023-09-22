@@ -54,14 +54,14 @@ public class LocationDefinition {
       .setRequired(null)
       .build();
 
-  public static <ParentHost> MetadataComposite<ParentHost, Location, LocationWritable> getMetadata(Function<ParentHost, LocationWritable> hostExtractor) {
+  public static <ParentHost> MetadataComposite<ParentHost, Location, LocationWritable> getMetadata(String title, Function<ParentHost, LocationWritable> hostExtractor) {
     final List<FieldMetadataExtended<Location, LocationWritable, ?>> leafs = new ArrayList<>(); 
     leafs.add(X_METADATA);
     leafs.add(Y_METADATA);
     leafs.add(Z_METADATA);
     leafs.add(NAME_METADATA);
-    
-    return new MetadataComposite<>(TITLE, leafs, new ArrayList<>(), hostExtractor);
+
+    return new MetadataComposite<>(title, leafs, new ArrayList<>(), hostExtractor);
   }
 
   public static class Location implements Serializable {

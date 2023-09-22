@@ -1,14 +1,9 @@
 package net.whitehorizont.apps.collection_manager.core.storage;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Optional;
-import java.util.function.Consumer;
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-
 import io.reactivex.rxjava3.core.Observable;
 import net.whitehorizont.apps.collection_manager.core.collection.RamCollection;
 import net.whitehorizont.apps.collection_manager.core.collection.CollectionMetadataDefinition.CollectionMetadata;
@@ -16,6 +11,7 @@ import net.whitehorizont.apps.collection_manager.core.collection.errors.Duplicat
 import net.whitehorizont.apps.collection_manager.core.collection.interfaces.ICollection;
 import net.whitehorizont.apps.collection_manager.core.collection.interfaces.ICollectionElement;
 import net.whitehorizont.apps.collection_manager.core.collection.keys.KeyGenerationError;
+import net.whitehorizont.apps.collection_manager.core.collection.middleware.CollectionMiddleware;
 import net.whitehorizont.apps.collection_manager.core.storage.errors.CollectionNotFound;
 import net.whitehorizont.apps.collection_manager.core.storage.errors.StorageInaccessibleError;
 import net.whitehorizont.apps.organization_collection_manager.lib.FieldMetadataExtended;
@@ -33,18 +29,23 @@ import net.whitehorizont.apps.organization_collection_manager.lib.validators.Val
 public class DatabaseStorage<Host extends ICollectionElement<Host>, WritableHost extends Host>
     implements IStorage<ICollection<Host>> {
 
-  private final IWritableHostFactory<WritableHost> elementFactory;
   private final DatabaseConnectionFactory connectionFactory;
+  private final IWritableHostFactory<WritableHost> elementFactory;
   private final RamCollection.Configuration<Host, ?> collectionFactory;
   private final MetadataComposite<?, Host, WritableHost> elementMetadata;
   private final String sqlSelectAll;
 
+  private final CollectionMiddleware<Host> insertMiddleware;
+  private final CollectionMiddleware<Host> deleteMiddleware;
+
   public DatabaseStorage(DatabaseConnectionFactory connectionFactory, IWritableHostFactory<WritableHost> elementFactory, MetadataComposite<?, Host, WritableHost> elementMetadata,
-      RamCollection.Configuration<Host, ?> collectionFactory, String tableName) {
+      RamCollection.Configuration<Host, ?> collectionFactory, CollectionMiddleware<Host> insertMiddleware, CollectionMiddleware<Host> deleteMiddleware, String tableName) {
     this.connectionFactory = connectionFactory;
     this.elementFactory = elementFactory;
     this.collectionFactory = collectionFactory;
     this.elementMetadata = elementMetadata;
+    this.insertMiddleware = insertMiddleware;
+    this.deleteMiddleware = deleteMiddleware;
 
     this.sqlSelectAll = "SELECT * FROM " + tableName;
   }
@@ -65,7 +66,7 @@ public class DatabaseStorage<Host extends ICollectionElement<Host>, WritableHost
   public Observable<ICollection<Host>> load() {
     return Observable.create(subscriber -> {
       // request collection elements from database
-      safeExecuteQuery(sqlSelectAll, null, resultSet -> {
+      SqlUtils.safeExecuteQuery(connectionFactory, sqlSelectAll, null, resultSet -> {
         try {
         final var collection = createCollectionInstance();
         // populate collection with received elements
@@ -73,9 +74,18 @@ public class DatabaseStorage<Host extends ICollectionElement<Host>, WritableHost
           final var element = elementFactory.createWritable();
           fillElement(resultSet, elementMetadata,
               element);
-          collection.insert(element);
+          try {
+            collection.insert(element);
+          } catch (StorageInaccessibleError e) {
+            subscriber.onError(e);
+            return;
+          }
         }
-        // just return collection
+        // register middleware
+        
+        collection.registerInsert(insertMiddleware);
+        collection.registerDelete(deleteMiddleware);
+
 
         subscriber.onNext(collection);
         subscriber.onComplete();
@@ -116,21 +126,6 @@ public class DatabaseStorage<Host extends ICollectionElement<Host>, WritableHost
       field.getValueSetter().accept(element, value);
     } catch (SQLException|ValidationError e) {
       throw new RuntimeException(e);
-    }
-  }
-
-  private void safeExecuteQuery(String sqlTemplateString,
-      @Nullable Consumer<PreparedStatement> sqlStatementPreparer, Consumer<ResultSet> callback)
-      throws StorageInaccessibleError {
-    try (final Connection db = connectionFactory.getConnection();
-        PreparedStatement statement = db.prepareStatement(sqlTemplateString)) {
-      if (sqlStatementPreparer != null) {
-        sqlStatementPreparer.accept(statement);
-      }
-      final var resultSet = statement.executeQuery();
-      callback.accept(resultSet);
-    } catch (SQLException e) {
-      throw new StorageInaccessibleError(e);
     }
   }
 

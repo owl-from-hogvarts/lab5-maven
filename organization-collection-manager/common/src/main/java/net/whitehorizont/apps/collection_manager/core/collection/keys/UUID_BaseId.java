@@ -11,6 +11,10 @@ public class UUID_BaseId extends BaseId {
 
   private final UUID ID;
 
+  public UUID getUUID() {
+    return ID;
+  }
+
   protected UUID_BaseId() {
     ID = UUID.randomUUID();
   }

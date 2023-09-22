@@ -24,6 +24,7 @@ import net.whitehorizont.apps.collection_manager.core.collection.keys.ISerializa
 import net.whitehorizont.apps.collection_manager.core.collection.keys.KeyGenerationError;
 import net.whitehorizont.apps.collection_manager.core.collection.keys.UUID_CollectionId;
 import net.whitehorizont.apps.collection_manager.core.collection.middleware.CollectionMiddleware;
+import net.whitehorizont.apps.collection_manager.core.storage.errors.StorageInaccessibleError;
 import net.whitehorizont.apps.organization_collection_manager.lib.IElementInfoProvider;
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationError;
 
@@ -55,17 +56,18 @@ public class RamCollection<E extends ICollectionElement<E>>
    * @throws ValidationError
    * @throws KeyGenerationError
    * @throws DuplicateElements
+   * @throws StorageInaccessibleError
    * @throws NoSuchElement
    * @throws DuplicateElementsError
    */
   @Override
-  public void insert(E element) throws ValidationError, DuplicateElements, KeyGenerationError {
+  public void insert(E element) throws ValidationError, DuplicateElements, KeyGenerationError, StorageInaccessibleError {
     insert(generateElementKey(), element);
   }
 
 
   @Override
-  public void insert(ElementKey key, E element) throws ValidationError, DuplicateElements {
+  public void insert(ElementKey key, E element) throws ValidationError, DuplicateElements, StorageInaccessibleError {
     if (containsKey(key)) {
       throw new DuplicateElements(key);
     }
@@ -127,7 +129,7 @@ public class RamCollection<E extends ICollectionElement<E>>
   }
 
   @Override
-  public void replace(ElementKey key, E element) throws ValidationError, NoSuchElement {
+  public void replace(ElementKey key, E element) throws ValidationError, NoSuchElement, StorageInaccessibleError {
     checkIfExists(key);
     final var removed = this.delete(key);
     try {
@@ -153,7 +155,7 @@ public class RamCollection<E extends ICollectionElement<E>>
   }
 
   @Override
-  public E delete(ElementKey key) throws NoSuchElement, ValidationError {
+  public E delete(ElementKey key) throws NoSuchElement, ValidationError, StorageInaccessibleError {
     checkIfExists(key);
 
     final var element = this.elements.get(key);
@@ -175,11 +177,19 @@ public class RamCollection<E extends ICollectionElement<E>>
     return this.elementMetadata.getDisplayedName();
   }
 
+  public void registerInsert(CollectionMiddleware<E> middleware) {
+    this.insertMiddleware.add(middleware);
+  }
+
+  public void registerDelete(CollectionMiddleware<E> middleware) {
+    this.deleteMiddleware.add(middleware);
+  }
+
   public static class Configuration<E extends ICollectionElement<E>, This extends Configuration<E, This>> implements Cloneable {
     private Optional<CollectionMetadata> metadata = Optional.empty();
-    private IElementInfoProvider<E> elementMetadata;
-    private List<CollectionMiddleware<E>> insertMiddleware;
-    private List<CollectionMiddleware<E>> deleteMiddleware;
+    private @Nullable IElementInfoProvider<E> elementMetadata;
+    private @Nullable List<CollectionMiddleware<E>> insertMiddleware;
+    private @Nullable List<CollectionMiddleware<E>> deleteMiddleware;
     
     private This self() {
       return (This) this;

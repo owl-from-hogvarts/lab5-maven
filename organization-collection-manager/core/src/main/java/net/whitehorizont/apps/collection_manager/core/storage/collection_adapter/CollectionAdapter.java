@@ -17,6 +17,7 @@ import net.whitehorizont.apps.collection_manager.core.collection.interfaces.ICol
 import net.whitehorizont.apps.collection_manager.core.collection.keys.KeyGenerationError;
 import net.whitehorizont.apps.collection_manager.core.storage.IFileAdapter;
 import net.whitehorizont.apps.collection_manager.core.storage.errors.ResourceEmpty;
+import net.whitehorizont.apps.collection_manager.core.storage.errors.StorageInaccessibleError;
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationError;
 
 /**
@@ -67,7 +68,7 @@ public class CollectionAdapter<E extends ICollectionElement<E>>
     return serializedContent;
   }
 
-  public RamCollection<E> parse(ByteBuffer fileContent) throws ValidationError, KeyGenerationError, DuplicateElements {
+  public RamCollection<E> parse(ByteBuffer fileContent) throws ValidationError, KeyGenerationError, DuplicateElements, StorageInaccessibleError {
     // receive buffer
     // cast to string
     final String xml_content = DEFAULT_ENCODING.decode(fileContent).toString();
@@ -93,7 +94,7 @@ public class CollectionAdapter<E extends ICollectionElement<E>>
 
   @Override
   public RamCollection<E> deserialize(byte[] fileContent)
-      throws ValidationError, ResourceEmpty, KeyGenerationError, DuplicateElements {
+      throws ValidationError, ResourceEmpty, KeyGenerationError, DuplicateElements, StorageInaccessibleError {
     if (fileContent.length == 0) {
       // if something wrong with file, error any way
       // this is responsibility of client code to decide what to do with errors

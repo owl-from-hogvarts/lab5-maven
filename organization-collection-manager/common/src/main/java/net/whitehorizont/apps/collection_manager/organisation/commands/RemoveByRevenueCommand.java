@@ -5,6 +5,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import io.reactivex.rxjava3.core.Observable;
 import net.whitehorizont.apps.collection_manager.core.commands.interfaces.ICommand;
 import net.whitehorizont.apps.collection_manager.core.dependencies.IProvideCollectionReceiver;
+import net.whitehorizont.apps.collection_manager.core.storage.errors.StorageInaccessibleError;
 import net.whitehorizont.apps.collection_manager.organisation.commands.IOrganisationCollectionCommandReceiver.RemovalCriteria;
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationError;
 
@@ -24,7 +25,7 @@ public class RemoveByRevenueCommand
       IProvideCollectionReceiver<? extends IOrganisationCollectionCommandReceiver> dependencyProvider) {
     try {
       dependencyProvider.getCollectionReceiver().removeByRevenue(removalCriteria, targetValue);
-    } catch (ValidationError e) {
+    } catch (ValidationError|StorageInaccessibleError e) {
       return Observable.error(e);
     }
     return Observable.empty();
