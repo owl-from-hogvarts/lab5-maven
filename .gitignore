@@ -14,3 +14,4 @@ test.xml
 .vscode
 build
 dist
+database.toml

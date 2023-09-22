@@ -5,7 +5,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
+import com.electronwill.nightconfig.core.file.FileConfig;
+
+import io.reactivex.rxjava3.annotations.NonNull;
 import net.whitehorizont.apps.collection_manager.core.collection.CollectionManager;
 import net.whitehorizont.apps.collection_manager.core.collection.RamCollection;
 import net.whitehorizont.apps.collection_manager.core.collection.middleware.CollectionMiddleware;
@@ -30,13 +34,13 @@ import net.whitehorizont.libs.network.transport.udp.datagram_channel.DatagramCha
 @NonNullByDefault
 public class Server {
   public static void main(String[] args) throws StorageInaccessibleError {
-    startServer().start();
+    startServer(args).start();
   }
 
-  public static CommandQueue<CoreDependencyManager<OrganisationCollectionCommandReceiver, OrganisationElementFull>, InetSocketAddress> startServer()
+  public static CommandQueue<CoreDependencyManager<OrganisationCollectionCommandReceiver, OrganisationElementFull>, InetSocketAddress> startServer(String[] args)
       throws StorageInaccessibleError {
     // final var testStorage = setupStorage(getStoragePath());
-    final var testStorage = setupDatabase();
+    final var testStorage = setupDatabase(args);
     final var collectionManager = new CollectionManager<>(testStorage);
     final var collectionManagerReceiver = new CollectionManagerReceiver<>(collectionManager);
 
@@ -89,8 +93,14 @@ public class Server {
     return maybePath;
   }
 
-  private static DatabaseStorage<OrganisationElementFull, OrganisationElementFullWritable> setupDatabase() {
-    final var connectionFactory = new DatabaseConnectionFactory("jdbc:postgresql:studs", "removed", "removed");
+  private static DatabaseStorage<OrganisationElementFull, OrganisationElementFullWritable> setupDatabase(String[] args) {
+    final String configPath = args.length > 0 ? args[0] : "./database.toml";
+    final var config = FileConfig.of(configPath);
+    config.load();
+    final @NonNull String database_path = config.get("db_path");
+    final @NonNull String database_user = config.get("user");
+    final @NonNull String database_password = config.get("password");
+    final var connectionFactory = new DatabaseConnectionFactory(database_path, database_user, database_password);
     final var elementMetadata = OrganisationElementDefinition.getMetadata();
     final RamCollection.Configuration<OrganisationElementFull, ?> collectionConfiguration = new RamCollection.Configuration<>();
     final List<CollectionMiddleware<OrganisationElementFull>> insertMiddleware = new ArrayList<>();
