@@ -2,6 +2,7 @@ package net.whitehorizont.apps.collection_manager.core.commands;
 
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.javatuples.Pair;
@@ -75,14 +76,21 @@ public class OrganisationCollectionCommandReceiver extends CollectionCommandRece
   }
 
   @Override
-  public void removeById(UUID_ElementId id) {
-    this.collection.getEveryWithKey$()
+  public Single<ElementKey> removeById(UUID_ElementId id) {
+    return this.collection.getEveryWithKey$()
         .filter(keyElement -> OrganisationElementDefinition.ID_METADATA.getValueGetter()
             .apply(keyElement.getValue1())
             .equals(id))
+        .singleOrError()
         .map(keyElement -> keyElement.getValue0())
-        // blocking prevents concurrent modification
-        .blockingSubscribe(key -> this.collection.delete(key));
+        .doOnSuccess(key -> this.collection.delete(key))
+        .onErrorResumeNext(error -> {
+          if (error instanceof IllegalArgumentException || error instanceof NoSuchElementException) {
+            return Single.error(new NoSuchElement(id));
+          }
+
+          return Single.error(error);
+        });
   }
 
   @Override

@@ -3,12 +3,13 @@ package net.whitehorizont.apps.collection_manager.organisation.commands;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import io.reactivex.rxjava3.core.Observable;
+import net.whitehorizont.apps.collection_manager.core.collection.keys.ElementKey;
 import net.whitehorizont.apps.collection_manager.core.collection.keys.UUID_ElementId;
 import net.whitehorizont.apps.collection_manager.core.commands.interfaces.ICommand;
 import net.whitehorizont.apps.collection_manager.core.dependencies.IProvideCollectionReceiver;
 
 @NonNullByDefault
-public class RemoveCommand implements ICommand<Long, IProvideCollectionReceiver<? extends IOrganisationCollectionCommandReceiver>> {
+public class RemoveCommand implements ICommand<ElementKey, IProvideCollectionReceiver<? extends IOrganisationCollectionCommandReceiver>> {
   private final UUID_ElementId id;
 
   public RemoveCommand(UUID_ElementId id) {
@@ -16,10 +17,9 @@ public class RemoveCommand implements ICommand<Long, IProvideCollectionReceiver<
   }
 
   @Override
-  public Observable<Long> execute(
+  public Observable<ElementKey> execute(
       IProvideCollectionReceiver<? extends IOrganisationCollectionCommandReceiver> dependencyProvider) {
-    dependencyProvider.getCollectionReceiver().removeById(id);
-    return Observable.empty();
+    return dependencyProvider.getCollectionReceiver().removeById(id).toObservable();
   }
   
 }

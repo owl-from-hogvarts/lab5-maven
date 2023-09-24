@@ -24,7 +24,7 @@ public interface IOrganisationCollectionCommandReceiver extends ICollectionComma
 
   Single<Long> countByType(OrganisationType type);
 
-  void removeById(UUID_ElementId id);
+  Single<ElementKey> removeById(UUID_ElementId id);
 
   void removeByRevenue(RemovalCriteria removalCriteria, double targetValue) throws ValidationError, StorageInaccessibleError;
 
