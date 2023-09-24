@@ -2,17 +2,17 @@ package net.whitehorizont.apps.collection_manager.core.storage;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.function.Consumer;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 import net.whitehorizont.apps.collection_manager.core.storage.errors.StorageInaccessibleError;
 
+@NonNullByDefault
 public class SqlUtils {
   public static void safeExecuteQuery(DatabaseConnectionFactory connectionFactory, String sqlTemplateString,
-      @Nullable StatementPreparer sqlStatementPreparer, Consumer<ResultSet> callback)
+      @Nullable StatementPreparer sqlStatementPreparer, @Nullable SqlResultReceiver callback)
       throws StorageInaccessibleError {
     try (final Connection db = connectionFactory.getConnection();
         PreparedStatement statement = db.prepareStatement(sqlTemplateString)) {
@@ -21,7 +21,8 @@ public class SqlUtils {
       }
       if (callback != null) {
         final var resultSet = statement.executeQuery();
-        callback.accept(resultSet);
+        callback.receiveResult(resultSet);
+        resultSet.close();
         return;
       }
       statement.execute();
