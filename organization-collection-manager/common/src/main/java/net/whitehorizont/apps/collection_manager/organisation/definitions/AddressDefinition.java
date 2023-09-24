@@ -24,7 +24,6 @@ public class AddressDefinition {
       .setValueBuilder(new StringFactory())
       .setValueGetter(host -> host.street)
       .setValueSetter((host, value) -> host.setStreet(value))
-      .setRequired(null)
       .build();
   public static FieldMetadataExtended<Address, AddressWritable, String> ZIP_CODE_METADATA = FieldMetadataExtended
       .<Address, AddressWritable, String>builder()
@@ -33,7 +32,6 @@ public class AddressDefinition {
       .setValueSetter((host, value) -> host.setZipCode(value))
       .setValueGetter(host -> host.zipCode)
       .setValueBuilder(new StringFactory())
-      .setRequired(null)
       .build();
 
   public static <ParentHost> MetadataComposite<ParentHost, Address, AddressWritable> getMetadata(

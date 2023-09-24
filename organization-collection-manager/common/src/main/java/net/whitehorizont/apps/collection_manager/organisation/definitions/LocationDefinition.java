@@ -19,7 +19,6 @@ public class LocationDefinition {
   public static FieldMetadataExtended<Location, LocationWritable, Float> X_METADATA = FieldMetadataExtended
       .<Location, LocationWritable, Float>builder()
       // just use default on null message
-      .setRequired(null)
       .setSQLReader(resultSet -> resultSet.getFloat("address_location_x"))
       .setValueGetter(host -> host.x)
       .setValueSetter((host, value) -> host.setX(value))
@@ -28,7 +27,6 @@ public class LocationDefinition {
       .build();
   public static FieldMetadataExtended<Location, LocationWritable, Double> Y_METADATA = FieldMetadataExtended
       .<Location, LocationWritable, Double>builder()
-      .setRequired(null)
       .setSQLReader(resultSet -> resultSet.getDouble("address_location_y"))
       .setValueGetter(host -> host.y)
       .setValueSetter((host, value) -> host.setY(value))
@@ -42,7 +40,6 @@ public class LocationDefinition {
       .setValueSetter((host, value) -> host.setZ(value))
       .setValueGetter(host -> host.z)
       .setValueBuilder(new IntegerFactory<>(Integer.class))
-      .setRequired(null)
       .build();
   public static FieldMetadataExtended<Location, LocationWritable, String> NAME_METADATA = FieldMetadataExtended
       .<Location, LocationWritable, String>builder()
@@ -51,7 +48,6 @@ public class LocationDefinition {
       .setValueSetter((host, value) -> host.setName(value))
       .setValueGetter(host -> host.name)
       .setValueBuilder(new StringFactory())
-      .setRequired(null)
       .build();
 
   public static <ParentHost> MetadataComposite<ParentHost, Location, LocationWritable> getMetadata(String title, Function<ParentHost, LocationWritable> hostExtractor) {
