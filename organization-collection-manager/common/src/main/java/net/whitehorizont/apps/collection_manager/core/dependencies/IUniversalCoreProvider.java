@@ -17,6 +17,6 @@ import net.whitehorizont.apps.collection_manager.core.commands.interfaces.IColle
  * Runtime check will complicate things a lot.
  */
 @NonNullByDefault
-public interface IUniversalCoreProvider<CR extends ICollectionCommandReceiver<E>, E extends ICollectionElement<E>> extends IProvideCollectionReceiver<CR>,IProvideNothing, IProvideCollectionManagerReceiver<ICollection<E>> {
+public interface IUniversalCoreProvider<CR extends ICollectionCommandReceiver<E>, E extends ICollectionElement<E>> extends IProvideCollectionReceiver<CR>,IProvideNothing, IProvideCollectionManagerReceiver<ICollection<E>>, IProvideAuthReceiver {
   
 }

@@ -15,6 +15,7 @@ import net.whitehorizont.apps.collection_manager.core.collection.errors.Duplicat
 import net.whitehorizont.apps.collection_manager.core.collection.interfaces.ICollection;
 import net.whitehorizont.apps.collection_manager.core.collection.interfaces.ICollectionElement;
 import net.whitehorizont.apps.collection_manager.core.collection.keys.KeyGenerationError;
+import net.whitehorizont.apps.collection_manager.core.crypto.Sha256;
 import net.whitehorizont.apps.collection_manager.core.storage.IFileAdapter;
 import net.whitehorizont.apps.collection_manager.core.storage.errors.ResourceEmpty;
 import net.whitehorizont.apps.collection_manager.core.storage.errors.StorageInaccessibleError;

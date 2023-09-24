@@ -19,7 +19,9 @@ import net.whitehorizont.apps.collection_manager.cli.commands.History;
 import net.whitehorizont.apps.collection_manager.cli.commands.ICliCommand;
 import net.whitehorizont.apps.collection_manager.cli.commands.Info;
 import net.whitehorizont.apps.collection_manager.cli.commands.Insert;
+import net.whitehorizont.apps.collection_manager.cli.commands.Login;
 import net.whitehorizont.apps.collection_manager.cli.commands.PrintDescending;
+import net.whitehorizont.apps.collection_manager.cli.commands.Register;
 import net.whitehorizont.apps.collection_manager.cli.commands.RemoveById;
 import net.whitehorizont.apps.collection_manager.cli.commands.RemoveGreater;
 import net.whitehorizont.apps.collection_manager.cli.commands.RemoveLower;
@@ -89,6 +91,10 @@ public class App
         baseCommands.put("insert", insert);
         final var update = new Update(OrganisationElementDefinition.getInputMetadata(), new OrganisationElementDefinition.OrganisationElementFactory(), retries);
         baseCommands.put("update", update);
+        final var register = new Register();
+        baseCommands.put("register", register);
+        final var login = new Login();
+        baseCommands.put("login", login);
 
         final var executeScriptCommandSet = buildExecuteScriptCommandSet();
         final var executeScript = new ExecuteScript<>(executeScriptCommandSet);

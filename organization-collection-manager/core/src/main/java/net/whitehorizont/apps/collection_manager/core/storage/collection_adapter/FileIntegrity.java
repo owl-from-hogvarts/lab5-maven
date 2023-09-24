@@ -2,12 +2,14 @@ package net.whitehorizont.apps.collection_manager.core.storage.collection_adapte
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
+import net.whitehorizont.apps.collection_manager.core.crypto.ICryptoProvider;
+
 public class FileIntegrity {
   @XStreamAlias("algorithm")
   final String algorithmName;
   final byte[] integrityData;
 
-  FileIntegrity(IntegrityAlgorithm algorithm, byte[] data) {
+  FileIntegrity(ICryptoProvider algorithm, byte[] data) {
     algorithmName = algorithm.getDisplayedName();
     integrityData = algorithm.apply(data);
   }
