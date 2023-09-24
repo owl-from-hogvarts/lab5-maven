@@ -61,8 +61,7 @@ public class IntegerFactory<Num extends Number> implements IFromStringBuilder<Nu
                 + (numberExample.example != null ? numberExample.example + "\n" : "")
                 + "Number should be within range: " + numberFactory.getField("MIN_VALUE").get(numberFactory).toString()
                 + " <= number <= "
-                + numberFactory.getField("MAX_VALUE").get(numberFactory).toString(),
-            e);
+                + numberFactory.getField("MAX_VALUE").get(numberFactory).toString());
       }
     } catch (NoSuchMethodException | NoSuchFieldException | IllegalAccessException _ignore) {
       // похуй
