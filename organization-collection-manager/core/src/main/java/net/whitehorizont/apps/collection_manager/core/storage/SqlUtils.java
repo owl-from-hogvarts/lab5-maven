@@ -3,6 +3,7 @@ package net.whitehorizont.apps.collection_manager.core.storage;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -11,7 +12,7 @@ import net.whitehorizont.apps.collection_manager.core.storage.errors.StorageInac
 
 @NonNullByDefault
 public class SqlUtils {
-  public static void safeExecuteQuery(DatabaseConnectionFactory connectionFactory, String sqlTemplateString,
+  public static Optional<Integer> safeExecuteQuery(DatabaseConnectionFactory connectionFactory, String sqlTemplateString,
       @Nullable StatementPreparer sqlStatementPreparer, @Nullable SqlResultReceiver callback)
       throws StorageInaccessibleError {
     try (final Connection db = connectionFactory.getConnection();
@@ -19,14 +20,20 @@ public class SqlUtils {
       if (sqlStatementPreparer != null) {
         sqlStatementPreparer.prepare(statement);
       }
-      if (callback != null) {
-        final var resultSet = statement.executeQuery();
+      final boolean isResultSet = statement.execute();
+      if (isResultSet && (callback != null)) {
+        final var resultSet = statement.getResultSet();
         callback.receiveResult(resultSet);
         resultSet.close();
-        return;
+        return Optional.empty();
       }
-      statement.execute();
 
+      final boolean isCount = !isResultSet;
+      if (isCount) {
+        return Optional.of(statement.getUpdateCount());
+      }
+
+      return Optional.empty();
     } catch (SQLException e) {
       throw new StorageInaccessibleError(e);
     }
