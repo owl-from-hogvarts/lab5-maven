@@ -17,9 +17,10 @@ import net.whitehorizont.apps.collection_manager.cli.errors.IGlobalErrorHandler;
 import net.whitehorizont.apps.collection_manager.cli.errors.IInterruptHandler;
 import net.whitehorizont.apps.collection_manager.cli.errors.TerminalUnavailable;
 import net.whitehorizont.apps.collection_manager.core.commands.interfaces.ICommandQueue;
+import net.whitehorizont.apps.collection_manager.core.dependencies.IProvideAuthReceiver;
 
 @NonNullByDefault
-public class CliDependencyManager<DP> {
+public class CliDependencyManager<DP extends IProvideAuthReceiver> {
 
   private final Map<String, ICliCommand<? super DP>> commands;
   private final LineReader commandLineReader;
@@ -40,8 +41,14 @@ public class CliDependencyManager<DP> {
 
   private final Streams streams;
   private final ICommandQueue<DP> commandQueue;
+  private final CredentialManager<DP> credentialManager;
   private final Optional<IInterruptHandler> onInterrupt;
   private final IGlobalErrorHandler globalErrorHandler;
+
+  public CredentialManager<DP> getCredentialManager() {
+    return credentialManager;
+  }
+
 
   public IGlobalErrorHandler getGlobalErrorHandler() {
     return globalErrorHandler;
@@ -55,6 +62,10 @@ public class CliDependencyManager<DP> {
     return this.commands;
   }
 
+  /**
+   * 
+   * @return command queue used to send commands to server
+   */
   public ICommandQueue<DP> getCommandQueue() {
     return this.commandQueue;
   }
@@ -79,6 +90,7 @@ public class CliDependencyManager<DP> {
     this.globalErrorHandler = builder.globalErrorHandler;
     this.displayPrompts = builder.displayPrompts;
     this.commandQueue = builder.commandQueue;
+    this.credentialManager = builder.credentialManager;
 
     try {
       final PrintStream voidStream = new PrintStream(OutputStream.nullOutputStream());
@@ -100,7 +112,7 @@ public class CliDependencyManager<DP> {
     }
   }
 
-  public static class Builder<DP> {
+  public static class Builder<DP extends IProvideAuthReceiver> {
     private Map<String, ICliCommand<? super DP>> commands;
     private Streams streams;
     private @Nullable IInterruptHandler onInterruptHandler;
@@ -108,6 +120,13 @@ public class CliDependencyManager<DP> {
     private @Nullable IGlobalErrorHandler globalErrorHandler;
     private boolean displayPrompts = true;
     private ICommandQueue<DP> commandQueue;
+    private CredentialManager<DP> credentialManager;
+
+
+    public Builder<DP> setCredentialManager(CredentialManager<DP> credentialManager) {
+      this.credentialManager = credentialManager;
+      return this;
+    }
 
     public Builder<DP> setCommandQueue(ICommandQueue<DP> commandQueue) {
       this.commandQueue = commandQueue;

@@ -16,10 +16,11 @@ import net.whitehorizont.apps.collection_manager.cli.CliDependencyManager;
 import net.whitehorizont.apps.collection_manager.cli.Streams;
 import net.whitehorizont.apps.collection_manager.cli.errors.RecursionDetected;
 import net.whitehorizont.apps.collection_manager.core.commands.interfaces.ICommandQueue;
+import net.whitehorizont.apps.collection_manager.core.dependencies.IProvideAuthReceiver;
 import net.whitehorizont.libs.file_system.PathHelpers;
 
 @NonNullByDefault
-public class ExecuteScript<DP> implements ICliCommand<DP> {
+public class ExecuteScript<DP extends IProvideAuthReceiver> implements ICliCommand<DP> {
   public static final String EXECUTE_SCRIPT_COMMAND = "execute_script";
   private static final String DESCRIPTION = "executes new line separated sequence of commands from file";
   private final Set<Path> runningScripts = new HashSet<>();

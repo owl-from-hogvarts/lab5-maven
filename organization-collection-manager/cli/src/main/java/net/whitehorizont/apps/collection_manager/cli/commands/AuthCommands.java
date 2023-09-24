@@ -3,6 +3,7 @@ package net.whitehorizont.apps.collection_manager.cli.commands;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import net.whitehorizont.apps.collection_manager.cli.CliDependencyManager;
+import net.whitehorizont.apps.collection_manager.cli.LoginData;
 import net.whitehorizont.apps.collection_manager.core.dependencies.IProvideAuthReceiver;
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationError;
 
@@ -24,6 +25,4 @@ public abstract class AuthCommands {
     return new LoginData(login, password);
   }
 
-  protected static record LoginData(String login, String password) {
-  }
 }

@@ -9,6 +9,7 @@ import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.observables.ConnectableObservable;
 import io.reactivex.rxjava3.subjects.PublishSubject;
 import io.reactivex.rxjava3.subjects.Subject;
+import net.whitehorizont.apps.collection_manager.core.commands.errors.AuthException;
 import net.whitehorizont.apps.collection_manager.core.commands.interfaces.ICommand;
 import net.whitehorizont.apps.collection_manager.core.commands.interfaces.ICommandQueue;
 import net.whitehorizont.libs.network.past.IConnection;
@@ -35,6 +36,10 @@ public class CommandQueue<DependencyManager, Endpoint> implements ICommandQueue<
   public <@NonNull T> Observable<T> push(ICommand<T, ? super DependencyManager> command) {
     if (command.isServerOnly()) {
       return Observable.error(new PermissionError("server only command!"));
+    }
+
+    if (!(command instanceof AuthCommand)) {
+      return Observable.error(new AuthException("Command lacks auth data! Probably there is bug in your client app!"));
     }
 
     return command.execute(dependencyManager).publish().refCount();

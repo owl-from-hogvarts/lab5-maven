@@ -29,6 +29,7 @@ public class Login extends AuthCommands implements ICliCommand<IProvideAuthRecei
   public Observable<?> run(CliDependencyManager<? extends IProvideAuthReceiver> dependencyManager,
       Stack<String> arguments) throws Exception {
         final var loginData = askForCredentials(dependencyManager);
+        dependencyManager.getCredentialManager().setLoginData(loginData);
         return dependencyManager.getCommandQueue().push(new LoginCommand(loginData.login(), loginData.password()));
       }
   

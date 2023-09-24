@@ -19,9 +19,10 @@ import net.whitehorizont.apps.collection_manager.cli.errors.IGlobalErrorHandler;
 import net.whitehorizont.apps.collection_manager.cli.errors.IInterruptHandler;
 import net.whitehorizont.apps.collection_manager.cli.errors.IncorrectNumberOfArguments;
 import net.whitehorizont.apps.collection_manager.cli.errors.UnknownCommand;
+import net.whitehorizont.apps.collection_manager.core.dependencies.IProvideAuthReceiver;
 
 @NonNullByDefault
-public class CLI<DP> {
+public class CLI<DP extends IProvideAuthReceiver> {
   private static final String DEFAULT_PROMPT = " > ";
   private static final String COMMAND_SEPARATOR = " ";
   private final LineReader reader;

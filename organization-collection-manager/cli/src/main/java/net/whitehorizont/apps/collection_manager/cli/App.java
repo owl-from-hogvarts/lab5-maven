@@ -68,6 +68,7 @@ public class App
         clientTransport.setTimeout(RECEIVE_TIMEOUT_MS);
         final var connectionToServer = new Past<>(clientTransport).connect(serverEndpoint);
         final ICommandQueue<IUniversalCoreProvider<? extends IOrganisationCollectionCommandReceiver, OrganisationElementFull>> commandQueue = new NetworkCommandQueue<>(connectionToServer);
+        final var credentialManager = new CredentialManager<>(commandQueue);
 
         // other configuration 
         final var streams = new Streams(System.in, System.out, System.err);
@@ -75,7 +76,8 @@ public class App
             .setStreams(streams)
             .setGlobalErrorHandler(globalErrorHandler)
             .setCommands(commands)
-            .setCommandQueue(commandQueue);
+            .setCommandQueue(credentialManager)
+            .setCredentialManager(credentialManager);
         final var dependencyManager = new CliDependencyManager<>(dependencyManagerBuilder);
         final var cli = new CLI<>(dependencyManager);
 
