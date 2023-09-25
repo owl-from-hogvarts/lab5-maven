@@ -64,6 +64,7 @@ public class ExecuteScript<DP extends IProvideAuthReceiver> implements ICliComma
           .setStreams(scriptStreams)
           .setCommands(executeScriptCommandSet)
           .setOnInterruptHandler(() -> Observable.empty())
+          .setCredentialManager(dependencyManager.getCredentialManager())
           .setGlobalErrorHandler((e, _dependencyManager) -> {
             dependencyManager.getGlobalErrorHandler().handle(e, _dependencyManager);
             return true;

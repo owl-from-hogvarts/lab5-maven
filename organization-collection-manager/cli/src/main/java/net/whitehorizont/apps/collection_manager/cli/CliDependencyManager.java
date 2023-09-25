@@ -41,11 +41,11 @@ public class CliDependencyManager<DP extends IProvideAuthReceiver> {
 
   private final Streams streams;
   private final ICommandQueue<DP> commandQueue;
-  private final CredentialManager<DP> credentialManager;
+  private final CredentialManager<? extends DP> credentialManager;
   private final Optional<IInterruptHandler> onInterrupt;
   private final IGlobalErrorHandler globalErrorHandler;
 
-  public CredentialManager<DP> getCredentialManager() {
+  public CredentialManager<? extends DP> getCredentialManager() {
     return credentialManager;
   }
 
@@ -120,10 +120,10 @@ public class CliDependencyManager<DP extends IProvideAuthReceiver> {
     private @Nullable IGlobalErrorHandler globalErrorHandler;
     private boolean displayPrompts = true;
     private ICommandQueue<DP> commandQueue;
-    private CredentialManager<DP> credentialManager;
+    private CredentialManager<? extends DP> credentialManager;
 
 
-    public Builder<DP> setCredentialManager(CredentialManager<DP> credentialManager) {
+    public Builder<DP> setCredentialManager(CredentialManager<? extends DP> credentialManager) {
       this.credentialManager = credentialManager;
       return this;
     }
