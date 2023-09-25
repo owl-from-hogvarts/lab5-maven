@@ -17,6 +17,10 @@ public class CredentialManager<DP extends IProvideAuthReceiver> implements IComm
   private final ICommandQueue<DP> nextCommandQueue;
   private Optional<LoginData> loginData = Optional.empty();
 
+  public Optional<LoginData> getLoginData() {
+    return loginData;
+  }
+
   public void setLoginData(LoginData loginData) {
     this.loginData = Optional.of(loginData);
   }

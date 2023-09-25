@@ -27,6 +27,7 @@ import net.whitehorizont.apps.collection_manager.cli.commands.RemoveGreater;
 import net.whitehorizont.apps.collection_manager.cli.commands.RemoveLower;
 import net.whitehorizont.apps.collection_manager.cli.commands.Show;
 import net.whitehorizont.apps.collection_manager.cli.commands.Update;
+import net.whitehorizont.apps.collection_manager.cli.commands.WhoAmI;
 import net.whitehorizont.apps.collection_manager.cli.errors.GlobalErrorHandler;
 import net.whitehorizont.apps.collection_manager.core.collection.CollectionMetadataDefinition;
 import net.whitehorizont.apps.collection_manager.core.commands.interfaces.ICommandQueue;
@@ -97,6 +98,8 @@ public class App
         baseCommands.put("register", register);
         final var login = new Login();
         baseCommands.put("login", login);
+        final var whoami = new WhoAmI();
+        baseCommands.put("whoami", whoami);
 
         final var executeScriptCommandSet = buildExecuteScriptCommandSet();
         final var executeScript = new ExecuteScript<>(executeScriptCommandSet);
