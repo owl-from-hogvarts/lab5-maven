@@ -17,6 +17,13 @@ import net.whitehorizont.apps.organization_collection_manager.lib.IWritableHostF
 import net.whitehorizont.apps.organization_collection_manager.lib.MetadataComposite;
 import net.whitehorizont.apps.organization_collection_manager.lib.validators.ValidationError;
 
+// element must adhere to ICollectionElement (server's (InputCommand's) requirement)
+// otherwise cli command would not be able to issue command to server
+// since cli command does not know, what transformations server does on data 
+// it may only pass ready made elements to server
+
+// hardcoding types reveals to cli command which transformations server does
+// therefore it can pass raw data
 @NonNullByDefault
 public class Insert
     extends InputElementCommand<OrganisationElement, OrganisationElementWritable>

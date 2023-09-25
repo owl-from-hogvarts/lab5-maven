@@ -31,21 +31,19 @@ import net.whitehorizont.apps.organization_collection_manager.lib.validators.Val
  */
 @NonNullByDefault
 public class OrganisationCollectionCommandReceiver extends CollectionCommandReceiver<OrganisationElementFull> implements IOrganisationCollectionCommandReceiver {
-  final ICollection<OrganisationElementFull> collection;
 
   public OrganisationCollectionCommandReceiver(ICollection<OrganisationElementFull> collection) {
     super(collection);
-    this.collection = collection;
   }
 
   @Override
-  public Observable<Void> replaceById(BaseId id, OrganisationElementWritable prototype) {
-    final var entries = this.collection.getEveryWithKey$()
+  public Observable<Void> replaceById(String owner, BaseId id, OrganisationElementWritable prototype) {
+    final var entries = this.getOwnedWithKey$(owner)
         .filter(keyElement -> OrganisationElementDefinition.ID_METADATA.getValueGetter().apply(keyElement.getValue1())
             .equals(id));
     final var amount = entries.count().blockingGet();
     if (amount < 1) {
-      return Observable.error(new NoSuchElement(id));
+      return Observable.error(new NoSuchElement(id, owner));
     }
 
     // iteration would happen over freshly constructed list so
@@ -61,7 +59,7 @@ public class OrganisationCollectionCommandReceiver extends CollectionCommandRece
         final var element = new OrganisationElementFull(base.getMetadata(), updatedPrototype);
         // do replace
         final var key = keyElement.getValue0();
-        this.collection.replace(key, element);
+        this.replace(key, element);
         return Observable.empty();
       } catch (ValidationError | NoSuchElement e) {
         return Observable.error(e);
@@ -71,22 +69,22 @@ public class OrganisationCollectionCommandReceiver extends CollectionCommandRece
 
   @Override
   public Single<Long> countByType(OrganisationType type) {
-    return this.collection.getEvery$()
+    return this.getEvery$()
         .filter(element -> OrganisationElementDefinition.TYPE_METADATA.getValueGetter().apply(element.getElement()) == type).count();
   }
 
   @Override
-  public Single<ElementKey> removeById(UUID_ElementId id) {
-    return this.collection.getEveryWithKey$()
+  public Single<ElementKey> removeById(String owner, UUID_ElementId id) {
+    return this.getOwnedWithKey$(owner)
         .filter(keyElement -> OrganisationElementDefinition.ID_METADATA.getValueGetter()
             .apply(keyElement.getValue1())
             .equals(id))
         .singleOrError()
         .map(keyElement -> keyElement.getValue0())
-        .doOnSuccess(key -> this.collection.delete(key))
+        .doOnSuccess(key -> this.delete(key))
         .onErrorResumeNext(error -> {
           if (error instanceof IllegalArgumentException || error instanceof NoSuchElementException) {
-            return Single.error(new NoSuchElement(id));
+            return Single.error(new NoSuchElement(id, owner));
           }
 
           return Single.error(error);
@@ -94,8 +92,8 @@ public class OrganisationCollectionCommandReceiver extends CollectionCommandRece
   }
 
   @Override
-  public void removeByRevenue(RemovalCriteria removalCriteria, double targetValue) throws ValidationError, StorageInaccessibleError {
-    final var keysToDelete = this.getEveryWithKey$().filter(keyElement -> {
+  public void removeByRevenue(String owner, RemovalCriteria removalCriteria, double targetValue) throws ValidationError, StorageInaccessibleError {
+    final var keysToDelete = this.getOwnedWithKey$(owner).filter(keyElement -> {
       final @NonNull var currentAnnualTurnover = OrganisationElementDefinition.ANNUAL_TURNOVER_METADATA.getValueGetter()
           .apply(keyElement.getValue1().getElement());
       return switch (removalCriteria) {
@@ -110,7 +108,7 @@ public class OrganisationCollectionCommandReceiver extends CollectionCommandRece
 
     for (final var key : keysToDelete) {
       try {
-        this.collection.delete(key);
+        this.delete(key);
       } catch (NoSuchElement _ignore) {
         // should never happen
         assert false;
@@ -121,13 +119,13 @@ public class OrganisationCollectionCommandReceiver extends CollectionCommandRece
 
   @Override
   public Observable<Pair<ElementKey, OrganisationElementFull>> getStartsWith$(String startOfFullName) {
-    return collection.getEveryWithKey$().filter(keyElement -> OrganisationElementDefinition.FULL_NAME_METADATA
+    return this.getEveryWithKey$().filter(keyElement -> OrganisationElementDefinition.FULL_NAME_METADATA
         .getValueGetter().apply(keyElement.getValue1().getElement()).startsWith(startOfFullName));
   }
 
   @Override
   public Observable<Pair<ElementKey, OrganisationElementFull>> getDescending$() {
-    return this.collection.getEveryWithKey$().sorted((a, b) -> {
+    return this.getEveryWithKey$().sorted((a, b) -> {
       final var aElement = a.getValue1();
       final var bElement = b.getValue1();
       // b to a to reverse order
@@ -137,9 +135,12 @@ public class OrganisationCollectionCommandReceiver extends CollectionCommandRece
 
   @Override
   public void insert(String key, OrganisationElementWritable element) throws ValidationError, DuplicateElements, StorageInaccessibleError {
-    final var entireElement = new OrganisationElementFull(new OrganisationElementAutogenerated(), element);
+    final var entireElement = createElement(element);
     this.insert(key, entireElement);
+  }
 
+  private OrganisationElementFull createElement(OrganisationElementWritable element) {
+    return new OrganisationElementFull(new OrganisationElementAutogenerated(), element);
   }
 
   @Override
@@ -165,5 +166,23 @@ public class OrganisationCollectionCommandReceiver extends CollectionCommandRece
       final String bName = getter.apply(b.getElement());
 
       return aName.compareTo(bName);
+  }
+
+  @Override
+  public void insert(String owner, String key, OrganisationElementWritable element)
+      throws ValidationError, DuplicateElements, StorageInaccessibleError {
+        final var entireElement = createElement(element);
+        entireElement.getMetadata().setOwner(owner);
+
+        this.insert(key, entireElement);
+      }
+
+  private Observable<Pair<ElementKey, OrganisationElementFull>> getOwnedWithKey$(String owner) {
+    return super.getEveryWithKey$().filter(keyElement -> OrganisationElementDefinition.OWNER_METADATA.getValueGetter().apply(keyElement.getValue1()).equals(owner));
+  }
+
+  @Override
+  public void clear(String owner) {
+    this.getOwnedWithKey$(owner).doOnNext(keyElement -> this.delete(keyElement.getValue0())).blockingSubscribe();
   }
 }

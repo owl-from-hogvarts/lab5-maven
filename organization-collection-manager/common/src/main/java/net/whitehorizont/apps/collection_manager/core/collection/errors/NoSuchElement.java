@@ -12,12 +12,20 @@ public class NoSuchElement extends Exception {
     this(key, null);
   }
 
-  public NoSuchElement(ISerializableKey key, @Nullable Throwable cause) {
-    super(buildErrorMessage(key), cause);
+  public NoSuchElement(ISerializableKey key, String owner) {
+    this(key, owner, null);
   }
 
-  private static String buildErrorMessage(ISerializableKey key) {
-    return "Collection does not contain element, which can be addressed by " + key.serialize();
+  public NoSuchElement(ISerializableKey key, String owner, @Nullable Throwable cause) {
+    super(buildErrorMessage(key, owner), cause);
+  }
+
+  private static String buildErrorMessage(ISerializableKey key, @Nullable String owner) {
+    String ownerMessage = "";
+    if (owner != null) {
+      ownerMessage = " and belongs to user '" + owner + "'";
+    }
+    return "Collection does not contain element, which can be addressed by " + key.serialize() + ownerMessage;
   }
   
 }

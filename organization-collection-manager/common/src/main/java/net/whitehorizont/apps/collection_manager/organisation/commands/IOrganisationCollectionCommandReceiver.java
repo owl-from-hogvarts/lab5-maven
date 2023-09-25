@@ -20,13 +20,13 @@ import net.whitehorizont.apps.organization_collection_manager.lib.validators.Val
 @NonNullByDefault
 public interface IOrganisationCollectionCommandReceiver extends ICollectionCommandReceiver<OrganisationElementFull> {
 
-  Observable<Void> replaceById(BaseId id, OrganisationElementWritable prototype);
+  Observable<Void> replaceById(String owner, BaseId id, OrganisationElementWritable prototype);
 
   Single<Long> countByType(OrganisationType type);
 
-  Single<ElementKey> removeById(UUID_ElementId id);
+  Single<ElementKey> removeById(String owner, UUID_ElementId id);
 
-  void removeByRevenue(RemovalCriteria removalCriteria, double targetValue) throws ValidationError, StorageInaccessibleError;
+  void removeByRevenue(String owner, RemovalCriteria removalCriteria, double targetValue) throws ValidationError, StorageInaccessibleError;
 
   Observable<Pair<ElementKey, OrganisationElementFull>> getStartsWith$(String startOfFullName);
 
@@ -38,4 +38,7 @@ public interface IOrganisationCollectionCommandReceiver extends ICollectionComma
   }
 
   void insert(String key, OrganisationElementWritable element) throws ValidationError, DuplicateElements, StorageInaccessibleError;
+  void insert(String owner, String key, OrganisationElementWritable element) throws ValidationError, DuplicateElements, StorageInaccessibleError;
+
+  void clear(String owner);
 }

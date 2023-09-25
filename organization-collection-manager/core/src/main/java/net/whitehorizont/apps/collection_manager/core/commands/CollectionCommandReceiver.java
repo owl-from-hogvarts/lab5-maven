@@ -24,7 +24,7 @@ import net.whitehorizont.apps.organization_collection_manager.lib.validators.Val
  */
 @NonNullByDefault
 public class CollectionCommandReceiver<E extends ICollectionElement<E>> implements ICollectionCommandReceiver<E> {
-  protected final ICollection<E> collection;
+  private final ICollection<E> collection;
 
   public CollectionCommandReceiver(ICollection<E> collection) {
     this.collection = collection;
@@ -107,7 +107,7 @@ public class CollectionCommandReceiver<E extends ICollectionElement<E>> implemen
 
   public void insert(String key, E element) throws ValidationError, DuplicateElements, StorageInaccessibleError {
     final ElementKey keyParsed = collection.getElementKeyFromString(key);
-    this.collection.insert(keyParsed, element);
+    this.insert(keyParsed, element);
   }
   
 }

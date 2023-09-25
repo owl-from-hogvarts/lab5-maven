@@ -5,6 +5,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.Observable;
 import net.whitehorizont.apps.collection_manager.core.commands.interfaces.ICommand;
+import net.whitehorizont.apps.collection_manager.core.commands.interfaces.IWithAuthData;
 import net.whitehorizont.apps.collection_manager.core.dependencies.IProvideAuthReceiver;
 
 @NonNullByDefault
@@ -34,6 +35,9 @@ public class AuthCommand<Return, DependencyProvider extends IProvideAuthReceiver
   }
 
   private Observable<@NonNull Return> executeAuthorized(DependencyProvider dependencyProvider) {
+    if (command instanceof IWithAuthData) {
+      return ((IWithAuthData<Return, ? super DependencyProvider>)command).executeWithAuthData(dependencyProvider, login);
+    }
     return command.execute(dependencyProvider);
   }
   
